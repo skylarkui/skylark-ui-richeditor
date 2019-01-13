@@ -1,2 +1,2 @@
 # skylark-ui-rteditor
-The skylark rich text editor widget library
+The skylark rich text editor widget library, in development.

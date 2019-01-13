@@ -1,6 +1,6 @@
 {
-  "name": "skylark-ui-mdeditor",
-  "description": "The skylark mdeditor widget",
+  "name": "skylark-ui-rteditor",
+  "description": "The skylark rteditor widget",
   "version": "0.9.0",
   "keywords": [
     "css",
@@ -11,7 +11,7 @@
     "framework",
     "web"
   ],
-  "homepage": "https://github.com/skylarkui/skylark-ui-mdeditor/",
+  "homepage": "https://github.com/skylarkui/skylark-ui-rteditor/",
   "author": "Hudaokeji, Inc.",
   "scripts": {
     "change-version": "node grunt/change-version.js",
@@ -23,10 +23,10 @@
   "main": "./dist/js/main",
   "repository": {
     "type": "git",
-    "url": "https://github.com/skylarkui/skylark-ui-mdeditor.git"
+    "url": "https://github.com/skylarkui/skylark-ui-rteditor.git"
   },
   "bugs": {
-    "url": "https://github.com/skylarkui/skylark-ui-mdeditor/issues"
+    "url": "https://github.com/skylarkui/skylark-ui-rteditor/issues"
   },
   "license": "MIT",
   "devDependencies": {

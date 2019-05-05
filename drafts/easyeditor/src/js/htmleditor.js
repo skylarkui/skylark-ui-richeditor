@@ -1,4 +1,4 @@
-define([
+define("htmleditor",[
   "skylark-utils/langx",
   "skylark-utils/browser",
   "skylark-utils/datax",

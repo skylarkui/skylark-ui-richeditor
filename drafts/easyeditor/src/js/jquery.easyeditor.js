@@ -1,4 +1,4 @@
-define([
+define("rteditor",[
   "skylark-utils/langx",
   "skylark-utils/browser",
   "skylark-utils/datax",
@@ -671,7 +671,7 @@ define([
         return this.each(function () {
             if (!$.data(this, 'plugin_easyEditor')) {
                 $.data(this, 'plugin_easyEditor',
-                new EasyEditor( this, options ));
+                new RichTextEditor( this, options ));
             }
         });
     };

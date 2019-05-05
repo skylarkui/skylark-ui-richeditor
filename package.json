@@ -1,6 +1,6 @@
 {
-  "name": "skylark-ui-rteditor",
-  "description": "The skylark rteditor widget",
+  "name": "skylark-ui-richeditor",
+  "description": "The skylark richeditor widget",
   "version": "0.9.0",
   "keywords": [
     "css",
@@ -11,7 +11,7 @@
     "framework",
     "web"
   ],
-  "homepage": "https://github.com/skylarkui/skylark-ui-rteditor/",
+  "homepage": "https://github.com/skylarkui/skylark-ui-richeditor/",
   "author": "Hudaokeji, Inc.",
 
   "license": "MIT",
@@ -21,10 +21,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/skylarkui/skylark-ui-rteditor.git"
+    "url": "https://github.com/skylarkui/skylark-ui-richeditor.git"
   },
   "bugs": {
-    "url": "https://github.com/skylarkui/skylark-ui-rteditor/issues"
+    "url": "https://github.com/skylarkui/skylark-ui-richeditor/issues"
   },
   "dependencies": {
     "skylark-langx": "git+https://github.com/skylarklangx/skylark-langx.git#master",

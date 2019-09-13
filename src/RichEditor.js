@@ -1,7 +1,7 @@
 define([
   "skylark-langx/langx",
   "skylark-utils-dom/query",
-  "skylark-ui-contents/editable",
+  "skylark-domx-contents/editable",
   "./Toolbar",
   "./uploader",
   "./i18n"

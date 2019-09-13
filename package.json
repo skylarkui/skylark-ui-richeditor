@@ -1,5 +1,5 @@
 {
-  "name": "skylark-ui-richeditor",
+  "name": "skylark-widgets-richeditor",
   "description": "The skylark richeditor widget",
   "version": "0.9.0",
   "keywords": [
@@ -11,24 +11,22 @@
     "framework",
     "web"
   ],
-  "homepage": "https://github.com/skylarkui/skylark-ui-richeditor/",
+  "homepage": "https://github.com/skylark-widgets/skylark-widgets-richeditor/",
   "author": "Hudaokeji, Inc.",
-
   "license": "MIT",
-
   "scripts": {
     "build": "sbundle build ."
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/skylarkui/skylark-ui-richeditor.git"
+    "url": "https://github.com/skylark-widgets/skylark-widgets-richeditor.git"
   },
   "bugs": {
-    "url": "https://github.com/skylarkui/skylark-ui-richeditor/issues"
+    "url": "https://github.com/skylark-widgets/skylark-widgets-richeditor/issues"
   },
   "dependencies": {
+    "skylark-domx-contents": "git+https://github.com/skylark-domx/skylark-domx-contents.git#master",
     "skylark-langx": "git+https://github.com/skylarklangx/skylark-langx.git#master",
-    "skylark-ui-contents": "git+https://github.com/skylarkui/skylark-ui-contents.git#master",
     "skylark-utils-dom": "git+https://github.com/skylarkutils/skylark-utils-dom.git#master"
   },
   "skylarkjs": {
@@ -40,4 +38,5 @@
   },
   "engines": {
     "node": ">=0.10.1"
-  }}
+  }
+}

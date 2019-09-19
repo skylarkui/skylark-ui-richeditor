@@ -13,9 +13,9 @@ define([
       if (!this.opts.toolbar) {
         return;
       }
-      if (!langx.isArray(this.opts.toolbar)) {
-        this.opts.toolbar = ['bold', 'italic', 'underline', 'strikethrough', '|', 'ol', 'ul', 'blockquote', 'code', '|', 'link', 'image', '|', 'indent', 'outdent'];
-      }
+      //if (!langx.isArray(this.opts.toolbar)) {
+      //  this.opts.toolbar = ['bold', 'italic', 'underline', 'strikethrough', '|', 'ol', 'ul', 'blockquote', 'code', '|', 'link', 'image', '|', 'indent', 'outdent'];
+      //}
       this._render();
       this.list.on('click', function(e) {
         return false;

@@ -1,6 +1,6 @@
 define([
   "skylark-utils-dom/noder",
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Button"

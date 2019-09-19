@@ -93,16 +93,25 @@ define([], function () {
     define([
         'skylark-langx/langx',
         'skylark-utils-dom/query',
-        'skylark-domx-contents/editable',
+        'skylark-domx-contents/Editable',
+        'skylark-widgets-base/Widget',
         './Toolbar',
         './uploader',
         './i18n'
-    ], function (langx, $, editable, Toolbar, uploader, i18n) {
-        var RichEditor = langx.Evented.inherit({
-            init: function (opts) {
-                this.opts = langx.extend({}, this.opts, opts);
+    ], function (langx, $, Editable, Widget, Toolbar, uploader, i18n) {
+        var RichEditor = Widget.inherit({
+            options: {
+                srcNodeRef: null,
+                placeholder: '',
+                defaultImage: 'images/image.png',
+                params: {},
+                upload: false,
+                template: '<div class="richeditor">\n  <div class="richeditor-wrapper">\n    <div class="richeditor-placeholder"></div>\n    <div class="richeditor-body" contenteditable="true">\n    </div>\n  </div>\n</div>'
+            },
+            _init: function () {
+                this.opts = this.options;
                 var e, editor, uploadOpts;
-                this.textarea = $(this.opts.textarea);
+                this.textarea = $(this.opts.srcNodeRef);
                 this.opts.placeholder = this.opts.placeholder || this.textarea.attr('placeholder');
                 if (!this.textarea.length) {
                     throw new Error('richeditor: param textarea is required.');
@@ -115,7 +124,7 @@ define([], function () {
                 this.id = ++RichEditor.count;
                 this._render();
                 var self = this;
-                this.editable = editable(this.el, {
+                this.editable = new Editable(this._elm, {
                     classPrefix: 'richeditor-',
                     textarea: this.textarea,
                     body: this.body
@@ -154,17 +163,9 @@ define([], function () {
             return this;
         };
         RichEditor.count = 0;
-        RichEditor.prototype.opts = {
-            textarea: null,
-            placeholder: '',
-            defaultImage: 'images/image.png',
-            params: {},
-            upload: false
-        };
-        RichEditor.prototype._tpl = '<div class="richeditor">\n  <div class="richeditor-wrapper">\n    <div class="richeditor-placeholder"></div>\n    <div class="richeditor-body" contenteditable="true">\n    </div>\n  </div>\n</div>';
         RichEditor.prototype._render = function () {
             var key, ref, results, val;
-            this.el = $(this._tpl).insertBefore(this.textarea);
+            this.el = $(this._elm).insertBefore(this.textarea);
             this.wrapper = this.el.find('.richeditor-wrapper');
             this.body = this.wrapper.find('.richeditor-body');
             this.placeholderEl = this.wrapper.find('.richeditor-placeholder').append(this.opts.placeholder);
@@ -230,6 +231,10 @@ define([], function () {
         };
         RichEditor.Toolbar = Toolbar;
         RichEditor.i18n = i18n;
+        RichEditor.addons = {
+            general: {},
+            actions: {}
+        };
         return RichEditor;
     });
     function __isEmptyObject(obj) {
@@ -5073,6 +5078,16 @@ define('skylark-domx-noder/noder',[
       return (node === document.body) ? true : document.body.contains(node);
     }        
 
+    var blockNodes = ["div", "p", "ul", "ol", "li", "blockquote", "hr", "pre", "h1", "h2", "h3", "h4", "h5", "table"];
+
+    function isBlockNode(node) {
+        if (!node || node.nodeType === 3) {
+          return false;
+        }
+        return new RegExp("^(" + (blockNodes.join('|')) + ")$").test(node.nodeName.toLowerCase());
+    }
+
+
     /*   
      * Get the owner document object for the specified element.
      * @param {Node} elm
@@ -5195,7 +5210,17 @@ define('skylark-domx-noder/noder',[
             scrollParent;
     };
 
-        /*   
+
+    function reflow(elm) {
+        if (el == null) {
+          elm = document;
+        }
+        elm.offsetHeight;
+
+        return this;      
+    }
+
+    /*   
      * Replace an old node with the specified node.
      * @param {Node} node
      * @param {Node} oldNode
@@ -5390,6 +5415,8 @@ define('skylark-domx-noder/noder',[
         prepend: prepend,
 
         append: append,
+
+        reflow: reflow,
 
         remove: remove,
 
@@ -9294,7 +9321,7 @@ define('skylark-domx-fx/fx',[
 });
 define('skylark-domx-fx/main',[
 	"./fx"
-],function(browser){
+],function(fx){
 	return fx;
 });
 define('skylark-domx-fx', ['skylark-domx-fx/main'], function (main) { return main; });
@@ -10411,6 +10438,14 @@ define('skylark-domx-query/query',[
         $.fn.enableSelection = function() {
             return this.off( ".ui-disableSelection" );
         };
+
+        $.fn.reflow = function() {
+            return noder.flow(this[0]);
+        };
+
+        $.fn.isBlockNode = function() {
+            return noder.isBlockNode(this[0]);
+        };
        
 
     })(query);
@@ -11123,7 +11158,7 @@ define('skylark-widgets-richeditor/Toolbar',[
 
 });
 define('skylark-widgets-richeditor/buttons/AlignmentButton',[
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Button",
@@ -11230,7 +11265,7 @@ define('skylark-widgets-richeditor/buttons/BlockquoteButton',[
 
 });
 define('skylark-widgets-richeditor/buttons/BoldButton',[
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Button"
@@ -11278,7 +11313,7 @@ define('skylark-widgets-richeditor/buttons/BoldButton',[
 
 });
 define('skylark-widgets-richeditor/buttons/CodePopover',[
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Popover"
@@ -11404,7 +11439,7 @@ define('skylark-widgets-richeditor/buttons/CodePopover',[
 
 });
 define('skylark-widgets-richeditor/buttons/CodeButton',[
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Button",
@@ -11522,7 +11557,7 @@ define('skylark-widgets-richeditor/buttons/CodeButton',[
 
 });
 define('skylark-widgets-richeditor/buttons/ColorButton',[
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Button",
@@ -11607,8 +11642,89 @@ define('skylark-widgets-richeditor/buttons/ColorButton',[
   return ColorButton;
 	
 });
+define('skylark-widgets-richeditor/buttons/EmojiButton',[
+  "skylark-langx/langx",
+  "skylark-domx-query",
+  "../Toolbar",
+  "../RichEditor",
+  "../Button"
+],function(langx,$,Toolbar,RichEditor,Button){ 
+  
+
+   var EmojiButton = Button.inherit({
+
+   });
+
+
+  EmojiButton.i18n = {
+    'zh-CN': {
+      emoji: '表情'
+    },
+    'en-US': {
+      emoji: 'emoji'
+    }
+  };
+
+  EmojiButton.images = ['smile.png', 'smiley.png', 'laughing.png', 'blush.png', 'heart_eyes.png', 'smirk.png', 'flushed.png', 'grin.png', 'wink.png', 'kissing_closed_eyes.png', 'stuck_out_tongue_winking_eye.png', 'stuck_out_tongue.png', 'sleeping.png', 'worried.png', 'expressionless.png', 'sweat_smile.png', 'cold_sweat.png', 'joy.png', 'sob.png', 'angry.png', 'mask.png', 'scream.png', 'sunglasses.png', 'heart.png', 'broken_heart.png', 'star.png', 'anger.png', 'exclamation.png', 'question.png', 'zzz.png', 'thumbsup.png', 'thumbsdown.png', 'ok_hand.png', 'punch.png', 'v.png', 'clap.png', 'muscle.png', 'pray.png', 'skull.png', 'trollface.png'];
+
+  EmojiButton.prototype.name = 'emoji';
+
+  EmojiButton.prototype.icon = 'smile-o';
+
+  EmojiButton.prototype.menu = true;
+
+  EmojiButton.prototype._init = function() {
+    Button.prototype._init.apply(this);
+    langx.merge(this.editor.editable.formatter._allowedAttributes['img'], ['data-emoji', 'alt']);
+  }
+
+  EmojiButton.prototype.renderMenu = function() {
+    var $list, dir, html, name, opts, src, tpl, _i, _len, _ref;
+    tpl = '<ul class="emoji-list">\n</ul>';
+    opts = langx.extend({
+      imagePath: 'images/emoji/',
+      images: EmojiButton.images
+    }, this.editor.opts.emoji || {});
+    html = "";
+    dir = opts.imagePath.replace(/\/$/, '') + '/';
+    _ref = opts.images;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      name = _ref[_i];
+      src = "" + dir + name;
+      name = name.split('.')[0];
+      html += "<li data-name='" + name + "'><img src='" + src + "' width='20' height='20' alt='" + name + "' /></li>";
+    }
+    $list = $(tpl);
+    $list.html(html).appendTo(this.menuWrapper);
+    return $list.on('mousedown', 'li', (function(_this) {
+      return function(e) {
+        var $img;
+        _this.wrapper.removeClass('menu-on');
+        if (!_this.editor.editable.inputManager.focused) {
+          return;
+        }
+        $img = $(e.currentTarget).find('img').clone().attr({
+          'data-emoji': true,
+          'data-non-image': true
+        });
+        _this.editor.editable.selection.insertNode($img);
+        _this.editor.trigger('valuechanged');
+        _this.editor.trigger('selectionchanged');
+        return false;
+      };
+    })(this));
+  };
+
+  EmojiButton.prototype.status = function() {};
+
+
+  RichEditor.Toolbar.addButton(EmojiButton);
+
+  return EmojiButton;
+	
+});
 define('skylark-widgets-richeditor/buttons/FontScaleButton',[
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Button",
@@ -11678,8 +11794,83 @@ define('skylark-widgets-richeditor/buttons/FontScaleButton',[
   return FontScaleButton;
 
 });
+define('skylark-widgets-richeditor/buttons/FullScreenButton',[
+  "skylark-domx-query",
+  "../Toolbar",
+  "../RichEditor",
+  "../Button",
+  "../i18n"
+],function($,Toolbar,RichEditor,Button,i18n){ 
+
+  
+  var FullScrennButton = Button.inherit({
+    name : 'fullscreen',
+
+    needFocus : false,
+
+    _init : function() {
+      Button.prototype._init.call(this);
+
+      this.window = $(window);
+      this.body = $('body');
+      this.editable = this.editor.body;
+      return this.toolbar = this.toolbar.wrapper;
+    }
+
+  });
+
+
+
+  FullScrennButton.cls = 'richeditor-fullscreen';
+
+  FullScrennButton.i18n = {
+    'zh-CN': {
+      fullscreen: '全屏'
+    }
+  };
+
+  FullScrennButton.prototype.iconClassOf = function() {
+    return 'icon-fullscreen';
+  };
+
+
+  FullScrennButton.prototype.status = function() {
+    return this.setActive(this.body.hasClass(this.constructor.cls));
+  };
+
+  FullScrennButton.prototype.command = function() {
+    var editablePadding, isFullscreen;
+    this.body.toggleClass(this.constructor.cls);
+    isFullscreen = this.body.hasClass(this.constructor.cls);
+    if (isFullscreen) {
+      editablePadding = this.editable.outerHeight() - this.editable.height();
+      this.window.on("resize.richeditor-fullscreen-" + this.editor.id, (function(_this) {
+        return function() {
+          return _this._resize({
+            height: _this.window.height() - _this.toolbar.outerHeight() - editablePadding
+          });
+        };
+      })(this)).resize();
+    } else {
+      this.window.off("resize.richeditor-fullscreen-" + this.editor.id).resize();
+      this._resize({
+        height: 'auto'
+      });
+    }
+    return this.setActive(isFullscreen);
+  };
+
+  FullScrennButton.prototype._resize = function(size) {
+    return this.editable.height(size.height);
+  };
+
+  RichEditor.Toolbar.addButton(FullScrennButton);
+
+  return FullScrennButton;
+
+ }); 
 define('skylark-widgets-richeditor/buttons/HrButton',[
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Button"
@@ -11708,9 +11899,95 @@ define('skylark-widgets-richeditor/buttons/HrButton',[
   return HrButton;
 	
 });
+define('skylark-widgets-richeditor/buttons/HtmlButton',[
+  "skylark-domx-query",
+  "../Toolbar",
+  "../RichEditor",
+  "../Button"
+],function($,Toolbar,RichEditor,Button){ 
+   var  hasProp = {}.hasOwnProperty,
+        slice = [].slice;
+  
+
+   var HtmlButton = Button.inherit({
+
+   });
+
+  HtmlButton.prototype.name = 'html';
+
+  HtmlButton.prototype.icon = 'html5';
+
+  HtmlButton.prototype.needFocus = false;
+
+  HtmlButton.prototype._init = function() {
+    Button.prototype._init.call(this);
+    this.editor.textarea.on('focus', (function(_this) {
+      return function(e) {
+        return _this.editor.el.addClass('focus').removeClass('error');
+      };
+    })(this));
+    this.editor.textarea.on('blur', (function(_this) {
+      return function(e) {
+        _this.editor.el.removeClass('focus');
+        return _this.editor.setValue(_this.editor.textarea.val());
+      };
+    })(this));
+    return this.editor.textarea.on('input', (function(_this) {
+      return function(e) {
+        return _this._resizeTextarea();
+      };
+    })(this));
+  };
+
+  HtmlButton.prototype.status = function() {};
+
+  HtmlButton.prototype.command = function() {
+    var button, i, len, ref;
+    this.editor.blur();
+    this.editor.el.toggleClass('richeditor-html');
+    this.editor.htmlMode = this.editor.el.hasClass('richeditor-html');
+    if (this.editor.htmlMode) {
+      this.editor.hidePopover();
+      this.editor.textarea.val(this.beautifyHTML(this.editor.textarea.val()));
+      this._resizeTextarea();
+    } else {
+      this.editor.setValue(this.editor.textarea.val());
+    }
+    ref = this.editor.toolbar.buttons;
+    for (i = 0, len = ref.length; i < len; i++) {
+      button = ref[i];
+      if (button.name === 'html') {
+        button.setActive(this.editor.htmlMode);
+      } else {
+        button.setDisabled(this.editor.htmlMode);
+      }
+    }
+    return null;
+  };
+
+  HtmlButton.prototype.beautifyHTML = function() {
+    return arguments[0];
+    var args;
+    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    if (beautify.html) {
+      return beautify.html.apply(beautify, args);
+    } else {
+      return beautify.apply(null, args);
+    }
+  };
+
+  HtmlButton.prototype._resizeTextarea = function() {
+    this._textareaPadding || (this._textareaPadding = this.editor.textarea.innerHeight() - this.editor.textarea.height());
+    return this.editor.textarea.height(this.editor.textarea[0].scrollHeight - this._textareaPadding);
+  };
+  RichEditor.Toolbar.addButton(HtmlButton);
+
+  return HtmlButton;
+	
+});
 define('skylark-widgets-richeditor/buttons/ImagePopover',[
   "skylark-langx/langx",
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Popover"
@@ -11956,12 +12233,13 @@ define('skylark-widgets-richeditor/buttons/ImagePopover',[
 });
 define('skylark-widgets-richeditor/buttons/ImageButton',[
   "skylark-langx/langx",
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Button",
-  "./ImagePopover"
-],function(langx, $,Toolbar,RichEditor,Button,ImagePopover){ 
+  "./ImagePopover",
+  "../i18n"
+],function(langx, $,Toolbar,RichEditor,Button,ImagePopover,i18n){ 
    var ImageButton = Button.inherit({
 
    });
@@ -12000,10 +12278,10 @@ define('skylark-widgets-richeditor/buttons/ImageButton',[
         this.menu = [
           {
             name: 'upload-image',
-            text: this._t('uploadImage')
+            text: i18n.translate('uploadImage')
           }, {
             name: 'external-image',
-            text: this._t('externalImage')
+            text: i18n.translate('externalImage')
           }
         ];
       } else {
@@ -12381,7 +12659,7 @@ define('skylark-widgets-richeditor/buttons/ImageButton',[
 
 });
 define('skylark-widgets-richeditor/buttons/IndentButton',[
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Button"
@@ -12414,7 +12692,7 @@ define('skylark-widgets-richeditor/buttons/IndentButton',[
   return IndentButton;
 });
 define('skylark-widgets-richeditor/buttons/ItalicButton',[
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Button"
@@ -12463,7 +12741,7 @@ define('skylark-widgets-richeditor/buttons/ItalicButton',[
 
 });
 define('skylark-widgets-richeditor/buttons/LinkPopover',[
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Popover"
@@ -12546,7 +12824,7 @@ define('skylark-widgets-richeditor/buttons/LinkPopover',[
 
 });
 define('skylark-widgets-richeditor/buttons/LinkButton',[
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Button",
@@ -12620,7 +12898,7 @@ define('skylark-utils-dom/noder',[
 });
 define('skylark-widgets-richeditor/buttons/ListButton',[
   "skylark-utils-dom/noder",
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Button"
@@ -12641,8 +12919,96 @@ define('skylark-widgets-richeditor/buttons/ListButton',[
     return ListButton;
 	
 });
+define('skylark-widgets-richeditor/buttons/MarkButton',[
+  "skylark-domx-query",
+  "../Toolbar",
+  "../RichEditor",
+  "../Button",
+  "../i18n"
+],function($,Toolbar,RichEditor,Button,i18n){ 
+
+
+  var MarkButton = Button.inherit({
+    name : 'mark'
+
+  });
+
+
+  MarkButton.prototype.icon = 'mark';
+
+  MarkButton.prototype.htmlTag = 'mark';
+
+  MarkButton.prototype.disableTag = 'pre, table';
+
+  MarkButton.prototype.command = function() {
+    var $end, $start, range;
+    range = this.editor.editable.selection.range();
+    if (this.active) {
+      this.editor.editable.selection.save();
+      this.unmark(range);
+      this.editor.editable.selection.restore();
+      this.editor.trigger('valuechanged');
+      return;
+    }
+    if (range.collapsed) {
+      return;
+    }
+    this.editor.editable.selection.save();
+    $start = $(range.startContainer);
+    $end = $(range.endContainer);
+    if ($start.closest('mark').length) {
+      range.setStartBefore($start.closest('mark')[0]);
+    }
+    if ($end.closest('mark').length) {
+      range.setEndAfter($end.closest('mark')[0]);
+    }
+    this.mark(range);
+    this.editor.editable.selection.restore();
+    this.editor.trigger('valuechanged');
+    if (this.editor.editable.util.support.onselectionchange) {
+      return this.editor.trigger('selectionchanged');
+    }
+  };
+
+  MarkButton.prototype.mark = function(range) {
+    var $contents, $mark;
+    if (range == null) {
+      range = this.editor.editable.selection.range();
+    }
+    $contents = $(range.extractContents());
+    $contents.find('mark').each(function(index, ele) {
+      return $(ele).replaceWith($(ele).html());
+    });
+    $mark = $('<mark>').append($contents);
+    return range.insertNode($mark[0]);
+  };
+
+  MarkButton.prototype.unmark = function(range) {
+    var $mark;
+    if (range == null) {
+      range = this.editor.editable.selection.range();
+    }
+    if (range.collapsed) {
+      $mark = $(range.commonAncestorContainer);
+      if (!$mark.is('mark')) {
+        $mark = $mark.parent();
+      }
+    } else if ($(range.startContainer).closest('mark').length) {
+      $mark = $(range.startContainer).closest('mark');
+    } else if ($(range.endContainer).closest('mark').length) {
+      $mark = $(range.endContainer).closest('mark');
+    }
+    return $mark.replaceWith($mark.html());
+  };  
+
+  
+  RichEditor.Toolbar.addButton(MarkButton);
+
+  return MarkButton;
+
+ }); 
 define('skylark-widgets-richeditor/buttons/OrderListButton',[
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "./ListButton"
@@ -12678,7 +13044,7 @@ define('skylark-widgets-richeditor/buttons/OrderListButton',[
 	
 });
 define('skylark-widgets-richeditor/buttons/OutdentButton',[
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Button"
@@ -12711,7 +13077,7 @@ define('skylark-widgets-richeditor/buttons/OutdentButton',[
 
 });
 define('skylark-widgets-richeditor/buttons/StrikethroughButton',[
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Button"
@@ -13106,17 +13472,10 @@ define('skylark-domx-tables/main',[
 });
 define('skylark-domx-tables', ['skylark-domx-tables/main'], function (main) { return main; });
 
-define('skylark-utils-dom/tables',[
-    "./dom",
-    "skylark-domx-tables"
-], function(dom, tables) {
-
-  return dom.tables = tables;
-});
 define('skylark-widgets-richeditor/buttons/TableButton',[
   "skylark-langx/langx",
-  "skylark-utils-dom/tables",
-  "skylark-utils-dom/query",
+  "skylark-domx-tables",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Button"
@@ -13442,7 +13801,7 @@ define('skylark-widgets-richeditor/buttons/TableButton',[
 
 });
 define('skylark-widgets-richeditor/buttons/TitleButton',[
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Button",
@@ -13510,7 +13869,7 @@ define('skylark-widgets-richeditor/buttons/TitleButton',[
 
 });
 define('skylark-widgets-richeditor/buttons/UnderlineButton',[
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Button"
@@ -13558,7 +13917,7 @@ define('skylark-widgets-richeditor/buttons/UnderlineButton',[
 
 });
 define('skylark-widgets-richeditor/buttons/UnorderListButton',[
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "./ListButton"
@@ -13592,6 +13951,255 @@ define('skylark-widgets-richeditor/buttons/UnorderListButton',[
     return UnorderListButton;
 
 });
+define('skylark-widgets-base/base',[
+	"skylark-langx/skylark"
+],function(skylark){
+	return skylark.attach("widgets.base",{});
+});
+define('skylark-widgets-base/Addon',[
+	"./base",
+  "skylark-langx/Evented"	
+],function(base,Evented){
+
+	var Addon = Evented.inherit({
+
+		_construct : function(widget,options) {
+			this._widget = widget;
+			this._options = options;
+			if (this._init) {
+				this._init();
+			}
+		}
+
+	});
+
+	return base.Addon = Addon;
+
+});
+define('skylark-widgets-richeditor/addons/AutoSave',[
+  "skylark-domx-query",
+  "skylark-widgets-base/Addon",
+  "../Toolbar",
+  "../RichEditor",
+  "../Button",
+  "../i18n"
+],function($,Addon, Toolbar,RichEditor,Button,i18n){ 
+
+
+  var AutoSave = Addon.inherit({
+    needFocus : false,
+
+    _init : function() {
+      Button.prototype._init.call(this);
+
+	    var currentVal, link, name, val;
+	    this.editor = this._module;
+	    if (!this.opts.autosave) {
+	      return;
+	    }
+	    this.name = typeof this.opts.autosave === 'string' ? this.opts.autosave : 'simditor';
+	    if (this.opts.autosavePath) {
+	      this.path = this.opts.autosavePath;
+	    } else {
+	      link = $("<a/>", {
+	        href: location.href
+	      });
+	      name = this.editor.textarea.data('autosave') || this.name;
+	      this.path = "/" + (link[0].pathname.replace(/\/$/g, "").replace(/^\//g, "")) + "/autosave/" + name + "/";
+	    }
+	    if (!this.path) {
+	      return;
+	    }
+	    this.editor.on("valuechanged", (function(_this) {
+	      return function() {
+	        return _this.storage.set(_this.path, _this.editor.getValue());
+	      };
+	    })(this));
+	    this.editor.el.closest('form').on('ajax:success.simditor-' + this.editor.id, (function(_this) {
+	      return function(e) {
+	        return _this.storage.remove(_this.path);
+	      };
+	    })(this));
+	    val = this.storage.get(this.path);
+	    if (!val) {
+	      return;
+	    }
+	    currentVal = this.editor.textarea.val();
+	    if (val === currentVal) {
+	      return;
+	    }
+	    if (this.editor.textarea.is('[data-autosave-confirm]')) {
+	      if (confirm(this.editor.textarea.data('autosave-confirm') || 'Are you sure to restore unsaved changes?')) {
+	        return this.editor.setValue(val);
+	      } else {
+	        return this.storage.remove(this.path);
+	      }
+	    } else {
+	      return this.editor.setValue(val);
+	    }
+
+    }
+
+  });
+
+
+  AutoSave.categoryName = "general";
+  AutoSave.addonName = 'autosave';
+
+  AutoSave.prototype.opts = {
+    autosave: true,
+    autosavePath: null
+  };
+
+
+  AutoSave.prototype.storage = {
+    supported: function() {
+      var error;
+      try {
+        localStorage.setItem('_storageSupported', 'yes');
+        localStorage.removeItem('_storageSupported');
+        return true;
+      } catch (_error) {
+        error = _error;
+        return false;
+      }
+    },
+    set: function(key, val, session) {
+      var storage;
+      if (session == null) {
+        session = false;
+      }
+      if (!this.supported()) {
+        return;
+      }
+      storage = session ? sessionStorage : localStorage;
+      return storage.setItem(key, val);
+    },
+    get: function(key, session) {
+      var storage;
+      if (session == null) {
+        session = false;
+      }
+      if (!this.supported()) {
+        return;
+      }
+      storage = session ? sessionStorage : localStorage;
+      return storage[key];
+    },
+    remove: function(key, session) {
+      var storage;
+      if (session == null) {
+        session = false;
+      }
+      if (!this.supported()) {
+        return;
+      }
+      storage = session ? sessionStorage : localStorage;
+      return storage.removeItem(key);
+    }
+  };
+
+  return RichEditor.AutoSave = AutoSave;
+
+});
+define('skylark-widgets-richeditor/addons/Dropzone',[
+  "skylark-domx-query",
+  "skylark-widgets-base/Addon",
+  "../Toolbar",
+  "../RichEditor",
+  "../Button",
+  "../i18n"
+],function($,Addon, Toolbar,RichEditor,Button,i18n){ 
+
+
+  var Dropzone = Addon.inherit({
+  });
+
+  Dropzone.categoryName = "genernal";
+
+  Dropzone.addonName = "dropzone";
+
+
+  Dropzone.prototype._entered = 0;
+
+  Dropzone.prototype._init = function() {
+    this.editor = this._widget;
+    if (this.editor.uploader == null) {
+      throw new Error("Can't work without 'simple-uploader' module");
+      return;
+    }
+    $(document.body).on("dragover", function(e) {
+      e.originalEvent.dataTransfer.dropEffect = "none";
+      return e.preventDefault();
+    });
+    $(document.body).on('drop', function(e) {
+      return e.preventDefault();
+    });
+    this.imageBtn = this.editor.toolbar.findButton("image");
+    return this.editor.body.on("dragover", function(e) {
+      e.originalEvent.dataTransfer.dropEffect = "copy";
+      e.stopPropagation();
+      return e.preventDefault();
+    }).on("dragenter", (function(_this) {
+      return function(e) {
+        if ((_this._entered += 1) === 1) {
+          _this.show();
+        }
+        e.preventDefault();
+        return e.stopPropagation();
+      };
+    })(this)).on("dragleave", (function(_this) {
+      return function(e) {
+        if ((_this._entered -= 1) <= 0) {
+          _this.hide();
+        }
+        e.preventDefault();
+        return e.stopPropagation();
+      };
+    })(this)).on("drop", (function(_this) {
+      return function(e) {
+        var file, imageFiles, _i, _j, _len, _len1, _ref;
+        imageFiles = [];
+        _ref = e.originalEvent.dataTransfer.files;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          file = _ref[_i];
+          if (!_this.validFile(file)) {
+            alert("「" + file.name + "]」文件不是图片。");
+            _this.hide();
+            return false;
+          }
+          imageFiles.push(file);
+        }
+        for (_j = 0, _len1 = imageFiles.length; _j < _len1; _j++) {
+          file = imageFiles[_j];
+          _this.editor.uploader.upload(file, {
+            inline: true
+          });
+        }
+        _this.hide();
+        e.stopPropagation();
+        return e.preventDefault();
+      };
+    })(this));
+  };
+
+  Dropzone.prototype.show = function() {
+    return this.imageBtn.setActive(true);
+  };
+
+  Dropzone.prototype.hide = function() {
+    this.imageBtn.setActive(false);
+    return this._entered = 0;
+  };
+
+  Dropzone.prototype.validFile = function(file) {
+    return file.type.indexOf("image/") > -1;
+  };
+
+  return RichEditor.addons.general.dropzone = Dropzone;
+
+
+});
 define('skylark-widgets-richeditor/main',[
   "./RichEditor", 
   "./Button", 
@@ -13603,8 +14211,11 @@ define('skylark-widgets-richeditor/main',[
   "./buttons/CodeButton", 
   "./buttons/CodePopover", 
   "./buttons/ColorButton", 
+  "./buttons/EmojiButton", 
   "./buttons/FontScaleButton", 
+  "./buttons/FullScreenButton", 
   "./buttons/HrButton", 
+  "./buttons/HtmlButton", 
   "./buttons/ImageButton", 
   "./buttons/ImagePopover", 
   "./buttons/IndentButton", 
@@ -13612,13 +14223,16 @@ define('skylark-widgets-richeditor/main',[
   "./buttons/LinkButton", 
   "./buttons/LinkPopover", 
   "./buttons/ListButton", 
+  "./buttons/MarkButton", 
   "./buttons/OrderListButton", 
   "./buttons/OutdentButton",
   "./buttons/StrikethroughButton", 
   "./buttons/TableButton", 
   "./buttons/TitleButton", 
   "./buttons/UnderlineButton", 
-  "./buttons/UnorderListButton"
+  "./buttons/UnorderListButton",
+  "./addons/AutoSave",
+  "./addons/Dropzone"
 ],function(RichEditor){
 	
   return RichEditor;

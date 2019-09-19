@@ -27,7 +27,8 @@
   "dependencies": {
     "skylark-domx-contents": "git+https://github.com/skylark-domx/skylark-domx-contents.git#master",
     "skylark-langx": "git+https://github.com/skylarklangx/skylark-langx.git#master",
-    "skylark-utils-dom": "git+https://github.com/skylarkutils/skylark-utils-dom.git#master"
+    "skylark-utils-dom": "git+https://github.com/skylarkutils/skylark-utils-dom.git#master",
+    "skylark-widgets-base": "git+https://github.com/skylark-widgets/skylark-widgets-base.git#master"
   },
   "skylarkjs": {
     "build": {

@@ -1,11 +1,12 @@
 define([
   "skylark-langx/langx",
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Button",
-  "./ImagePopover"
-],function(langx, $,Toolbar,RichEditor,Button,ImagePopover){ 
+  "./ImagePopover",
+  "../i18n"
+],function(langx, $,Toolbar,RichEditor,Button,ImagePopover,i18n){ 
    var ImageButton = Button.inherit({
 
    });
@@ -44,10 +45,10 @@ define([
         this.menu = [
           {
             name: 'upload-image',
-            text: this._t('uploadImage')
+            text: i18n.translate('uploadImage')
           }, {
             name: 'external-image',
-            text: this._t('externalImage')
+            text: i18n.translate('externalImage')
           }
         ];
       } else {

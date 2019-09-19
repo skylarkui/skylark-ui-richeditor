@@ -1,0 +1,7 @@
+.richeditor.richeditor-html .richeditor-wrapper > textarea {
+  display: block !important;
+}
+.richeditor.richeditor-html .richeditor-body,
+.richeditor.richeditor-html .richeditor-placeholder {
+  display: none;
+}

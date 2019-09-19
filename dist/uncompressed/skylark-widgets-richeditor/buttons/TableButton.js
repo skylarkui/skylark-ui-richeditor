@@ -1,7 +1,7 @@
 define([
   "skylark-langx/langx",
-  "skylark-utils-dom/tables",
-  "skylark-utils-dom/query",
+  "skylark-domx-tables",
+  "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",
   "../Button"

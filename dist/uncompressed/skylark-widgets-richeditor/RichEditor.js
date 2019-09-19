@@ -5,16 +5,25 @@ define([], function () {
     define([
         'skylark-langx/langx',
         'skylark-utils-dom/query',
-        'skylark-domx-contents/editable',
+        'skylark-domx-contents/Editable',
+        'skylark-widgets-base/Widget',
         './Toolbar',
         './uploader',
         './i18n'
-    ], function (langx, $, editable, Toolbar, uploader, i18n) {
-        var RichEditor = langx.Evented.inherit({
-            init: function (opts) {
-                this.opts = langx.extend({}, this.opts, opts);
+    ], function (langx, $, Editable, Widget, Toolbar, uploader, i18n) {
+        var RichEditor = Widget.inherit({
+            options: {
+                srcNodeRef: null,
+                placeholder: '',
+                defaultImage: 'images/image.png',
+                params: {},
+                upload: false,
+                template: '<div class="richeditor">\n  <div class="richeditor-wrapper">\n    <div class="richeditor-placeholder"></div>\n    <div class="richeditor-body" contenteditable="true">\n    </div>\n  </div>\n</div>'
+            },
+            _init: function () {
+                this.opts = this.options;
                 var e, editor, uploadOpts;
-                this.textarea = $(this.opts.textarea);
+                this.textarea = $(this.opts.srcNodeRef);
                 this.opts.placeholder = this.opts.placeholder || this.textarea.attr('placeholder');
                 if (!this.textarea.length) {
                     throw new Error('richeditor: param textarea is required.');
@@ -27,7 +36,7 @@ define([], function () {
                 this.id = ++RichEditor.count;
                 this._render();
                 var self = this;
-                this.editable = editable(this.el, {
+                this.editable = new Editable(this._elm, {
                     classPrefix: 'richeditor-',
                     textarea: this.textarea,
                     body: this.body
@@ -66,17 +75,9 @@ define([], function () {
             return this;
         };
         RichEditor.count = 0;
-        RichEditor.prototype.opts = {
-            textarea: null,
-            placeholder: '',
-            defaultImage: 'images/image.png',
-            params: {},
-            upload: false
-        };
-        RichEditor.prototype._tpl = '<div class="richeditor">\n  <div class="richeditor-wrapper">\n    <div class="richeditor-placeholder"></div>\n    <div class="richeditor-body" contenteditable="true">\n    </div>\n  </div>\n</div>';
         RichEditor.prototype._render = function () {
             var key, ref, results, val;
-            this.el = $(this._tpl).insertBefore(this.textarea);
+            this.el = $(this._elm).insertBefore(this.textarea);
             this.wrapper = this.el.find('.richeditor-wrapper');
             this.body = this.wrapper.find('.richeditor-body');
             this.placeholderEl = this.wrapper.find('.richeditor-placeholder').append(this.opts.placeholder);
@@ -142,6 +143,10 @@ define([], function () {
         };
         RichEditor.Toolbar = Toolbar;
         RichEditor.i18n = i18n;
+        RichEditor.addons = {
+            general: {},
+            actions: {}
+        };
         return RichEditor;
     });
     function __isEmptyObject(obj) {

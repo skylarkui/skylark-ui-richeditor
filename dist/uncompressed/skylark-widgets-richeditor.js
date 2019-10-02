@@ -389,26 +389,34 @@ define('skylark-widgets-richeditor/i18n',[
 define('skylark-widgets-richeditor/Button',[
   "skylark-langx/langx",
   "skylark-utils-dom/query",
+  "skylark-widgets-base/Widget",
   "./RichEditor",
   "./i18n"
-],function(langx, $,RichEditor,i18n){ 
+],function(langx, $, Widget, RichEditor,i18n){ 
   var slice = [].slice;
 
-  var Button = langx.Evented.inherit( {
-    init : function(opts) {
+  var Button = Widget.inherit( {
+
+    options : {
+      template: '<li><a tabindex="-1" unselectable="on" class="toolbar-item" href="javascript:;"><span></span></a></li>',
+
+      menu : {
+        menuWrapper: '<div class="toolbar-menu"></div>',
+        menuItem: '<li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;"><span></span></a></li>',
+        separator: '<li><span class="separator"></span></li>'      
+      }
+
+    },
+
+
+    _construct : function(opts) {
       this.toolbar = opts.toolbar;
       this.editor = opts.toolbar.editor;
       this.title = i18n.translate(this.name);
-      this._init();
+      Widget.prototype._construct.call(this,opts);
     }
   }); 
 
-  Button.prototype._tpl = {
-    item: '<li><a tabindex="-1" unselectable="on" class="toolbar-item" href="javascript:;"><span></span></a></li>',
-    menuWrapper: '<div class="toolbar-menu"></div>',
-    menuItem: '<li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;"><span></span></a></li>',
-    separator: '<li><span class="separator"></span></li>'
-  };
 
   Button.prototype.name = '';
 
@@ -534,14 +542,18 @@ define('skylark-widgets-richeditor/Button',[
   };
 
   Button.prototype.render = function() {
-    this.wrapper = $(this._tpl.item).appendTo(this.toolbar.list);
+
+    //this.wrapper = $(this._tpl.item).appendTo(this.toolbar.list);
+    this.toolbar.addToolItem(this);
+    this.wrapper = $(this._elm);
+
     this.el = this.wrapper.find('a.toolbar-item');
     this.el.attr('title', this.title).addClass("toolbar-item-" + this.name).data('button', this);
     this.setIcon(this.icon);
     if (!this.menu) {
       return;
     }
-    this.menuWrapper = $(this._tpl.menuWrapper).appendTo(this.wrapper);
+    this.menuWrapper = $(this.options.menu.menuWrapper).appendTo(this.wrapper);
     this.menuWrapper.addClass("toolbar-menu-" + this.name);
     return this.renderMenu();
   };
@@ -557,10 +569,10 @@ define('skylark-widgets-richeditor/Button',[
     for (k = 0, len = ref.length; k < len; k++) {
       menuItem = ref[k];
       if (menuItem === '|') {
-        $(this._tpl.separator).appendTo(this.menuEl);
+        $(this.options.menu.separator).appendTo(this.menuEl);
         continue;
       }
-      $menuItemEl = $(this._tpl.menuItem).appendTo(this.menuEl);
+      $menuItemEl = $(this.options.menu.menuItem).appendTo(this.menuEl);
       $menuBtnEl = $menuItemEl.find('a.menu-item').attr({
         'title': (ref1 = menuItem.title) != null ? ref1 : menuItem.text,
         'data-param': menuItem.param
@@ -787,119 +799,37 @@ define('skylark-widgets-richeditor/Popover',[
 });
 define('skylark-widgets-richeditor/Toolbar',[
   "skylark-langx/langx",
-  "skylark-utils-dom/query"
-],function(langx,$){ 
+  "skylark-utils-dom/query",
+  "skylark-widgets-swt/Toolbar"
+],function(langx,$,_Toolbar){ 
 
-  var Toolbar = langx.Evented.inherit({
-    init : function(editor,opts) {
-      var floatInitialized, initToolbarFloat, toolbarHeight;
-      this.editor = editor;
 
-      this.opts = langx.extend({}, this.opts, opts);
 
-      if (!this.opts.toolbar) {
-        return;
-      }
-      if (!langx.isArray(this.opts.toolbar)) {
-        this.opts.toolbar = ['bold', 'italic', 'underline', 'strikethrough', '|', 'ol', 'ul', 'blockquote', 'code', '|', 'link', 'image', '|', 'indent', 'outdent'];
-      }
+  var Toolbar = _Toolbar.inherit({
+    pluginName : "lark.richeditor.toolbar",
+
+    _construct : function(editor,opts) {
+      this.editor =editor;
+      _Toolbar.prototype._construct.call(this,opts);
+    },
+
+    _init : function() {
+      _Toolbar.prototype._init.call(this);
       this._render();
-      this.list.on('click', function(e) {
-        return false;
-      });
-      this.wrapper.on('mousedown', (function(_this) {
-        return function(e) {
-          return _this.list.find('.menu-on').removeClass('.menu-on');
-        };
-      })(this));
-      $(document).on('mousedown.richeditor' + this.editor.id, (function(_this) {
-        return function(e) {
-          return _this.list.find('.menu-on').removeClass('.menu-on');
-        };
-      })(this));
-      if (!this.opts.toolbarHidden && this.opts.toolbarFloat) {
-        this.wrapper.css('top', this.opts.toolbarFloatOffset);
-        toolbarHeight = 0;
-        initToolbarFloat = (function(_this) {
-          return function() {
-            _this.wrapper.css('position', 'static');
-            _this.wrapper.width('auto');
-            _this.editor.editable.util.reflow(_this.wrapper);
-            _this.wrapper.width(_this.wrapper.outerWidth());
-            _this.wrapper.css('left', _this.editor.editable.util.os.mobile ? _this.wrapper.position().left : _this.wrapper.offset().left);
-            _this.wrapper.css('position', '');
-            toolbarHeight = _this.wrapper.outerHeight();
-            _this.editor.placeholderEl.css('top', toolbarHeight);
-            return true;
-          };
-        })(this);
-        floatInitialized = null;
-        $(window).on('resize.richeditor-' + this.editor.id, function(e) {
-          return floatInitialized = initToolbarFloat();
-        });
-        $(window).on('scroll.richeditor-' + this.editor.id, (function(_this) {
-          return function(e) {
-            var bottomEdge, scrollTop, topEdge;
-            if (!_this.wrapper.is(':visible')) {
-              return;
-            }
-            topEdge = _this.editor.wrapper.offset().top;
-            bottomEdge = topEdge + _this.editor.wrapper.outerHeight() - 80;
-            scrollTop = $(document).scrollTop() + _this.opts.toolbarFloatOffset;
-            if (scrollTop <= topEdge || scrollTop >= bottomEdge) {
-              _this.editor.wrapper.removeClass('toolbar-floating').css('padding-top', '');
-              if (_this.editor.editable.util.os.mobile) {
-                return _this.wrapper.css('top', _this.opts.toolbarFloatOffset);
-              }
-            } else {
-              floatInitialized || (floatInitialized = initToolbarFloat());
-              _this.editor.wrapper.addClass('toolbar-floating').css('padding-top', toolbarHeight);
-              if (_this.editor.editable.util.os.mobile) {
-                return _this.wrapper.css('top', scrollTop - topEdge + _this.opts.toolbarFloatOffset);
-              }
-            }
-          };
-        })(this));
-      }
-      this.editor.on('destroy', (function(_this) {
-        return function() {
-          return _this.buttons.length = 0;
-        };
-      })(this));
-      $(document).on("mousedown.richeditor-" + this.editor.id, (function(_this) {
-        return function(e) {
-          return _this.list.find('li.menu-on').removeClass('menu-on');
-        };
-      })(this));
     }
 
   });
 
-  Toolbar.pluginName = 'Toolbar';
-
-  Toolbar.prototype.opts = {
-    toolbar: true,
-    toolbarFloat: true,
-    toolbarHidden: false,
-    toolbarFloatOffset: 0
-  };
-
-  Toolbar.prototype._tpl = {
-    wrapper: '<div class="richeditor-toolbar"><ul></ul></div>',
-    separator: '<li><span class="separator"></span></li>'
-  };
-
-
   Toolbar.prototype._render = function() {
     var k, len, name, ref;
     this.buttons = [];
-    this.wrapper = $(this._tpl.wrapper).prependTo(this.editor.wrapper);
-    this.list = this.wrapper.find('ul');
+    //this.wrapper = $(this._tpl.wrapper).prependTo(this.editor.wrapper);
+    this.wrapper = $(this._elm).prependTo(this.editor.wrapper);
     ref = this.opts.toolbar;
     for (k = 0, len = ref.length; k < len; k++) {
       name = ref[k];
       if (name === '|') {
-        $(this._tpl.separator).appendTo(this.list);
+        this.addSeparator();
         continue;
       }
       if (!this.constructor.buttons[name]) {
@@ -3392,7 +3322,6 @@ define('skylark-widgets-richeditor/addons/AutoSave',[
     needFocus : false,
 
     _init : function() {
-      Button.prototype._init.call(this);
 
 	    var currentVal, link, name, val;
 	    this.editor = this._module;
@@ -3501,7 +3430,7 @@ define('skylark-widgets-richeditor/addons/AutoSave',[
     }
   };
 
-  return RichEditor.AutoSave = AutoSave;
+  return RichEditor.addons.general.autoSave = AutoSave;
 
 });
 define('skylark-widgets-richeditor/addons/Dropzone',[

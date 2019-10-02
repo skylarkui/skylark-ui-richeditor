@@ -1,24 +1,24 @@
-.richeditor .richeditor-toolbar .toolbar-item-emoji span.fa {
+.richeditor .lark-toolbar .toolbar-item-emoji span.fa {
   color: #888;
   font-weight: bold;
 }
-.richeditor .richeditor-toolbar .toolbar-menu-emoji {
+.richeditor .lark-toolbar .toolbar-menu-emoji {
   width: 296px;
 }
-.richeditor .richeditor-toolbar ul.emoji-list {
+.richeditor .lark-toolbar ul.emoji-list {
   padding: 6px 8px;
   overflow: hidden;
 }
-.richeditor .richeditor-toolbar ul.emoji-list li {
+.richeditor .lark-toolbar ul.emoji-list li {
   float: left;
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
 }
-.richeditor .richeditor-toolbar ul.emoji-list li:hover {
+.richeditor .lark-toolbar ul.emoji-list li:hover {
   background-color: #f0f0f0;
 }
-.richeditor .richeditor-toolbar ul.emoji-list img {
+.richeditor .lark-toolbar ul.emoji-list img {
   display: block;
 }
 

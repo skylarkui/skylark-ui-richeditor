@@ -12,7 +12,6 @@ define([
     needFocus : false,
 
     _init : function() {
-      Button.prototype._init.call(this);
 
 	    var currentVal, link, name, val;
 	    this.editor = this._module;
@@ -121,6 +120,6 @@ define([
     }
   };
 
-  return RichEditor.AutoSave = AutoSave;
+  return RichEditor.addons.general.autoSave = AutoSave;
 
 });

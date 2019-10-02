@@ -10479,6 +10479,1378 @@ define('skylark-utils-dom/query',[
     return dom.query = query;
 
 });
+define('skylark-domx-velm/velm',[
+    "skylark-langx/skylark",
+    "skylark-langx/langx",
+    "skylark-domx-noder",
+    "skylark-domx-data",
+    "skylark-domx-eventer",
+    "skylark-domx-finder",
+    "skylark-domx-geom",
+    "skylark-domx-styler",
+    "skylark-domx-fx",
+    "skylark-domx-query"
+], function(skylark, langx, noder, datax, eventer, finder, geom, styler, fx, $) {
+    var map = Array.prototype.map,
+        slice = Array.prototype.slice;
+    /*
+     * VisualElement is a skylark class type wrapping a visule dom node,
+     * provides a number of prototype methods and supports chain calls.
+     */
+    var VisualElement = langx.klass({
+        klassName: "VisualElement",
+
+        "_construct": function(node) {
+            if (langx.isString(node)) {
+                if (node.charAt(0) === "<") {
+                    //html
+                    node = noder.createFragment(node)[0];
+                } else {
+                    // id
+                    node = document.getElementById(node);
+                }
+            }
+            this._elm = node;
+        }
+    });
+
+    VisualElement.prototype.$ = VisualElement.prototype.query = function(selector) {
+        return $(selector,this._elm);
+    };
+
+    VisualElement.prototype.elm = function() {
+        return this._elm;
+    };
+
+    /*
+     * the VisualElement object wrapping document.body
+     */
+    var root = new VisualElement(document.body),
+        elmx = function(node) {
+            if (node) {
+                return new VisualElement(node);
+            } else {
+                return root;
+            }
+        };
+    /*
+     * Extend VisualElement prototype with wrapping the specified methods.
+     * @param {ArrayLike} fn
+     * @param {Object} context
+     */
+    function _delegator(fn, context) {
+        return function() {
+            var self = this,
+                elem = self._elm,
+                ret = fn.apply(context, [elem].concat(slice.call(arguments)));
+
+            if (ret) {
+                if (ret === context) {
+                    return self;
+                } else {
+                    if (ret instanceof HTMLElement) {
+                        ret = new VisualElement(ret);
+                    } else if (langx.isArrayLike(ret)) {
+                        ret = map.call(ret, function(el) {
+                            if (el instanceof HTMLElement) {
+                                return new VisualElement(el);
+                            } else {
+                                return el;
+                            }
+                        })
+                    }
+                }
+            }
+            return ret;
+        };
+    }
+
+    langx.mixin(elmx, {
+        batch: function(nodes, action, args) {
+            nodes.forEach(function(node) {
+                var elm = (node instanceof VisualElement) ? node : elmx(node);
+                elm[action].apply(elm, args);
+            });
+
+            return this;
+        },
+
+        root: new VisualElement(document.body),
+
+        VisualElement: VisualElement,
+
+        partial: function(name, fn) {
+            var props = {};
+
+            props[name] = fn;
+
+            VisualElement.partial(props);
+        },
+
+        delegate: function(names, context) {
+            var props = {};
+
+            names.forEach(function(name) {
+                props[name] = _delegator(context[name], context);
+            });
+
+            VisualElement.partial(props);
+        }
+    });
+
+    // from ./datax
+    elmx.delegate([
+        "attr",
+        "data",
+        "prop",
+        "removeAttr",
+        "removeData",
+        "text",
+        "val"
+    ], datax);
+
+    // from ./eventer
+    elmx.delegate([
+        "off",
+        "on",
+        "one",
+        "shortcuts",
+        "trigger"
+    ], eventer);
+
+    // from ./finder
+    elmx.delegate([
+        "ancestor",
+        "ancestors",
+        "children",
+        "descendant",
+        "find",
+        "findAll",
+        "firstChild",
+        "lastChild",
+        "matches",
+        "nextSibling",
+        "nextSiblings",
+        "parent",
+        "previousSibling",
+        "previousSiblings",
+        "siblings"
+    ], finder);
+
+    /*
+     * find a dom element matched by the specified selector.
+     * @param {String} selector
+     */
+    elmx.find = function(selector) {
+        if (selector === "body") {
+            return this.root;
+        } else {
+            return this.root.descendant(selector);
+        }
+    };
+
+    // from ./fx
+    elmx.delegate([
+        "animate",
+        "fadeIn",
+        "fadeOut",
+        "fadeTo",
+        "fadeToggle",
+        "hide",
+        "scrollToTop",
+        "show",
+        "toggle"
+    ], fx);
+
+
+    // from ./geom
+    elmx.delegate([
+        "borderExtents",
+        "boundingPosition",
+        "boundingRect",
+        "clientHeight",
+        "clientSize",
+        "clientWidth",
+        "contentRect",
+        "height",
+        "marginExtents",
+        "offsetParent",
+        "paddingExtents",
+        "pagePosition",
+        "pageRect",
+        "relativePosition",
+        "relativeRect",
+        "scrollIntoView",
+        "scrollLeft",
+        "scrollTop",
+        "size",
+        "width"
+    ], geom);
+
+    // from ./noder
+    elmx.delegate([
+        "after",
+        "append",
+        "before",
+        "clone",
+        "contains",
+        "contents",
+        "empty",
+        "html",
+        "isChildOf",
+        "isDocument",
+        "isInDocument",
+        "isWindow",
+        "ownerDoc",
+        "prepend",
+        "remove",
+        "removeChild",
+        "replace",
+        "reverse",
+        "throb",
+        "traverse",
+        "wrapper",
+        "wrapperInner",
+        "unwrap"
+    ], noder);
+
+    // from ./styler
+    elmx.delegate([
+        "addClass",
+        "className",
+        "css",
+        "hasClass",
+        "hide",
+        "isInvisible",
+        "removeClass",
+        "show",
+        "toggleClass"
+    ], styler);
+
+    // properties
+
+    var properties = [ 'position', 'left', 'top', 'right', 'bottom', 'width', 'height', 'border', 'borderLeft',
+    'borderTop', 'borderRight', 'borderBottom', 'borderColor', 'display', 'overflow', 'margin', 'marginLeft', 'marginTop', 'marginRight', 'marginBottom', 'padding', 'paddingLeft', 'paddingTop', 'paddingRight', 'paddingBottom', 'color',
+    'background', 'backgroundColor', 'opacity', 'fontSize', 'fontWeight', 'textAlign', 'textDecoration', 'textTransform', 'cursor', 'zIndex' ];
+
+    properties.forEach( function ( property ) {
+
+        var method = property;
+
+        VisualElement.prototype[method ] = function (value) {
+
+            this.css( property, value );
+
+            return this;
+
+        };
+
+    });
+
+    // events
+    var events = [ 'keyUp', 'keyDown', 'mouseOver', 'mouseOut', 'click', 'dblClick', 'change' ];
+
+    events.forEach( function ( event ) {
+
+        var method = event;
+
+        VisualElement.prototype[method ] = function ( callback ) {
+
+            this.on( event.toLowerCase(), callback);
+
+            return this;
+        };
+
+    });
+
+
+    return skylark.attach("domx.elmx", elmx);
+});
+define('skylark-domx-velm/main',[
+	"./velm"
+],function(velm){
+	return velm;
+});
+define('skylark-domx-velm', ['skylark-domx-velm/main'], function (main) { return main; });
+
+define('skylark-domx-plugins/plugins',[
+    "skylark-langx/skylark",
+    "skylark-langx/langx",
+    "skylark-domx-noder",
+    "skylark-domx-data",
+    "skylark-domx-eventer",
+    "skylark-domx-finder",
+    "skylark-domx-geom",
+    "skylark-domx-styler",
+    "skylark-domx-fx",
+    "skylark-domx-query",
+    "skylark-domx-velm"
+], function(skylark, langx, noder, datax, eventer, finder, geom, styler, fx, $, elmx) {
+    "use strict";
+
+    var slice = Array.prototype.slice,
+        concat = Array.prototype.concat,
+        pluginKlasses = {},
+        shortcuts = {};
+
+    /*
+     * Create or get or destory a plugin instance assocated with the element.
+     */
+    function instantiate(elm,pluginName,options) {
+        var pair = pluginName.split(":"),
+            instanceDataName = pair[1];
+        pluginName = pair[0];
+
+        if (!instanceDataName) {
+            instanceDataName = pluginName;
+        }
+
+        var pluginInstance = datax.data( elm, instanceDataName );
+
+        if (options === "instance") {
+            return pluginInstance;
+        } else if (options === "destroy") {
+            if (!pluginInstance) {
+                throw new Error ("The plugin instance is not existed");
+            }
+            pluginInstance.destroy();
+            datax.removeData( elm, pluginName);
+            pluginInstance = undefined;
+        } else {
+            if (!pluginInstance) {
+                if (options !== undefined && typeof options !== "object") {
+                    throw new Error ("The options must be a plain object");
+                }
+                var pluginKlass = pluginKlasses[pluginName]; 
+                pluginInstance = new pluginKlass(elm,options);
+                datax.data( elm, instanceDataName,pluginInstance );
+            } else if (options) {
+                pluginInstance.reset(options);
+            }
+        }
+
+        return pluginInstance;
+    }
+
+    function shortcutter(pluginName,extfn) {
+       /*
+        * Create or get or destory a plugin instance assocated with the element,
+        * and also you can execute the plugin method directory;
+        */
+        return function (elm,options) {
+            var  plugin = instantiate(elm, pluginName,"instance");
+            if ( options === "instance" ) {
+              return plugin || null;
+            }
+            if (!plugin) {
+                plugin = instantiate(elm, pluginName,typeof options == 'object' && options || {});
+            }
+
+            if (options) {
+                var args = slice.call(arguments,1); //2
+                if (extfn) {
+                    return extfn.apply(plugin,args);
+                } else {
+                    if (typeof options == 'string') {
+                        var methodName = options;
+
+                        if ( !plugin ) {
+                            throw new Error( "cannot call methods on " + pluginName +
+                                " prior to initialization; " +
+                                "attempted to call method '" + methodName + "'" );
+                        }
+
+                        if ( !langx.isFunction( plugin[ methodName ] ) || methodName.charAt( 0 ) === "_" ) {
+                            throw new Error( "no such method '" + methodName + "' for " + pluginName +
+                                " plugin instance" );
+                        }
+
+                        return plugin[methodName].apply(plugin,args);
+                    }                
+                }                
+            }
+
+        }
+
+    }
+
+    /*
+     * Register a plugin type
+     */
+    function register( pluginKlass,shortcutName,instanceDataName,extfn) {
+        var pluginName = pluginKlass.prototype.pluginName;
+        
+        pluginKlasses[pluginName] = pluginKlass;
+
+        if (shortcutName) {
+            if (instanceDataName && langx.isFunction(instanceDataName)) {
+                extfn = instanceDataName;
+                instanceDataName = null;
+            } 
+            if (instanceDataName) {
+                pluginName = pluginName + ":" + instanceDataName;
+            }
+
+            var shortcut = shortcuts[shortcutName] = shortcutter(pluginName,extfn);
+                
+            $.fn[shortcutName] = function(options) {
+                var returnValue = this;
+
+                if ( !this.length && options === "instance" ) {
+                  returnValue = undefined;
+                } else {
+                  var args = slice.call(arguments);
+                  this.each(function () {
+                    var args2 = slice.call(args);
+                    args2.unshift(this);
+                    var  ret  = shortcut.apply(null,args2);
+                    if (ret !== undefined) {
+                        returnValue = ret;
+                        return false;
+                    }
+                  });
+                }
+
+                return returnValue;
+            };
+
+            elmx.partial(shortcutName,function(options) {
+                var  ret  = shortcut(this._elm,options);
+                if (ret === undefined) {
+                    ret = this;
+                }
+                return ret;
+            });
+
+        }
+    }
+
+ 
+    var Plugin =   langx.Evented.inherit({
+        klassName: "Plugin",
+
+        _construct : function(elm,options) {
+           this._elm = elm;
+           this._initOptions(options);
+        },
+
+        _initOptions : function(options) {
+          var ctor = this.constructor,
+              cache = ctor.cache = ctor.cache || {},
+              defaults = cache.defaults;
+          if (!defaults) {
+            var  ctors = [];
+            do {
+              ctors.unshift(ctor);
+              if (ctor === Plugin) {
+                break;
+              }
+              ctor = ctor.superclass;
+            } while (ctor);
+
+            defaults = cache.defaults = {};
+            for (var i=0;i<ctors.length;i++) {
+              ctor = ctors[i];
+              if (ctor.prototype.hasOwnProperty("options")) {
+                langx.mixin(defaults,ctor.prototype.options);
+              }
+              if (ctor.hasOwnProperty("options")) {
+                langx.mixin(defaults,ctor.options);
+              }
+            }
+          }
+          Object.defineProperty(this,"options",{
+            value :langx.mixin({},defaults,options)
+          });
+
+          //return this.options = langx.mixin({},defaults,options);
+          return this.options;
+        },
+
+
+        destroy: function() {
+            var that = this;
+
+            this._destroy();
+            // We can probably remove the unbind calls in 2.0
+            // all event bindings should go through this._on()
+            datax.removeData(this._elm,this.pluginName );
+        },
+
+        _destroy: langx.noop,
+
+        _delay: function( handler, delay ) {
+            function handlerProxy() {
+                return ( typeof handler === "string" ? instance[ handler ] : handler )
+                    .apply( instance, arguments );
+            }
+            var instance = this;
+            return setTimeout( handlerProxy, delay || 0 );
+        },
+
+        option: function( key, value ) {
+            var options = key;
+            var parts;
+            var curOption;
+            var i;
+
+            if ( arguments.length === 0 ) {
+
+                // Don't return a reference to the internal hash
+                return langx.mixin( {}, this.options );
+            }
+
+            if ( typeof key === "string" ) {
+
+                // Handle nested keys, e.g., "foo.bar" => { foo: { bar: ___ } }
+                options = {};
+                parts = key.split( "." );
+                key = parts.shift();
+                if ( parts.length ) {
+                    curOption = options[ key ] = langx.mixin( {}, this.options[ key ] );
+                    for ( i = 0; i < parts.length - 1; i++ ) {
+                        curOption[ parts[ i ] ] = curOption[ parts[ i ] ] || {};
+                        curOption = curOption[ parts[ i ] ];
+                    }
+                    key = parts.pop();
+                    if ( arguments.length === 1 ) {
+                        return curOption[ key ] === undefined ? null : curOption[ key ];
+                    }
+                    curOption[ key ] = value;
+                } else {
+                    if ( arguments.length === 1 ) {
+                        return this.options[ key ] === undefined ? null : this.options[ key ];
+                    }
+                    options[ key ] = value;
+                }
+            }
+
+            this._setOptions( options );
+
+            return this;
+        },
+
+        _setOptions: function( options ) {
+            var key;
+
+            for ( key in options ) {
+                this._setOption( key, options[ key ] );
+            }
+
+            return this;
+        },
+
+        _setOption: function( key, value ) {
+
+            this.options[ key ] = value;
+
+            return this;
+        },
+
+        elm : function() {
+            return this._elm;
+        }
+
+    });
+
+    $.fn.plugin = function(name,options) {
+        var args = slice.call( arguments, 1 ),
+            self = this,
+            returnValue = this;
+
+        this.each(function(){
+            returnValue = instantiate.apply(self,[this,name].concat(args));
+        });
+        return returnValue;
+    };
+
+    elmx.partial("plugin",function(name,options) {
+        var args = slice.call( arguments, 1 );
+        return instantiate.apply(this,[this.domNode,name].concat(args));
+    }); 
+
+
+    function plugins() {
+        return plugins;
+    }
+     
+    langx.mixin(plugins, {
+        instantiate,
+        Plugin,
+        register,
+        shortcuts
+    });
+
+    return  skylark.attach("domx.plugins",plugins);
+});
+define('skylark-domx-plugins/main',[
+	"./plugins"
+],function(plugins){
+	return plugins;
+});
+define('skylark-domx-plugins', ['skylark-domx-plugins/main'], function (main) { return main; });
+
+define('skylark-data-collection/collections',[
+	"skylark-langx/skylark"
+],function(skylark){
+	return skylark.attach("data.collections",{});
+});
+define('skylark-data-collection/Collection',[
+    "skylark-langx/Evented",
+    "./collections"
+], function(Evented, collections) {
+
+    var Collection = collections.Collection = Evented.inherit({
+
+        "klassName": "Collection",
+
+        _clear: function() {
+            throw new Error('Unimplemented API');
+        },
+
+        "clear": function() {
+            //desc: "Removes all items from the Collection",
+            //result: {
+            //    type: Collection,
+            //    desc: "this instance for chain call"
+            //},
+            //params: [],
+            this._clear();
+            this.trigger("changed:clear");
+            return this;
+        },
+
+        /*
+         *@method count
+         *@return {Number}
+         */
+        count : /*Number*/function () {
+            var c = 0,
+                it = this.iterator();
+            while(!it.hasNext()){
+                c++;
+            }
+            return c;
+        },
+
+        "forEach": function( /*Function*/ func, /*Object?*/ thisArg) {
+            //desc: "Executes a provided callback function once per collection item.",
+            //result: {
+            //    type: Number,
+            //    desc: "the number of items"
+            //},
+            //params: [{
+            //    name: "func",
+            //    type: Function,
+            //    desc: "Function to execute for each element."
+            //}, {
+            //    name: "thisArg",
+            //    type: Object,
+            //    desc: "Value to use as this when executing callback."
+            //}],
+            var it = this.iterator();
+            while(it.hasNext()){
+                var item = it.next();
+                func.call(thisArg || item,item);
+            }
+            return this;
+
+        },
+
+        "iterator" : function() {
+            throw new Error('Unimplemented API');
+        },
+
+        "toArray": function() {
+            //desc: "Returns an array containing all of the items in this collection in proper sequence (from first to last item).",
+            //result: {
+            //    type: Array,
+            //    desc: "an array containing all of the elements in this collection in proper sequence"
+            //},
+            //params: [],
+            var items = [],
+                it = this.iterator();
+            while(!it.hasNext()){
+                items.push(it.next());
+            }
+            return items;
+        }
+    });
+
+    return Collection;
+});
+
+
+define('skylark-data-collection/Map',[
+    "./collections",
+    "./Collection"
+], function( collections, Collection) {
+
+    var Map = collections.Map = Collection.inherit({
+
+        "klassName": "Map",
+
+        _getInnerItems : function() {
+            return this._items;
+        },
+
+        _clear : function() {
+            this._items = [];
+        },
+
+        _findKeyByRegExp: function(regExp, callback) {
+            var items = this._getInnerItems();
+            return items.filter(function(key) {
+                if (key.match(regExp)) {
+                    if (callback) callback(key);
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+        },
+
+        "get":  function(strKey, silent) {
+            //desc: "Returns the item at the specified key in the Hashtable.",
+            //result: {
+            //    type: Object,
+            //    desc: "The item at the specified key."
+            //},
+            //params: [{
+            //    name: "strKey",
+            //    type: String,
+            //    desc: "The key of the item to return."
+            //}, {
+            //    name: "silent",
+            //    type: Boolean,
+            //    desc: "the silent flag.",
+            //    optional: true
+            //}],
+            if (typeof(strKey) != "string") {
+                throw "hash key is not string!";
+            }
+            /*
+            if (!silent && !this.contains(strKey)) {
+                throw "hash key is not  existed";
+            }
+            */
+            var items = this._getInnerItems();
+            return items[strKey];
+        },
+
+        "iterator" : function() {
+            var i =0;
+            return {
+                hasNext : function() {
+                    return i < this._items.length;
+                },
+                next : function() {
+                    var key =  this._items[i++];
+                    return [this._items[key],key];
+                }
+            }
+        },
+
+        "set": function( /*String*/ strKey, /*Object*/ value) {
+            //desc: "Replaces the item at the specified key in the Hashtable with the specified item.",
+            //result: {
+            //    type: Map,
+            //    desc: "this instance for chain call."
+            //},
+            //params: [{
+            //    name: "strKey",
+            //    type: String,
+            //    desc: "key of the item to replace."
+            //}, {
+            //    name: "value",
+            //    type: Object,
+            //    desc: "item to be stored at the specified position."
+            //}],
+            if (typeof(strKey) != "string") {
+                throw "hash key is not string!";
+            }
+
+            /*
+            if (!this.contains(strKey)) {
+                throw "hash key is not existed";
+            }
+            */
+
+            var items = this._getInnerItems();
+            if (items.indexOf(strKey) == -1) {
+                items.push(strKey);
+            }
+            var oldValue = items[strKey];
+            if (oldValue !== value) {
+                items[strKey] = value;
+                var updated = {};
+                updated[strKey] = {
+                    name : strKey,
+                    value : value,
+                    oldValue : oldValue
+                };
+                this.trigger("changed" ,{ //TODO: "changed:"+ strKey
+                    data : updated
+                });
+            }
+            return this;
+        },
+
+
+        "remove": function( /*String*/ strKey) {
+            //desc: "Removes the first occurrence of a specific item from the Hashtable",
+            //result: {
+            //    type: Map,
+            //    desc: "this instance for chain call."
+            //},
+            //params: [{
+            //    name: "strKey",
+            //    type: String,
+            //    desc: "The key for The item to remove from the Hashtable."
+            //}],
+            if (typeof(strKey) != "string") {
+                throw "hash key is not string!";
+            }
+            var items = this._getInnerItems();
+            var idx = items.indexOf(strKey);
+            if (idx >= 0) {
+                delete items[strKey];
+                delete items[idx];
+            }
+        },
+
+        findByRegExp: function( /*String*/ regExp, callback) {
+            //desc: "find regExp items",
+            //result: {
+            //    type: Map,
+            //    desc: "this instance for chain call."
+            //},
+            //params: [{
+            //    name: "regExp",
+            //    type: String,
+            //    desc: "The key for The item to remove from the Hashtable."
+            //}, {
+            //    name: "callback",
+            //    type: Function,
+            //    desc: "the callback method"
+            //}],
+            var items = [],
+                self = this;
+            this._findKeyByRegExp(regExp, function(key) {
+                var item = self.get(key);
+                if (callback) callback(item);
+                items.push(item);
+            });
+            return items;
+        },
+
+        removeByRegExp: function( /*String*/ regExp) {
+            //desc: "Removes regExp items",
+            //result: {
+            //    type: Map,
+            //    desc: "this instance for chain call."
+            //},
+            //params: [{
+            //    name: "regExp",
+            //    type: String,
+            //    desc: "The key for The item to remove from the Hashtable."
+            //}],
+            var self = this;
+            this._findKeyByRegExp(regExp, function(key) {
+                self.remove(key);
+            });
+        },
+
+        "toPlain": function() {
+            //desc: "Returns a plain object containing all of the items in this Hashable.",
+            //result: {
+            //    type: Object,
+            //    desc: "a plain object containing all of the items in this Hashtable."
+            //},
+            //params: [],
+            var items = this._getInnerItems(); 
+
+            for (var i = 0; i < items.length; i++) {
+                var key = items[i];
+                plain[key] = items[key];
+            }
+            return plain;
+        },
+
+        "toString": function( /*String?*/ delim) {
+            //desc: "implementation of toString, follows [].toString().",
+            //result: {
+            //    type: String,
+            //   desc: "The string."
+            //},
+            //params: [{
+            //    name: "delim",
+            //    type: String,
+            //    desc: "The delim ",
+            //    optional: true
+            //}],
+            var items = this._getInnerItems();
+
+            return items.join((delim || ","));
+        },
+
+        "init": function( /*Object*/ data) {
+            var items = this._items = [];
+            for (var name in data) {
+                items.push(name);
+                items[name]= data[name];
+            }
+        }
+       
+    });
+    return Map;
+});
+
+
+define('skylark-data-collection/HashMap',[
+    "./collections",
+	"./Map"
+],function(collections,_Map) {
+
+	var HashMap = collections.HashMap = _Map.inherit({
+	});
+
+	return HashMap;
+});
+define('skylark-widgets-base/base',[
+	"skylark-langx/skylark"
+],function(skylark){
+	return skylark.attach("widgets.base",{});
+});
+define('skylark-widgets-base/Widget',[
+  "skylark-langx/skylark",
+  "skylark-langx/langx",
+  "skylark-domx-browser",
+  "skylark-domx-data",
+  "skylark-domx-eventer",
+  "skylark-domx-noder",
+  "skylark-domx-geom",
+  "skylark-domx-velm",
+  "skylark-domx-query",
+  "skylark-domx-plugins",
+  "skylark-data-collection/HashMap",
+  "./base"
+],function(skylark,langx,browser,datax,eventer,noder,geom,elmx,$,plugins,HashMap,base){
+
+/*---------------------------------------------------------------------------------*/
+
+	var Widget = plugins.Plugin.inherit({
+    klassName: "Widget",
+
+    _elmx : elmx,
+
+    _construct : function(elm,options) {
+        if (langx.isHtmlNode(elm)) {
+          options = this._parse(elm,options);
+        } else {
+          options = elm;
+          elm = null;
+        }
+        this.overrided(elm,options);
+
+        if (!elm) {
+          this._velm = this._create();
+          this._elm = this._velm.elm();
+        } else {
+          this._velm = elmx(this._elm);
+        }
+        
+        Object.defineProperty(this,"state",{
+          value :this.options.state || new HashMap()
+        });
+
+        //this.state = this.options.state || new Map();
+        this._init();
+
+        var addonCategoryOptions = this.options.addons;
+        if (addonCategoryOptions) {
+          var widgetCtor = this.constructor,
+              addons = widgetCtor.addons;
+          for (var categoryName in addonCategoryOptions) {
+              for (var i =0;i < addonCategoryOptions[categoryName].length; i++ ) {
+                var addonOption = addonCategoryOptions[categoryName][i];
+                if (langx.isString(addonOption)) {
+                  var addonName = addonOption,
+                      addonCtor = addons[categoryName][addonName];
+
+                  this.addon(addonCtor);
+
+                }
+
+              }
+          }
+
+
+        }
+
+
+     },
+
+    /**
+     * Parses widget options from attached element.
+     * This is a callback method called by constructor when attached element is specified.
+     * @method _parse
+     * @return {Object} options.
+     */
+    _parse : function(elm,options) {
+      var optionsAttr = datax.data(elm,"options");
+      if (optionsAttr) {
+         var options1 = JSON.parse("{" + optionsAttr + "}");
+         options = langx.mixin(options1,options); 
+      }
+      return options || {};
+    },
+
+
+    /**
+     * Create html element for this widget.
+     * This is a callback method called by constructor when attached element is not specified.
+     * @method _create
+     */
+    _create : function() {
+        var template = this.options.template;
+        if (template) {
+          return this._elmx(template);
+        } else {
+          throw new Error("The template is not existed in options!");
+        }
+    },
+
+
+    /**
+     * Init widget.
+     * This is a callback method called by constructor.
+     * @method _init
+     */
+    _init : function() {
+      var self = this;
+      if (this.widgetClass) {
+        this._velm.addClass(this.widgetClass);
+      }
+      this.state.on("changed",function(e,args) {
+        self._refresh(args.data);
+      });
+    },
+
+
+    /**
+     * Startup widget.
+     * This is a callback method called when widget element is added into dom.
+     * @method _post
+     */
+    _startup : function() {
+
+    },
+
+
+    /**
+     * Refresh widget.
+     * This is a callback method called when widget state is changed.
+     * @method _refresh
+     */
+    _refresh : function(updates) {
+      /*
+      var _ = this._,
+          model = _.model,
+          dom = _.dom,
+          props = {
+
+          };
+      updates = updates || {};
+      for (var attrName in updates){
+          var v = updates[attrName].value;
+          if (v && v.toCss) {
+              v.toCss(props);
+              updates[attrName].processed = true;
+          }
+
+      };
+
+      this.css(props);
+
+      if (updates["disabled"]) {
+          var v = updates["disabled"].value;
+          dom.aria('disabled', v);
+          self.classes.toggle('disabled', v);
+      }
+      */
+    },                
+
+    mapping : {
+      "events" : {
+  //       'mousedown .title':  'edit',
+  //       'click .button':     'save',
+  //       'click .open':       function(e) { ... }            
+      },
+
+      "attributs" : {
+
+      },
+
+      "properties" : {
+
+      },
+
+      "styles" : {
+
+      }
+    },
+
+    addon : function(ctor,setting) {
+      var categoryName = ctor.categoryName,
+          addonName = ctor.addonName;
+
+      this._addons = this.addons || {};
+      var category = this._addons[categoryName] = this._addons[categoryName] || {};
+      category[addonName] = new ctor(this,setting);
+      return this;
+    },
+
+    addons : function(categoryName,settings) {
+      this._addons = this.addons || {};
+      var category = this._addons[categoryName] = this._addons[categoryName] || {};
+
+      if (settings == undefined) {
+        return langx.clone(category || null);
+      } else {
+        langx.mixin(category,settings);
+      }
+    },
+
+
+    /**
+     * Returns a html element representing the widget.
+     *
+     * @method render
+     * @return {HtmlElement} HTML element representing the widget.
+     */
+    render: function() {
+      return this._elm;
+    },
+
+
+    /**
+     * Returns a parent widget  enclosing this widgets, or null if not exist.
+     *
+     * @method getEnclosing
+     * @return {Widget} The enclosing parent widget, or null if not exist.
+     */
+    getEnclosing : function(selector) {
+      return null;
+    },
+
+    /**
+     * Returns a widget collection with all enclosed child widgets.
+     *
+     * @method getEnclosed
+     * @return {List} Collection with all enclosed child widgets..
+     */
+    getEnclosed : function() {
+      var self = this;
+          children = new ArrayList();
+      return children;
+    },
+
+    /**
+     * Sets the visible state to true.
+     *
+     * @method show
+     * @return {Widget} Current widget instance.
+     */
+
+    show : function() {
+      this._velm.show();
+    },
+
+    /**
+     * Sets the visible state to false.
+     *
+     * @method hide
+     * @return {Widget} Current widget instance.
+     */
+    hide : function() {
+      this._velm.hide();
+    },
+
+    /**
+     * Focuses the current widget.
+     *
+     * @method focus
+     * @return {Widget} Current widget instance.
+     */
+    focus :function() {
+      try {
+        this._velm.focus();
+      } catch (ex) {
+        // Ignore IE error
+      }
+
+      return this;
+    },
+
+    /**
+     * Blurs the current widget.
+     *
+     * @method blur
+     * @return {Widget} Current widget instance.
+     */
+    blur : function() {
+      this._velm.blur();
+
+      return this;
+    },
+
+    enable: function () {
+      this.state.set('disabled',false);
+      return this;
+    },
+
+    disable: function () {
+      this.state.set('disabled',true);
+      return this;
+    },
+
+    /**
+     * Sets the specified aria property.
+     *
+     * @method aria
+     * @param {String} name Name of the aria property to set.
+     * @param {String} value Value of the aria property.
+     * @return {Widget} Current widget instance.
+     */
+    aria : function(name, value) {
+      const self = this, elm = self.getEl(self.ariaTarget);
+
+      if (typeof value === 'undefined') {
+        return self._aria[name];
+      }
+
+      self._aria[name] = value;
+
+      if (self.state.get('rendered')) {
+        elm.setAttribute(name === 'role' ? name : 'aria-' + name, value);
+      }
+
+      return self;
+    },
+
+    attr: function (name,value) {
+        var velm = this._velm,
+            ret = velm.attr(name,value);
+        return ret == velm ? this : ret;
+    },
+
+    css: function (name, value) {
+        var velm = this._velm,
+            ret = velm.css(name, value);
+        return ret == velm ? this : ret;
+    },
+
+    data: function (name, value) {
+        var velm = this._velm,
+            ret = velm.data(name,value);
+        return ret == velm ? this : ret;
+    },
+
+    prop: function (name,value) {
+        var velm = this._velm,
+            ret = velm.prop(name,value);
+        return ret == velm ? this : ret;
+    },
+
+    throb: function(params) {
+      return noder.throb(this._elm,params);
+    },
+
+
+    /**
+     *  Attach the current widget element to dom document.
+     *
+     * @method attach
+     * @return {Widget} This Widget.
+     */
+    attach : function(target,position){
+        var elm = target;
+        if (!position || position=="child") {
+            noder.append(elm,this._elm);
+        } else  if (position == "before") {
+            noder.before(elm,this._elm);
+        } else if (position == "after") {
+            noder.after(elm,this._elm);
+        }
+        this._startup();
+    },
+
+    /**
+     *  Detach the current widget element from dom document.
+     *
+     * @method html
+     * @return {HtmlElement} HTML element representing the widget.
+     */
+    detach : function() {
+      this._velm.remove();
+    }
+  });
+
+  Widget.inherit = function(meta) {
+    var ctor = plugins.Plugin.inherit.apply(this,arguments);
+
+    function addStatePropMethod(name) {
+        ctor.prototype[name] = function(value) {
+          if (value !== undefined) {
+            this.state.set(name,value);
+            return this;
+          } else {
+            return this.state.get(name);
+          }
+        };
+    }
+    if (meta.state) {
+      for (var name in meta.state) {
+          addStatePropMethod(name);
+      }
+    }
+
+    if (meta.pluginName) {
+      plugins.register(ctor,meta.pluginName);
+    }
+    return ctor;
+  };
+
+  Widget.register = function(ctor,widgetName) {
+    var meta = ctor.prototype,
+        pluginName = widgetName || meta.pluginName;
+
+    function addStatePropMethod(name) {
+        ctor.prototype[name] = function(value) {
+          if (value !== undefined) {
+            this.state.set(name,value);
+            return this;
+          } else {
+            return this.state.get(name);
+          }
+        };
+    }
+    if (meta.state) {
+      for (var name in meta.state) {
+          addStatePropMethod(name);
+      }
+    }
+
+    if (pluginName) {
+      plugins.register(ctor,pluginName);
+    }
+    return ctor;
+  };
+
+	return base.Widget = Widget;
+});
+
 define('skylark-widgets-richeditor/i18n',[
 
 ],function(){ 
@@ -10615,26 +11987,34 @@ define('skylark-widgets-richeditor/i18n',[
 define('skylark-widgets-richeditor/Button',[
   "skylark-langx/langx",
   "skylark-utils-dom/query",
+  "skylark-widgets-base/Widget",
   "./RichEditor",
   "./i18n"
-],function(langx, $,RichEditor,i18n){ 
+],function(langx, $, Widget, RichEditor,i18n){ 
   var slice = [].slice;
 
-  var Button = langx.Evented.inherit( {
-    init : function(opts) {
+  var Button = Widget.inherit( {
+
+    options : {
+      template: '<li><a tabindex="-1" unselectable="on" class="toolbar-item" href="javascript:;"><span></span></a></li>',
+
+      menu : {
+        menuWrapper: '<div class="toolbar-menu"></div>',
+        menuItem: '<li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;"><span></span></a></li>',
+        separator: '<li><span class="separator"></span></li>'      
+      }
+
+    },
+
+
+    _construct : function(opts) {
       this.toolbar = opts.toolbar;
       this.editor = opts.toolbar.editor;
       this.title = i18n.translate(this.name);
-      this._init();
+      Widget.prototype._construct.call(this,opts);
     }
   }); 
 
-  Button.prototype._tpl = {
-    item: '<li><a tabindex="-1" unselectable="on" class="toolbar-item" href="javascript:;"><span></span></a></li>',
-    menuWrapper: '<div class="toolbar-menu"></div>',
-    menuItem: '<li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;"><span></span></a></li>',
-    separator: '<li><span class="separator"></span></li>'
-  };
 
   Button.prototype.name = '';
 
@@ -10760,14 +12140,18 @@ define('skylark-widgets-richeditor/Button',[
   };
 
   Button.prototype.render = function() {
-    this.wrapper = $(this._tpl.item).appendTo(this.toolbar.list);
+
+    //this.wrapper = $(this._tpl.item).appendTo(this.toolbar.list);
+    this.toolbar.addToolItem(this);
+    this.wrapper = $(this._elm);
+
     this.el = this.wrapper.find('a.toolbar-item');
     this.el.attr('title', this.title).addClass("toolbar-item-" + this.name).data('button', this);
     this.setIcon(this.icon);
     if (!this.menu) {
       return;
     }
-    this.menuWrapper = $(this._tpl.menuWrapper).appendTo(this.wrapper);
+    this.menuWrapper = $(this.options.menu.menuWrapper).appendTo(this.wrapper);
     this.menuWrapper.addClass("toolbar-menu-" + this.name);
     return this.renderMenu();
   };
@@ -10783,10 +12167,10 @@ define('skylark-widgets-richeditor/Button',[
     for (k = 0, len = ref.length; k < len; k++) {
       menuItem = ref[k];
       if (menuItem === '|') {
-        $(this._tpl.separator).appendTo(this.menuEl);
+        $(this.options.menu.separator).appendTo(this.menuEl);
         continue;
       }
-      $menuItemEl = $(this._tpl.menuItem).appendTo(this.menuEl);
+      $menuItemEl = $(this.options.menu.menuItem).appendTo(this.menuEl);
       $menuBtnEl = $menuItemEl.find('a.menu-item').attr({
         'title': (ref1 = menuItem.title) != null ? ref1 : menuItem.text,
         'data-param': menuItem.param
@@ -11011,25 +12395,41 @@ define('skylark-widgets-richeditor/Popover',[
 
 	
 });
-define('skylark-widgets-richeditor/Toolbar',[
+define('skylark-widgets-swt/Toolbar',[
   "skylark-langx/langx",
-  "skylark-utils-dom/query"
-],function(langx,$){ 
+  "skylark-utils-dom/query",
+  "skylark-widgets-base/Widget"
+],function(langx,$,Widget){ 
 
-  var Toolbar = langx.Evented.inherit({
-    init : function(editor,opts) {
+
+
+  var Toolbar = Widget.inherit({
+    pluginName : "lark.toolbar",
+
+    options : {
+      toolbarFloat: true,
+      toolbarHidden: false,
+      toolbarFloatOffset: 0,
+      template : '<div class="lark-toolbar"><ul></ul></div>',
+      separator : {
+        template :  '<li><span class="separator"></span></li>'
+      }
+    },
+
+    _init : function() {
       var floatInitialized, initToolbarFloat, toolbarHeight;
-      this.editor = editor;
+      //this.editor = editor;
 
-      this.opts = langx.extend({}, this.opts, opts);
+      //this.opts = langx.extend({}, this.opts, opts);
+      this.opts = this.options;
 
-      if (!this.opts.toolbar) {
-        return;
-      }
-      if (!langx.isArray(this.opts.toolbar)) {
-        this.opts.toolbar = ['bold', 'italic', 'underline', 'strikethrough', '|', 'ol', 'ul', 'blockquote', 'code', '|', 'link', 'image', '|', 'indent', 'outdent'];
-      }
-      this._render();
+
+      //if (!langx.isArray(this.opts.toolbar)) {
+      //  this.opts.toolbar = ['bold', 'italic', 'underline', 'strikethrough', '|', 'ol', 'ul', 'blockquote', 'code', '|', 'link', 'image', '|', 'indent', 'outdent'];
+      //}
+
+      this.wrapper = $(this._elm);
+      this.list = this.wrapper.find('ul');
       this.list.on('click', function(e) {
         return false;
       });
@@ -11038,9 +12438,9 @@ define('skylark-widgets-richeditor/Toolbar',[
           return _this.list.find('.menu-on').removeClass('.menu-on');
         };
       })(this));
-      $(document).on('mousedown.richeditor' + this.editor.id, (function(_this) {
+      $(document).on('mousedown.toolbar', (function(_this) {
         return function(e) {
-          return _this.list.find('.menu-on').removeClass('.menu-on');
+          return _this.list.find('.menu-on').removeClass('menu-on');
         };
       })(this));
       if (!this.opts.toolbarHidden && this.opts.toolbarFloat) {
@@ -11060,6 +12460,8 @@ define('skylark-widgets-richeditor/Toolbar',[
           };
         })(this);
         floatInitialized = null;
+
+        /*
         $(window).on('resize.richeditor-' + this.editor.id, function(e) {
           return floatInitialized = initToolbarFloat();
         });
@@ -11086,46 +12488,69 @@ define('skylark-widgets-richeditor/Toolbar',[
             }
           };
         })(this));
+        */
       }
+
+      /*
       this.editor.on('destroy', (function(_this) {
         return function() {
           return _this.buttons.length = 0;
         };
       })(this));
-      $(document).on("mousedown.richeditor-" + this.editor.id, (function(_this) {
-        return function(e) {
-          return _this.list.find('li.menu-on').removeClass('menu-on');
-        };
-      })(this));
+      */
+
+      
+    },
+
+    addToolItem : function(itemWidget) {
+      $(itemWidget._elm).appendTo(this.list);
+      return this;
+    },
+
+    addSeparator : function() {
+      $(this.options.separator.template).appendTo(this.list);
+      return this;
     }
 
   });
 
-  Toolbar.pluginName = 'Toolbar';
 
-  Toolbar.prototype.opts = {
-    toolbar: true,
-    toolbarFloat: true,
-    toolbarHidden: false,
-    toolbarFloatOffset: 0
-  };
+  return Toolbar;
 
-  Toolbar.prototype._tpl = {
-    wrapper: '<div class="richeditor-toolbar"><ul></ul></div>',
-    separator: '<li><span class="separator"></span></li>'
-  };
+});
+define('skylark-widgets-richeditor/Toolbar',[
+  "skylark-langx/langx",
+  "skylark-utils-dom/query",
+  "skylark-widgets-swt/Toolbar"
+],function(langx,$,_Toolbar){ 
 
+
+
+  var Toolbar = _Toolbar.inherit({
+    pluginName : "lark.richeditor.toolbar",
+
+    _construct : function(editor,opts) {
+      this.editor =editor;
+      _Toolbar.prototype._construct.call(this,opts);
+    },
+
+    _init : function() {
+      _Toolbar.prototype._init.call(this);
+      this._render();
+    }
+
+  });
 
   Toolbar.prototype._render = function() {
     var k, len, name, ref;
     this.buttons = [];
-    this.wrapper = $(this._tpl.wrapper).prependTo(this.editor.wrapper);
-    this.list = this.wrapper.find('ul');
+    //this.wrapper = $(this._tpl.wrapper).prependTo(this.editor.wrapper);
+    this.wrapper = $(this._elm).prependTo(this.editor.wrapper);
     ref = this.opts.toolbar;
     for (k = 0, len = ref.length; k < len; k++) {
       name = ref[k];
       if (name === '|') {
-        $(this._tpl.separator).appendTo(this.list);
+        this.addSeparator();
         continue;
       }
       if (!this.constructor.buttons[name]) {
@@ -13951,11 +15376,6 @@ define('skylark-widgets-richeditor/buttons/UnorderListButton',[
     return UnorderListButton;
 
 });
-define('skylark-widgets-base/base',[
-	"skylark-langx/skylark"
-],function(skylark){
-	return skylark.attach("widgets.base",{});
-});
 define('skylark-widgets-base/Addon',[
 	"./base",
   "skylark-langx/Evented"	
@@ -13990,7 +15410,6 @@ define('skylark-widgets-richeditor/addons/AutoSave',[
     needFocus : false,
 
     _init : function() {
-      Button.prototype._init.call(this);
 
 	    var currentVal, link, name, val;
 	    this.editor = this._module;
@@ -14099,7 +15518,7 @@ define('skylark-widgets-richeditor/addons/AutoSave',[
     }
   };
 
-  return RichEditor.AutoSave = AutoSave;
+  return RichEditor.addons.general.autoSave = AutoSave;
 
 });
 define('skylark-widgets-richeditor/addons/Dropzone',[

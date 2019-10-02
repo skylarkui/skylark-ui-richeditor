@@ -167,11 +167,20 @@ require.config({
             main: 'main'
          },
          {
+           name : "skylark-data-collection",
+           location : "../node_modules/skylark-data-collection/dist/uncompressed/skylark-data-collection",
+            main: 'main'
+         },
+         {
            name : "skylark-widgets-base",
            location : "../../skylark-widgets-base/src",
             main: 'main'
          },
-
+         {
+           name : "skylark-widgets-swt",
+           location : "../../skylark-widgets-swt/src",
+            main: 'main'
+         },
      { name: "skylark-langx", location: "../node_modules/skylark-langx/dist/uncompressed/skylark-langx" },
      { name: "skylark-utils-dom", location: "../node_modules/skylark-utils-dom/dist/uncompressed/skylark-utils-dom"},
      { name: "skylark-domx-contents", location: "../../../domx/skylark-domx-contents/src"},

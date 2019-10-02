@@ -1,26 +1,34 @@
 define([
   "skylark-langx/langx",
   "skylark-utils-dom/query",
+  "skylark-widgets-base/Widget",
   "./RichEditor",
   "./i18n"
-],function(langx, $,RichEditor,i18n){ 
+],function(langx, $, Widget, RichEditor,i18n){ 
   var slice = [].slice;
 
-  var Button = langx.Evented.inherit( {
-    init : function(opts) {
+  var Button = Widget.inherit( {
+
+    options : {
+      template: '<li><a tabindex="-1" unselectable="on" class="toolbar-item" href="javascript:;"><span></span></a></li>',
+
+      menu : {
+        menuWrapper: '<div class="toolbar-menu"></div>',
+        menuItem: '<li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;"><span></span></a></li>',
+        separator: '<li><span class="separator"></span></li>'      
+      }
+
+    },
+
+
+    _construct : function(opts) {
       this.toolbar = opts.toolbar;
       this.editor = opts.toolbar.editor;
       this.title = i18n.translate(this.name);
-      this._init();
+      Widget.prototype._construct.call(this,opts);
     }
   }); 
 
-  Button.prototype._tpl = {
-    item: '<li><a tabindex="-1" unselectable="on" class="toolbar-item" href="javascript:;"><span></span></a></li>',
-    menuWrapper: '<div class="toolbar-menu"></div>',
-    menuItem: '<li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;"><span></span></a></li>',
-    separator: '<li><span class="separator"></span></li>'
-  };
 
   Button.prototype.name = '';
 
@@ -146,14 +154,18 @@ define([
   };
 
   Button.prototype.render = function() {
-    this.wrapper = $(this._tpl.item).appendTo(this.toolbar.list);
+
+    //this.wrapper = $(this._tpl.item).appendTo(this.toolbar.list);
+    this.toolbar.addToolItem(this);
+    this.wrapper = $(this._elm);
+
     this.el = this.wrapper.find('a.toolbar-item');
     this.el.attr('title', this.title).addClass("toolbar-item-" + this.name).data('button', this);
     this.setIcon(this.icon);
     if (!this.menu) {
       return;
     }
-    this.menuWrapper = $(this._tpl.menuWrapper).appendTo(this.wrapper);
+    this.menuWrapper = $(this.options.menu.menuWrapper).appendTo(this.wrapper);
     this.menuWrapper.addClass("toolbar-menu-" + this.name);
     return this.renderMenu();
   };
@@ -169,10 +181,10 @@ define([
     for (k = 0, len = ref.length; k < len; k++) {
       menuItem = ref[k];
       if (menuItem === '|') {
-        $(this._tpl.separator).appendTo(this.menuEl);
+        $(this.options.menu.separator).appendTo(this.menuEl);
         continue;
       }
-      $menuItemEl = $(this._tpl.menuItem).appendTo(this.menuEl);
+      $menuItemEl = $(this.options.menu.menuItem).appendTo(this.menuEl);
       $menuBtnEl = $menuItemEl.find('a.menu-item').attr({
         'title': (ref1 = menuItem.title) != null ? ref1 : menuItem.text,
         'data-param': menuItem.param

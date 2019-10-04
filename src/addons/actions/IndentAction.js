@@ -1,9 +1,8 @@
 define([
   "skylark-domx-query",
-  "../Toolbar",
-  "../RichEditor",
-  "skylark-widgets-base/Action"
-],function($,Toolbar,RichEditor,Action){ 
+  "../../addons",
+  "../../Action"
+],function($,addons,Action){ 
   
    var IndentAction = Action.inherit({
       name :'indent',
@@ -17,8 +16,6 @@ define([
         return Action.prototype._init.call(this);
       },
 
-      _status : function() {},
-
       _execute : function() {
         return this.editor.editable.indent()
       }
@@ -26,8 +23,7 @@ define([
    });
 
 
-   RichEditor.addons.actions.indent = IndentAction; 
-
+   addons.actions.indent = IndentAction; 
 
    return IndentAction;
 });

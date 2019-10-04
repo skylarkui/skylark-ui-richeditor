@@ -3,9 +3,8 @@ define([
   "skylark-widgets-base/Addon",
   "../Toolbar",
   "../RichEditor",
-  "../Button",
   "../i18n"
-],function($,Addon, Toolbar,RichEditor,Button,i18n){ 
+],function($,Addon, Toolbar,RichEditor,i18n){ 
 
 
   var AutoSave = Addon.inherit({

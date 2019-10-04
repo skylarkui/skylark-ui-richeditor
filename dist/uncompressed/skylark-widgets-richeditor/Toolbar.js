@@ -1,10 +1,10 @@
 define([
   "skylark-langx/langx",
   "skylark-utils-dom/query",
-  "skylark-widgets-swt/Toolbar"
-],function(langx,$,_Toolbar){ 
-
-
+  "skylark-widgets-swt/Toolbar",
+  "./ToolButton",
+  "./addons"
+],function(langx,$,_Toolbar, ToolButton,addons){ 
 
   var Toolbar = _Toolbar.inherit({
     pluginName : "lark.richeditor.toolbar",
@@ -33,13 +33,17 @@ define([
         this.addSeparator();
         continue;
       }
-      if (!this.constructor.buttons[name]) {
-        throw new Error("richeditor: invalid toolbar button " + name);
-        continue;
+
+      var action  = this.editor.findAction(name),
+          toolItemCtor = addons.toolbar.items[name];
+
+      if (!toolItemCtor) {
+        toolItemCtor = ToolButton;
       }
-      this.buttons.push(new this.constructor.buttons[name]({
-        toolbar : this,
-        editor: this.editor
+
+      this.buttons.push(new toolItemCtor({
+        "action" : action,
+        "toolbar" : this
       }));
     }
     if (this.opts.toolbarHidden) {

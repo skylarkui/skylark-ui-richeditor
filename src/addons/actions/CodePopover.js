@@ -1,9 +1,8 @@
 define([
   "skylark-domx-query",
-  "../Toolbar",
-  "../RichEditor",
-  "../Popover"
-],function($,Toolbar,RichEditor,Popover){ 
+  "../../addons",
+  "../../Popover"
+],function($,addons,Popover){ 
   
    var CodePopover = Popover.inherit({
      render : function() {

@@ -1,9 +1,8 @@
 define([
   "skylark-domx-query",
-  "../Toolbar",
-  "../RichEditor",
-  "skylark-widgets-base/Action"
-],function($,Toolbar,RichEditor,Action){ 
+  "../../addons",
+  "../../Action"
+],function($,addons,Action){ 
   
    var HrAction = Action.inherit({
 
@@ -22,7 +21,7 @@ define([
    });
 
 
-  RichEditor.addons.actions.hr = HrAction; 
+  addons.actions.hr = HrAction; 
 
   return HrAction;	
 });

@@ -5,9 +5,10 @@ define([
   "skylark-widgets-base/Widget",
   "./Toolbar",
   "./uploader",
-  "./i18n"
+  "./i18n",
+  "./addons"
 
-],function(langx, $, Editable,Widget,Toolbar,uploader,i18n){ 
+],function(langx, $, Editable,Widget,Toolbar,uploader,i18n,addons){ 
 
   var RichEditor = Widget.inherit({
       options : {
@@ -21,6 +22,8 @@ define([
 
 
     _init : function() {
+      this._actions = [];
+
       //this.opts = langx.extend({}, this.opts, opts);
       this.opts = this.options;
 
@@ -172,6 +175,21 @@ define([
     return this.editable.blur();
   };
 
+  RichEditor.prototype.findAction = function(name) {
+    if (!this._actions[name]) {
+      if (!this.constructor.addons.actions[name]) {
+        throw new Error("richeditor: invalid action " + name);
+      }
+
+      this._actions[name] = new this.constructor.addons.actions[name]({
+        editor: this
+      });
+
+    }
+
+    return this._actions[name];
+  };
+
   RichEditor.prototype.hidePopover = function() {
     return this.el.find('.richeditor-popover').each(function(i, popover) {
       popover = $(popover).data('popover');
@@ -198,16 +216,8 @@ define([
 
   RichEditor.i18n = i18n;
 
-  RichEditor.addons = {
-    general : {
+  RichEditor.addons = addons;
 
-    },
-
-    actions : {
-      
-    }
-
-  }
 
   return RichEditor;
 

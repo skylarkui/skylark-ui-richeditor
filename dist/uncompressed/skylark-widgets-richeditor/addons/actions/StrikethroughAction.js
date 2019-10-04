@@ -1,9 +1,8 @@
 define([
   "skylark-domx-query",
-  "../Toolbar",
-  "../RichEditor",
-  "skylark-widgets-base/Action"
-],function($,Toolbar,RichEditor,Action){ 
+  "../../addons",
+  "../../Action"
+],function($,addons,Action){ 
   
   var StrikethroughAction = Action.inherit({
     name : 'strikethrough',
@@ -28,5 +27,5 @@ define([
   });
 
 
-  return RichEditor.addons.actions.strikethrough = StrikethroughAction;	
+  return addons.actions.strikethrough = StrikethroughAction;	
 });

@@ -1,9 +1,8 @@
 define([
   "skylark-utils-dom/query",
-  "../Toolbar",
-  "../RichEditor",
-  "skylark-widgets-base/Action"
-],function($,Toolbar,RichEditor,Action){ 
+  "../../addons",
+  "../../Action"
+],function($,addons,Action){ 
    var BlockquoteAction = Action.inherit({
       name : 'blockquote',
 
@@ -19,7 +18,7 @@ define([
    });
 
 
-   RichEditor.addons.actions.blockquote = BlockquoteAction; 
+   addons.actions.blockquote = BlockquoteAction; 
 
    return BlockquoteAction;
 });

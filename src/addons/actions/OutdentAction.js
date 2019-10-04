@@ -1,9 +1,8 @@
 define([
   "skylark-domx-query",
-  "../Toolbar",
-  "../RichEditor",
-  "skylark-widgets-base/Action"
-],function($,Toolbar,RichEditor,Action){ 
+  "../../addons",
+  "../../Action"
+],function($,addons,Action){ 
   var OutdentAction = Action.inherit({
     name : 'outdent',
 
@@ -25,7 +24,7 @@ define([
    });
 
 
-   RichEditor.addons.actions.outdent = OutdentAction; 
+   addons.actions.outdent = OutdentAction; 
  
    return OutdentAction;
 

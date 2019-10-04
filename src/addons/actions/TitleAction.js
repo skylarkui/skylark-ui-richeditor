@@ -1,10 +1,9 @@
 define([
   "skylark-domx-query",
-  "../Toolbar",
-  "../RichEditor",
-  "skylark-widgets-base/Action",
-  "../i18n"
-],function($,Toolbar,RichEditor,Action,i18n){ 
+  "../../addons",
+  "../../Action",
+  "../../i18n"
+],function($,addons,Action,i18n){ 
   var TitleAction = Action.inherit({
     name : 'title',
 
@@ -44,14 +43,10 @@ define([
     },
 
     setActive : function(active, param) {
+      if (active) {
+        active = this.node[0].tagName.toLowerCase();
+      }
       Action.prototype.setActive.call(this, active);
-      if (active) {
-        param || (param = this.node[0].tagName.toLowerCase());
-      }
-      this.el.removeClass('active-p active-h1 active-h2 active-h3 active-h4 active-h5');
-      if (active) {
-        return this.el.addClass('active active-' + param);
-      }
     },
 
     _execute : function(param) {
@@ -60,7 +55,7 @@ define([
 
   });
 
-  RichEditor.addons.actions.title = TitleAction;
+  addons.actions.title = TitleAction;
 
   return TitleAction;
 

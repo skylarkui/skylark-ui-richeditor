@@ -1,10 +1,9 @@
 define([
   "skylark-langx/langx",
   "skylark-domx-query",
-  "../Toolbar",
-  "../RichEditor",
-  "../Popover"
-],function(langx, $,Toolbar,RichEditor,Popover){ 
+  "../../addons",
+  "../../Popover"
+],function(langx, $,addons,Popover){ 
    var ImagePopover = Popover.inherit({
 
    });

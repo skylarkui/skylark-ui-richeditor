@@ -1,10 +1,9 @@
 define([
   "skylark-domx-query",
-  "../Toolbar",
-  "../RichEditor",
-  "skylark-widgets-base/Action",
-  "../i18n"
-],function($,Toolbar,RichEditor,Action,i18n){ 
+  "../../addons",
+  "../../Action",
+  "../../i18n"
+],function($,addons,Action,i18n){ 
 
 
   var MarkAction = Action.inherit({
@@ -16,7 +15,7 @@ define([
 
     disableTag : 'pre, table',
 
-    command : function() {
+    _execute : function() {
       var $end, $start, range;
       range = this.editor.editable.selection.range();
       if (this.active) {
@@ -79,10 +78,8 @@ define([
 
   });
 
-
-
   
-  RichEditor.Toolbar.addAction(MarkAction);
+  addons.actions.mark = MarkAction;
 
   return MarkAction;
 

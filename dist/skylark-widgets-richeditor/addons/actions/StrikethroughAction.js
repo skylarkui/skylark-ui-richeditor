@@ -5,5 +5,5 @@
  * @link https://github.com/skylark-widgets/skylark-widgets-richeditor/
  * @license MIT
  */
-define(["skylark-domx-query","../Toolbar","../RichEditor","skylark-widgets-base/Action"],function(t,e,i,r){var s=r.inherit({name:"strikethrough",icon:"strikethrough",htmlTag:"strike",disableTag:"pre",_activeStatus:function(){var t;return t=this.editor.editable.isActive("strikethrough"),this.setActive(t),this.active},_execute:function(){return this.editor.editable.strikethrough()}});return i.addons.actions.strikethrough=s});
+define(["skylark-domx-query","../../addons","../../Action"],function(t,e,i){var r=i.inherit({name:"strikethrough",icon:"strikethrough",htmlTag:"strike",disableTag:"pre",_activeStatus:function(){var t;return t=this.editor.editable.isActive("strikethrough"),this.setActive(t),this.active},_execute:function(){return this.editor.editable.strikethrough()}});return e.actions.strikethrough=r});
 //# sourceMappingURL=../../sourcemaps/addons/actions/StrikethroughAction.js.map

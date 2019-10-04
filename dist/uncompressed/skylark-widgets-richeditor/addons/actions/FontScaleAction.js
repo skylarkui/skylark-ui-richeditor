@@ -1,10 +1,9 @@
 define([
   "skylark-domx-query",
-  "../Toolbar",
-  "../RichEditor",
-  "skylark-widgets-base/Action",
-  "../i18n"
-],function($,Toolbar,RichEditor,Action,i18n){ 
+  "../../addons",
+  "../../Action",
+  "../../i18n"
+],function($,addons,Action,i18n){ 
   
   var FontScaleAction = Action.inherit({
     name : 'fontScale',
@@ -61,7 +60,7 @@ define([
   });
 
 
-  RichEditor.addons.actions.fontScale = FontScaleAction; 
+  addons.actions.fontScale = FontScaleAction; 
 
   return FontScaleAction;
 });

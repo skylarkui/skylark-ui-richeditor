@@ -5,5 +5,5 @@
  * @link https://github.com/skylark-widgets/skylark-widgets-richeditor/
  * @license MIT
  */
-define(["skylark-utils-dom/query","../Toolbar","../RichEditor","skylark-widgets-base/Action"],function(e,t,o,i){var a=i.inherit({name:"blockquote",icon:"quote-left",htmlTag:"blockquote",disableTag:"pre, table",_execute:function(){return this.editor.editable.blockquote(this.htmlTag,this.disableTag)}});return o.addons.actions.blockquote=a,a});
+define(["skylark-utils-dom/query","../../addons","../../Action"],function(e,t,o){var i=o.inherit({name:"blockquote",icon:"quote-left",htmlTag:"blockquote",disableTag:"pre, table",_execute:function(){return this.editor.editable.blockquote(this.htmlTag,this.disableTag)}});return t.actions.blockquote=i,i});
 //# sourceMappingURL=../../sourcemaps/addons/actions/BlockquoteAction.js.map

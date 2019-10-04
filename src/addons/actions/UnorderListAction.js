@@ -1,9 +1,8 @@
 define([
   "skylark-domx-query",
-  "../Toolbar",
-  "../RichEditor",
+  "../../addons",
   "./ListAction"
-],function($,Toolbar,RichEditor,ListAction){ 
+],function($,addons,ListAction){ 
    var UnorderListAction = ListAction.inherit({
       type : 'ul',
 
@@ -28,7 +27,7 @@ define([
    });
 
 
-    RichEditor.addons.actions.ul = UnorderListAction;
+    addons.actions.ul = UnorderListAction;
 
     return UnorderListAction;
 

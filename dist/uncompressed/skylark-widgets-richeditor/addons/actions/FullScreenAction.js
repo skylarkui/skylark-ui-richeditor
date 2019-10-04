@@ -1,10 +1,9 @@
 define([
   "skylark-domx-query",
-  "../Toolbar",
-  "../RichEditor",
-  "skylark-widgets-base/Action",
-  "../i18n"
-],function($,Toolbar,RichEditor,Action,i18n){ 
+  "../../addons",
+  "../../Action",
+  "../../i18n"
+],function($,addons,Action,i18n){ 
 
   
   var FullScrennAction = Action.inherit({
@@ -18,7 +17,6 @@ define([
       this.window = $(window);
       this.body = $('body');
       this.editable = this.editor.body;
-      return this.toolbar = this.toolbar.wrapper;
     },
 
     iconClassOf : function() {
@@ -39,7 +37,7 @@ define([
         this.window.on("resize.richeditor-fullscreen-" + this.editor.id, (function(_this) {
           return function() {
             return _this._resize({
-              height: _this.window.height() - _this.toolbar.outerHeight() - editablePadding
+              height: _this.window.height() - _this.editor.toolbar.outerHeight() - editablePadding
             });
           };
         })(this)).resize();
@@ -66,8 +64,7 @@ define([
   };
 
 
-  RichEditor.addons.actions.fullscreen = FullScrennAction; 
-
+  addons.actions.fullscreen = FullScrennAction; 
 
   return FullScrennAction;
 

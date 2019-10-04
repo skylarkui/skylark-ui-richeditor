@@ -1,10 +1,9 @@
 define([
   "skylark-domx-query",
-  "../Toolbar",
-  "../RichEditor",
-  "skylark-widgets-base/Action",
+  "../../addons",
+  "../../Action",
   "./CodePopover"
-],function($,Toolbar,RichEditor,Action,CodePopover){ 
+],function($,addons,Action,CodePopover){ 
   
 
    var CodeAction = Action.inherit({
@@ -34,15 +33,6 @@ define([
         })(this));
       },
 
-      render : function() {
-        var args;
-        args = 1 <= arguments.length ? Array.prototype.slice.call(arguments, 0) : [];
-        Action.prototype.render.apply(this, args);
-        return this.popover = new CodePopover({
-          Action: this
-        });
-      },
-
       _checkMode : function() {
         var $blockNodes, range;
         range = this.editor.editable.selection.range();
@@ -62,9 +52,16 @@ define([
           return;
         }
         if (this.active) {
+          if (!this.popover) {
+            this.popover = new CodePopover({
+              action: this
+            });
+          }
           return this.popover.show(this.node);
         } else {
-          return this.popover.hide();
+          if (this.popover) {
+            return this.popover.hide();
+          }
         }
       },
 
@@ -108,7 +105,7 @@ define([
    });
 
 
-   RichEditor.addons.actions.code = CodeAction; 
+   addons.actions.code = CodeAction; 
 
    return CodeAction;
 

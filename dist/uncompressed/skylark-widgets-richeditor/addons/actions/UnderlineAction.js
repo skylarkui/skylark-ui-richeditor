@@ -1,9 +1,8 @@
 define([
   "skylark-domx-query",
-  "../Toolbar",
-  "../RichEditor",
-  "skylark-widgets-base/Action"
-],function($,Toolbar,RichEditor,Action){
+  "../../addons",
+  "../../Action"
+],function($,addons,Action){
   var UnderlineAction = Action.inherit({
     name : 'underline',
 
@@ -39,7 +38,7 @@ define([
    });
 
 
-  RichEditor.addons.actions.ul = UnderlineAction;
+  addons.actions.underline = UnderlineAction;
 
   return UnderlineAction;
 

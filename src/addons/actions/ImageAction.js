@@ -1,12 +1,11 @@
 define([
   "skylark-langx/langx",
   "skylark-domx-query",
-  "../Toolbar",
-  "../RichEditor",
-  "skylark-widgets-base/Action",
+  "../../addons",
+  "../../Action",
   "./ImagePopover",
-  "../i18n"
-],function(langx, $,Toolbar,RichEditor,Action,ImagePopover,i18n){ 
+  "../../i18n"
+],function(langx, $,addons,Action,ImagePopover,i18n){ 
    var ImageAction = Action.inherit({
       name : 'image',
 
@@ -78,9 +77,17 @@ define([
             $contents = $(range.cloneContents()).contents();
             if ($contents.length === 1 && $contents.is('img:not([data-non-image])')) {
               $img = $(range.startContainer).contents().eq(range.startOffset);
+              if (!_this.popover) {
+                _this.popover = new ImagePopover({
+                  action: _this
+                });                
+              }
+
               return _this.popover.show($img);
             } else {
-              return _this.popover.hide();
+              if (_this.popover) {
+                  return _this.popover.hide();
+              }
             }
           };
         })(this));
@@ -418,7 +425,7 @@ define([
 
    });
 
-   RichEditor.addons.actions.image = ImageAction; 
+   addons.actions.image = ImageAction; 
 
    return ImageAction;
 

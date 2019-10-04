@@ -1,9 +1,8 @@
 define([
   "skylark-domx-query",
-  "../Toolbar",
-  "../RichEditor",
+  "../../addons",
   "./ListAction"
-],function($,Toolbar,RichEditor,ListAction){ 
+],function($,addons,ListAction){ 
   var OrderListAction = ListAction.inherit({
     type : 'ol',
 
@@ -27,5 +26,5 @@ define([
 
    });
 
-    return RichEditor.addons.actions.ol = OrderListAction;	
+    return addons.actions.ol = OrderListAction;	
 });

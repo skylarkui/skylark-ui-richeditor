@@ -2,10 +2,9 @@ define([
   "skylark-langx/langx",
   "skylark-domx-tables",
   "skylark-domx-query",
-  "../Toolbar",
-  "../RichEditor",
-  "skylark-widgets-base/Action"
-],function(langx,tables,$,Toolbar,RichEditor,Action){ 
+  "../../addons",
+  "../../Action"
+],function(langx,tables,$,addons,Action){ 
   var TableAction = Action.inherit({
     name : 'table',
 
@@ -221,17 +220,6 @@ define([
       return table.refreshTableWidth($table[0]);
     },
 
-    setActive : function(active) {
-      Action.prototype.setActive.call(this, active);
-      if (active) {
-        this.createMenu.hide();
-        return this.editMenu.show();
-      } else {
-        this.createMenu.show();
-        return this.editMenu.hide();
-      }
-    },
-
     deleteRow : function($td) {
       var self = this,
           ret; 
@@ -319,8 +307,7 @@ define([
    });
 
 
-
-  RichEditor.addons.actions.table = TableAction;
+  addons.actions.table = TableAction;
 
   return TableAction;
 

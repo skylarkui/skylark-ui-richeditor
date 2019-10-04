@@ -1,9 +1,8 @@
 define([
   "skylark-domx-query",
-  "../Toolbar",
-  "../RichEditor",
-  "skylark-widgets-base/Action"
-],function($,Toolbar,RichEditor,Action){ 
+  "../../addons",
+  "../../Action"
+],function($,addons,Action){ 
   
     var BoldAction = Action.inherit({
       name : 'bold',
@@ -40,7 +39,7 @@ define([
     });
 
 
-    RichEditor.addons.actions.bold = BoldAction; 
+    addons.actions.bold = BoldAction; 
 
     return BoldAction;
 });

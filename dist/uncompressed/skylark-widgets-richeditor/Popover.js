@@ -7,8 +7,8 @@ define([
 
   var Popover = langx.Evented.inherit({
      init : function(opts) {
-      this.button = opts.button;
-      this.editor = opts.button.editor;
+      this.action = opts.action;
+      this.editor = opts.action.editor;
       this._init();
     }
   });

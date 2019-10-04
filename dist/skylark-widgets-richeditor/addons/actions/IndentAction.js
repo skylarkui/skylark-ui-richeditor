@@ -5,5 +5,5 @@
  * @link https://github.com/skylark-widgets/skylark-widgets-richeditor/
  * @license MIT
  */
-define(["skylark-domx-query","../Toolbar","../RichEditor","skylark-widgets-base/Action"],function(t,i,n,e){var o=e.inherit({name:"indent",icon:"indent",_init:function(){var t;return t=!1===this.editor.opts.tabIndent?"":" (Tab)",this.title=this._t(this.name)+t,e.prototype._init.call(this)},_status:function(){},_execute:function(){return this.editor.editable.indent()}});return n.addons.actions.indent=o,o});
+define(["skylark-domx-query","../../addons","../../Action"],function(t,n,i){var e=i.inherit({name:"indent",icon:"indent",_init:function(){var t;return t=!1===this.editor.opts.tabIndent?"":" (Tab)",this.title=this._t(this.name)+t,i.prototype._init.call(this)},_execute:function(){return this.editor.editable.indent()}});return n.actions.indent=e,e});
 //# sourceMappingURL=../../sourcemaps/addons/actions/IndentAction.js.map

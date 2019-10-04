@@ -1,9 +1,8 @@
 define([
   "skylark-domx-query",
-  "../Toolbar",
-  "../RichEditor",
-  "skylark-widgets-base/Action"
-],function($,Toolbar,RichEditor,Action){ 
+  "../../addons",
+  "../../Action"
+],function($,addons,Action){ 
    var  hasProp = {}.hasOwnProperty,
         slice = [].slice;
   
@@ -80,7 +79,7 @@ define([
    });
 
 
-   RichEditor.addons.actions.html = HtmlAction; 
+   addons.actions.html = HtmlAction; 
 
    return HtmlAction;
 });

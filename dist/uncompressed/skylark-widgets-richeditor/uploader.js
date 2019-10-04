@@ -24,7 +24,7 @@ define([
             return;
           }
           e.originalEvent.returnValue = _this._t('leaveConfirm');
-          return _this._t('leaveConfirm');
+          return _this._t('leaveConfirm');  
         };
       })(this));
     }

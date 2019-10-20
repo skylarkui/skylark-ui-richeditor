@@ -1,5 +1,5 @@
 {
-  "name": "skylark-widgets-richeditor",
+  "name": "skylark-widgets-richtext",
   "description": "The skylark richeditor widget",
   "version": "0.9.0",
   "keywords": [
@@ -11,7 +11,7 @@
     "framework",
     "web"
   ],
-  "homepage": "https://github.com/skylark-widgets/skylark-widgets-richeditor/",
+  "homepage": "https://github.com/skylark-widgets/skylark-widgets-richtext/",
   "author": "Hudaokeji, Inc.",
   "license": "MIT",
   "scripts": {
@@ -19,10 +19,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/skylark-widgets/skylark-widgets-richeditor.git"
+    "url": "https://github.com/skylark-widgets/skylark-widgets-richtext.git"
   },
   "bugs": {
-    "url": "https://github.com/skylark-widgets/skylark-widgets-richeditor/issues"
+    "url": "https://github.com/skylark-widgets/skylark-widgets-richtext/issues"
   },
   "dependencies": {
     "skylark-domx-contents": "git+https://github.com/skylark-domx/skylark-domx-contents.git#master",

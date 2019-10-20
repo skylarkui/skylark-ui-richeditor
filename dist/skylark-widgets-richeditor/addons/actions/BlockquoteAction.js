@@ -1,9 +1,0 @@
-/**
- * skylark-widgets-richeditor - The skylark richeditor widget
- * @author Hudaokeji, Inc.
- * @version v0.9.0
- * @link https://github.com/skylark-widgets/skylark-widgets-richeditor/
- * @license MIT
- */
-define(["skylark-utils-dom/query","../../addons","../../Action"],function(e,t,o){var i=o.inherit({name:"blockquote",icon:"quote-left",htmlTag:"blockquote",disableTag:"pre, table",_execute:function(){return this.editor.editable.blockquote(this.htmlTag,this.disableTag)}});return t.actions.blockquote=i,i});
-//# sourceMappingURL=../../sourcemaps/addons/actions/BlockquoteAction.js.map

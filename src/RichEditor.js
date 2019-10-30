@@ -1,6 +1,6 @@
 define([
   "skylark-langx/langx",
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "skylark-domx-contents/Editable",
   "skylark-widgets-base/Widget",
   "./Toolbar",

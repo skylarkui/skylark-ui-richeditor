@@ -5,5 +5,5 @@
  * @link https://github.com/skylark-widgets/skylark-widgets-richtext/
  * @license MIT
  */
-define(["skylark-utils-dom/query","../Toolbar","../RichEditor","../Button"],function(t,o,e,r){var i=r.inherit({});return i.prototype.name="blockquote",i.prototype.icon="quote-left",i.prototype.htmlTag="blockquote",i.prototype.disableTag="pre, table",i.prototype.command=function(){return this.editor.editable.blockquote(this.htmlTag,this.disableTag)},e.Toolbar.addButton(i),i});
+define(["skylark-domx-query","../Toolbar","../RichEditor","../Button"],function(t,o,e,r){var a=r.inherit({});return a.prototype.name="blockquote",a.prototype.icon="quote-left",a.prototype.htmlTag="blockquote",a.prototype.disableTag="pre, table",a.prototype.command=function(){return this.editor.editable.blockquote(this.htmlTag,this.disableTag)},e.Toolbar.addButton(a),a});
 //# sourceMappingURL=../../sourcemaps/removing/buttons/BlockquoteButton.js.map

@@ -1,5 +1,5 @@
 define([
-  "skylark-utils-dom/noder",
+  "skylark-domx-noder",
   "skylark-domx-query",
   "../Toolbar",
   "../RichEditor",

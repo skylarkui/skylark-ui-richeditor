@@ -1,6 +1,6 @@
 define([
   "skylark-langx/langx",
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "skylark-widgets-base/Widget",
   "./RichEditor",
   "./i18n"

@@ -1,6 +1,6 @@
 define([
   "skylark-langx/langx",
-  "skylark-utils-dom/query"
+  "skylark-domx-query"
 ],function(langx,$){ 
 
   var Uploader = langx.Evented.inherit({

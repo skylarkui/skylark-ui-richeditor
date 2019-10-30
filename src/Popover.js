@@ -1,6 +1,6 @@
 define([
   "skylark-langx/langx",
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "./RichEditor",
   "./i18n"
 ],function(langx,$,RichEditor,i18n){ 

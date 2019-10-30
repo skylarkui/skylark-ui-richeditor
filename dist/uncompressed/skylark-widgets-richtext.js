@@ -92,7 +92,7 @@ define([], function () {
     var module = { exports: {} };
     define([
         'skylark-langx/langx',
-        'skylark-utils-dom/query',
+        'skylark-domx-query',
         'skylark-domx-contents/Editable',
         'skylark-widgets-base/Widget',
         './Toolbar',
@@ -538,7 +538,7 @@ define('skylark-widgets-richtext/Action',[
 });
 define('skylark-widgets-richtext/Popover',[
   "skylark-langx/langx",
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "./RichEditor",
   "./i18n"
 ],function(langx,$,RichEditor,i18n){ 
@@ -692,7 +692,7 @@ define('skylark-widgets-richtext/Popover',[
 });
 define('skylark-widgets-richtext/ToolButton',[
   "skylark-langx/langx",
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "skylark-widgets-base/Widget",
   "./RichEditor",
   "./i18n"
@@ -951,7 +951,7 @@ define('skylark-widgets-richtext/addons',[],function(){
 });
 define('skylark-widgets-richtext/Toolbar',[
   "skylark-langx/langx",
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "skylark-widgets-swt/Toolbar",
   "./ToolButton",
   "./addons"
@@ -1082,7 +1082,7 @@ define('skylark-widgets-richtext/addons/actions/AlignmentAction',[
   return addons.actions.alignment = AlignmentAction;
 });
 define('skylark-widgets-richtext/addons/actions/BlockquoteAction',[
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "../../addons",
   "../../Action"
 ],function($,addons,Action){ 
@@ -2579,7 +2579,7 @@ define('skylark-widgets-richtext/addons/actions/LinkAction',[
 
 });
 define('skylark-widgets-richtext/addons/actions/ListAction',[
-  "skylark-utils-dom/noder",
+  "skylark-domx-noder",
   "skylark-domx-query",
   "../../addons",
   "../../Action"

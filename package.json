@@ -25,8 +25,8 @@
     "url": "https://github.com/skylark-widgets/skylark-widgets-richtext/issues"
   },
   "dependencies": {
-    "skylark-domx-tables": "git+https://github.com/skylark-domx/skylark-domx-tables.git#master",
     "skylark-domx-contents": "git+https://github.com/skylark-domx/skylark-domx-contents.git#master",
+    "skylark-domx-tables": "git+https://github.com/skylark-domx/skylark-domx-tables.git#master",
     "skylark-langx": "git+https://github.com/skylarklangx/skylark-langx.git#master",
     "skylark-widgets-base": "git+https://github.com/skylark-widgets/skylark-widgets-base.git#master",
     "skylark-widgets-swt": "git+https://github.com/skylark-widgets/skylark-widgets-swt.git#master"

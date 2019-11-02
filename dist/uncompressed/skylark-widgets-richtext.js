@@ -1638,7 +1638,7 @@ define('skylark-widgets-richtext/addons/actions/HtmlAction',[
     status : function() {},
 
     _execute : function() {
-      var Action, i, len, ref;
+      var action, i, len, ref;
       this.editor.blur();
       this.editor.el.toggleClass('richeditor-html');
       this.editor.htmlMode = this.editor.el.hasClass('richeditor-html');
@@ -1649,13 +1649,13 @@ define('skylark-widgets-richtext/addons/actions/HtmlAction',[
       } else {
         this.editor.setValue(this.editor.textarea.val());
       }
-      ref = this.editor.toolbar.Actions;
+      ref = this.editor._actions;
       for (i = 0, len = ref.length; i < len; i++) {
-        Action = ref[i];
-        if (Action.name === 'html') {
-          Action.setActive(this.editor.htmlMode);
+        action = ref[i];
+        if (action.name === 'html') {
+          action.setActive(this.editor.htmlMode);
         } else {
-          Action.setDisabled(this.editor.htmlMode);
+          action.setDisabled(this.editor.htmlMode);
         }
       }
       return null;
@@ -3683,7 +3683,7 @@ define('skylark-widgets-richtext/addons/Dropzone',[
   Dropzone.prototype._init = function() {
     this.editor = this._widget;
     if (this.editor.uploader == null) {
-      throw new Error("Can't work without 'simple-uploader' module");
+      //throw new Error("Can't work without 'simple-uploader' module");
       return;
     }
     $(document.body).on("dragover", function(e) {

@@ -182,14 +182,13 @@ require.config({
             main: 'main'
          },
      { name: "skylark-langx", location: "../node_modules/skylark-langx/dist/uncompressed/skylark-langx" },
-     { name: "skylark-utils-dom", location: "../node_modules/skylark-utils-dom/dist/uncompressed/skylark-utils-dom"},
      { name: "skylark-domx-contents", location: "../../../domx/skylark-domx-contents/src"},
      { name: "skylark-widgets-richtext", location: "../src" }
   ],
 });
  
 require([
-  "skylark-utils-dom/query",
+  "skylark-domx-query",
   "skylark-widgets-richtext"
 ],function($,RichEditor,Dropzone){
 //  $(function() {

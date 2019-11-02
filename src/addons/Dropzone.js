@@ -20,7 +20,7 @@ define([
   Dropzone.prototype._init = function() {
     this.editor = this._widget;
     if (this.editor.uploader == null) {
-      throw new Error("Can't work without 'simple-uploader' module");
+      //throw new Error("Can't work without 'simple-uploader' module");
       return;
     }
     $(document.body).on("dragover", function(e) {

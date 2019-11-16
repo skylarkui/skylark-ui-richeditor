@@ -80,7 +80,7 @@ define([
       this.queue.push(file);
       return;
     }
-    if (this.triggerHandler('beforeupload', [file]) === false) {
+    if (this.trigger('beforeupload', [file]) === false) {
       return;
     }
     this.files.push(file);

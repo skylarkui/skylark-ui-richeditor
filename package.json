@@ -1,5 +1,5 @@
 {
-  "name": "skylark-widgets-richtext",
+  "name": "skylark-widgets-wordpad",
   "description": "The skylark richeditor widget",
   "version": "0.9.0",
   "keywords": [
@@ -11,7 +11,7 @@
     "framework",
     "web"
   ],
-  "homepage": "https://github.com/skylark-widgets/skylark-widgets-richtext/",
+  "homepage": "https://github.com/skylark-widgets/skylark-widgets-wordpad/",
   "author": "Hudaokeji, Inc.",
   "license": "MIT",
   "scripts": {
@@ -19,10 +19,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/skylark-widgets/skylark-widgets-richtext.git"
+    "url": "https://github.com/skylark-widgets/skylark-widgets-wordpad.git"
   },
   "bugs": {
-    "url": "https://github.com/skylark-widgets/skylark-widgets-richtext/issues"
+    "url": "https://github.com/skylark-widgets/skylark-widgets-wordpad/issues"
   },
   "dependencies": {
     "skylark-domx-contents": "git+https://github.com/skylark-domx/skylark-domx-contents.git#master",

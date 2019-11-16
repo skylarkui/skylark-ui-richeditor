@@ -1,7 +1,7 @@
-.richeditor.richeditor-html .richeditor-wrapper > textarea {
+.wordpad.wordpad-html .wordpad-wrapper > textarea {
   display: block !important;
 }
-.richeditor.richeditor-html .richeditor-body,
-.richeditor.richeditor-html .richeditor-placeholder {
+.wordpad.wordpad-html .wordpad-body,
+.wordpad.wordpad-html .wordpad-placeholder {
   display: none;
 }

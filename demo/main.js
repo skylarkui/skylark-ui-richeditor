@@ -106,6 +106,11 @@ require.config({
             main: 'main'
          },
          {
+           name : "skylark-domx-files",
+           location : "../node_modules/skylark-domx-files/dist/uncompressed/skylark-domx-files",
+            main: 'main'
+         },
+         {
            name : "skylark-domx-finder",
            location : "../node_modules/skylark-domx-finder/dist/uncompressed/skylark-domx-finder",
             main: 'main'
@@ -172,6 +177,11 @@ require.config({
             main: 'main'
          },
          {
+           name : "skylark-storages-diskfs",
+           location : "../node_modules/skylark-storages-diskfs/dist/uncompressed/skylark-storages-diskfs",
+            main: 'main'
+         },
+         {
            name : "skylark-widgets-base",
            location : "../../skylark-widgets-base/src",
             main: 'main'
@@ -183,23 +193,23 @@ require.config({
          },
      { name: "skylark-langx", location: "../node_modules/skylark-langx/dist/uncompressed/skylark-langx" },
      { name: "skylark-domx-contents", location: "../../../domx/skylark-domx-contents/src"},
-     { name: "skylark-widgets-richtext", location: "../src" }
+     { name: "skylark-widgets-wordpad", location: "../src" }
   ],
 });
  
 require([
   "skylark-domx-query",
-  "skylark-widgets-richtext"
-],function($,RichEditor,Dropzone){
+  "skylark-widgets-wordpad"
+],function($,Wordpad,Dropzone){
 //  $(function() {
     var $preview, editor, mobileToolbar, toolbar;
-    RichEditor.i18n.locale = 'en-US';
+    Wordpad.i18n.locale = 'en-US';
     toolbar = ['html','|','title', 'bold', 'italic', 'underline', 'strikethrough', 'fontScale', 'color', 'mark','|', 'ol', 'ul', 'blockquote', 'code', 'table', '|', 'emoji','link', 'image', 'hr', '|', 'indent', 'outdent', 'alignment','|','fullscreen'];
     mobileToolbar = ["bold", "underline", "strikethrough", "color", "ul", "ol"];
     if (mobilecheck()) {
       toolbar = mobileToolbar;
     }
-    editor = new RichEditor({
+    editor = new Wordpad({
       srcNodeRef: $('#txt-content')[0],
       placeholder: '这里输入文字...',
       toolbar: toolbar,

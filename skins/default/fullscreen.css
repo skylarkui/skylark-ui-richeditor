@@ -22,16 +22,16 @@
   content: "\e600";
 }
 
-.richeditor-fullscreen {
+.wordpad-fullscreen {
   overflow: hidden;
 }
-.richeditor-fullscreen .richeditor {
+.wordpad-fullscreen .wordpad {
   position: fixed;
   top: 0;
   left: 0;
   z-index: 9999;
   width: 100%;
 }
-.richeditor-fullscreen .richeditor .richeditor-body {
+.wordpad-fullscreen .wordpad .wordpad-body {
   overflow: auto;
 }

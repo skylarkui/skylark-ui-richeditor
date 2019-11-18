@@ -143,7 +143,7 @@ define([], function () {
             });
         };
         Wordpad.prototype.destroy = function () {
-            this.triggerHandler('destroy');
+            this.trigger('destroy');
             this.textarea.closest('form').off('.Wordpad .wordpad-' + this.id);
             this.selection.clear();
             this.inputManager.focused = false;

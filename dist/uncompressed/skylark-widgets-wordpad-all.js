@@ -231,7 +231,7 @@ define([], function () {
             });
         };
         Wordpad.prototype.destroy = function () {
-            this.triggerHandler('destroy');
+            this.trigger('destroy');
             this.textarea.closest('form').off('.Wordpad .wordpad-' + this.id);
             this.selection.clear();
             this.inputManager.focused = false;
@@ -2981,10 +2981,12 @@ define('skylark-langx-emitter/Emitter',[
             }
 
             return this;
+        },
+
+        trigger  : function() {
+            return this.emit.apply(this,arguments);
         }
     });
-
-    Emitter.prototype.trigger = Emitter.prototype.emit;
 
     Emitter.createEvent = function (type,props) {
         var e = new CustomEvent(type,props);
@@ -4966,7 +4968,7 @@ define('skylark-domx-noder/noder',[
                 node.appendChild(html);
             }
 
-
+            return this;
         }
     }
 
@@ -11730,10 +11732,12 @@ define('skylark-widgets-base/Widget',[
 
               }
           }
-
-
         }
 
+        if (this._elm.parentElement) {
+          // The widget is already in document
+          this._startup();
+        }
 
      },
 
@@ -15420,21 +15424,35 @@ define('skylark-widgets-wordpad/addons/toolbar/items/TitleButton',[
 
 });
 define('skylark-widgets-base/Addon',[
-	"./base",
-  "skylark-langx/Evented"	
-],function(base,Evented){
+  "skylark-langx/langx",	
+  "skylark-langx/Evented",
+	"./base"
+],function(langx,Evented,base){
 
 	var Addon = Evented.inherit({
 
 		_construct : function(widget,options) {
 			this._widget = widget;
-			this._options = options;
+            Object.defineProperty(this,"options",{
+              value :langx.mixin({},this.options,options,true)
+            });
 			if (this._init) {
 				this._init();
 			}
 		}
 
 	});
+
+	Addon.register = function(Widget) {
+		var categoryName = this.categoryName,
+			addonName = this.addonName;
+
+		if (categoryName && addonName) {
+			Widget.addons = Widget.addons || {};
+			Widget.addons[categoryName] = Widget.addons[categoryName] || {};
+			Widget.addons[categoryName][addonName] = this;
+		}
+	};
 
 	return base.Addon = Addon;
 

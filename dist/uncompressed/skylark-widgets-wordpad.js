@@ -86,182 +86,6 @@
 
 })(function(define,require) {
 
-define([], function () {
-    'use strict';
-    var exports = {};
-    var module = { exports: {} };
-    define([
-        'skylark-langx/skylark',
-        'skylark-langx/langx',
-        'skylark-domx-query',
-        'skylark-domx-contents/Editable',
-        'skylark-widgets-base/Widget',
-        './Toolbar',
-        './uploader',
-        './i18n',
-        './addons'
-    ], function (skylark, langx, $, Editable, Widget, Toolbar, uploader, i18n, addons) {
-        var Wordpad = Widget.inherit({
-            options: {
-                srcNodeRef: null,
-                placeholder: '',
-                defaultImage: 'images/image.png',
-                params: {},
-                upload: false,
-                template: '<div class="wordpad">\n  <div class="wordpad-wrapper">\n    <div class="wordpad-placeholder"></div>\n    <div class="wordpad-body" contenteditable="true">\n    </div>\n  </div>\n</div>'
-            },
-            _init: function () {
-                this._actions = [];
-                this.opts = this.options;
-                var e, editor, uploadOpts;
-                this.textarea = $(this.opts.srcNodeRef);
-                this.opts.placeholder = this.opts.placeholder || this.textarea.attr('placeholder');
-                if (!this.textarea.length) {
-                    throw new Error('Wordpad: param textarea is required.');
-                    return;
-                }
-                editor = this.textarea.data('wordpad');
-                if (editor != null) {
-                    editor.destroy();
-                }
-                this.id = ++Wordpad.count;
-                this._render();
-                var self = this;
-                this.editable = new Editable(this._elm, {
-                    classPrefix: 'wordpad-',
-                    textarea: this.textarea,
-                    body: this.body
-                });
-                this.editable.on('all', function (e, data) {
-                    return self.trigger(e.type, data);
-                });
-                if (this.opts.upload && uploader) {
-                    uploadOpts = typeof this.opts.upload === 'object' ? this.opts.upload : {};
-                    this.uploader = uploader(uploadOpts);
-                }
-                this.toolbar = new Toolbar(this, {
-                    toolbar: this.opts.toolbar,
-                    toolbarFloat: this.opts.toolbarFloat,
-                    toolbarHidden: this.opts.toolbarHidden,
-                    toolbarFloatOffset: this.opts.toolbarFloatOffset
-                });
-                if (this.opts.placeholder) {
-                    this.on('valuechanged', function () {
-                        return self._placeholder();
-                    });
-                }
-                this.setValue(this.textarea.val().trim() || '');
-                if (this.textarea.attr('autofocus')) {
-                    return self.focus();
-                }
-            }
-        });
-        Wordpad.prototype.triggerHandler = Wordpad.prototype.trigger = function (type, data) {
-            var args, ref;
-            args = [type];
-            if (data) {
-                args = args.concat(data);
-            }
-            langx.Evented.prototype.trigger.apply(this, args);
-            return this;
-        };
-        Wordpad.count = 0;
-        Wordpad.prototype._render = function () {
-            var key, ref, results, val;
-            this.el = $(this._elm).insertBefore(this.textarea);
-            this.wrapper = this.el.find('.wordpad-wrapper');
-            this.body = this.wrapper.find('.wordpad-body');
-            this.placeholderEl = this.wrapper.find('.wordpad-placeholder').append(this.opts.placeholder);
-            this.el.data('wordpad', this);
-            this.wrapper.append(this.textarea);
-            this.textarea.data('wordpad', this).blur();
-            this.body.attr('tabindex', this.textarea.attr('tabindex'));
-            if (this.opts.params) {
-                ref = this.opts.params;
-                results = [];
-                for (key in ref) {
-                    val = ref[key];
-                    results.push($('<input/>', {
-                        type: 'hidden',
-                        name: key,
-                        value: val
-                    }).insertAfter(this.textarea));
-                }
-                return results;
-            }
-        };
-        Wordpad.prototype._placeholder = function () {
-            var children;
-            children = this.body.children();
-            if (children.length === 0 || children.length === 1 && this.util.isEmptyNode(children) && parseInt(children.css('margin-left') || 0) < this.opts.indentWidth) {
-                return this.placeholderEl.show();
-            } else {
-                return this.placeholderEl.hide();
-            }
-        };
-        Wordpad.prototype.setValue = function (val) {
-            this.hidePopover();
-            this.editable.setValue(val);
-            return this.trigger('valuechanged');
-        };
-        Wordpad.prototype.getValue = function () {
-            return this.editable.getValue();
-        };
-        Wordpad.prototype.focus = function () {
-            return this.editable.focus();
-        };
-        Wordpad.prototype.blur = function () {
-            return this.editable.blur();
-        };
-        Wordpad.prototype.findAction = function (name) {
-            if (!this._actions[name]) {
-                if (!this.constructor.addons.actions[name]) {
-                    throw new Error('Wordpad: invalid action ' + name);
-                }
-                this._actions[name] = new this.constructor.addons.actions[name]({ editor: this });
-            }
-            return this._actions[name];
-        };
-        Wordpad.prototype.hidePopover = function () {
-            return this.el.find('.wordpad-popover').each(function (i, popover) {
-                popover = $(popover).data('popover');
-                if (popover.active) {
-                    return popover.hide();
-                }
-            });
-        };
-        Wordpad.prototype.destroy = function () {
-            this.trigger('destroy');
-            this.textarea.closest('form').off('.Wordpad .wordpad-' + this.id);
-            this.selection.clear();
-            this.inputManager.focused = false;
-            this.textarea.insertBefore(this.el).hide().val('').removeData('wordpad');
-            this.el.remove();
-            $(document).off('.wordpad-' + this.id);
-            $(window).off('.wordpad-' + this.id);
-            return this.off();
-        };
-        Wordpad.Toolbar = Toolbar;
-        Wordpad.i18n = i18n;
-        Wordpad.addons = addons;
-        return skylark.attach('widgets.Wordpad', Wordpad);
-    });
-    function __isEmptyObject(obj) {
-        var attr;
-        for (attr in obj)
-            return !1;
-        return !0;
-    }
-    function __isValidToReturn(obj) {
-        return typeof obj != 'object' || Array.isArray(obj) || !__isEmptyObject(obj);
-    }
-    if (__isValidToReturn(module.exports))
-        return module.exports;
-    else if (__isValidToReturn(exports))
-        return exports;
-});
-define("skylark-widgets-wordpad/Wordpad", function(){});
-
 define('skylark-widgets-wordpad/i18n',[
 
 ],function(){ 
@@ -394,302 +218,6 @@ define('skylark-widgets-wordpad/i18n',[
     };
 
     return i18n;
-});
-define('skylark-widgets-wordpad/Action',[
-  "skylark-langx/langx",
-  "skylark-widgets-base/Action",
-  "./Wordpad",
-  "./i18n"
-],function(langx, _Action, Wordpad,i18n){ 
-  var slice = [].slice;
-
-  var Action = _Action.inherit( {
-    htmlTag : '',
-
-    disableTag : '',
-
-    menu : false,
-
-    active : {
-      get : function() {
-        return this.state.get("active");
-      },
-
-      set : function(value) {
-        return this.state.set("active",value);
-
-      }
-
-    },
-
-    disabled : {
-      get : function() {
-        return this.state.get("disabled");
-      },
-
-      set : function(value) {
-        return this.state.set("disabled",value);
-
-      }
-    },
-
-    needFocus : true,
-
-    _construct  : function(opts) {
-      _Action.prototype._construct.apply(this,arguments);
-      //this.toolbar = opts.toolbar;
-      //this.editor = this.toolbar.editor;
-      this.title = i18n.translate(this.name);
-
-      var _this = this;
-
-      this.editor.on('blur', function() {
-        var editorActive;
-        editorActive = _this.editor.body.is(':visible') && _this.editor.body.is('[contenteditable]');
-        if (!(editorActive && !_this.editor.editable.clipboard.pasting)) {
-          return;
-        }
-        _this.setActive(false);
-        return _this.setDisabled(false);
-      });
-
-      if (this.shortcut != null) {
-        this.editor.editable.hotkeys.add(this.shortcut, function(e) {
-          //_this.el.mousedown();
-          _this.execute();
-          return false;
-        });
-      }
-
-      var ref = this.htmlTag.split(',');
-      for (k = 0, len = ref.length; k < len; k++) {
-        tag = ref[k];
-        tag = langx.trim(tag);
-        if (tag && langx.inArray(tag, this.editor.editable.formatter._allowedTags) < 0) {
-          this.editor.editable.formatter._allowedTags.push(tag);
-        }
-      }
-      this.editor.on('selectionchanged', function(e) {
-        if (_this.editor.editable.inputManager.focused) {
-          return _this._status();
-        }
-      });
-
-      this._init();
-    },
-
-    _init : function() {
-
-
-    },
-
-    _disableStatus : function() {
-      var disabled, endNodes, startNodes;
-      startNodes = this.editor.editable.selection.startNodes();
-      endNodes = this.editor.editable.selection.endNodes();
-      disabled = startNodes.filter(this.disableTag).length > 0 || endNodes.filter(this.disableTag).length > 0;
-      this.setDisabled(disabled);
-      if (this.disabled) {
-        this.setActive(false);
-      }
-      return this.disabled;
-    },
-
-    _activeStatus : function() {
-      var active, endNode, endNodes, startNode, startNodes;
-      startNodes = this.editor.editable.selection.startNodes();
-      endNodes = this.editor.editable.selection.endNodes();
-      startNode = startNodes.filter(this.htmlTag);
-      endNode = endNodes.filter(this.htmlTag);
-      active = startNode.length > 0 && endNode.length > 0 && startNode.is(endNode);
-      this.node = active ? startNode : null;
-      this.setActive(active);
-      return this.active;
-    },
-
-    _status : function() {
-      this._disableStatus();
-      if (this.disabled) {
-        return;
-      }
-      return this._activeStatus();
-    },
-
-    setActive : function(active) {
-      if (active === this.active) {
-        return;
-      }
-      this.active = active;
-    },
-
-    setDisabled : function(disabled) {
-      if (disabled === this.disabled) {
-        return;
-      }
-      this.disabled = disabled;
-    }
-  }); 
-
-
-  Action.prototype._t = i18n.translate;
-
-
-  return Action;
-
-});
-define('skylark-widgets-wordpad/Popover',[
-  "skylark-langx/langx",
-  "skylark-domx-query",
-  "./Wordpad",
-  "./i18n"
-],function(langx,$,Wordpad,i18n){ 
-
-  var Popover = langx.Evented.inherit({
-     init : function(opts) {
-      this.action = opts.action;
-      this.editor = opts.action.editor;
-      this._init();
-    }
-  });
-
-
-  Popover.prototype.offset = {
-    top: 4,
-    left: 0
-  };
-
-  Popover.prototype.target = null;
-
-  Popover.prototype.active = false;
-
-  Popover.prototype._init = function() {
-    this.el = $('<div class="wordpad-popover"></div>').appendTo(this.editor.el).data('popover', this);
-    this.render();
-    this.el.on('mouseenter', (function(_this) {
-      return function(e) {
-        return _this.el.addClass('hover');
-      };
-    })(this));
-    return this.el.on('mouseleave', (function(_this) {
-      return function(e) {
-        return _this.el.removeClass('hover');
-      };
-    })(this));
-  };
-
-  Popover.prototype.render = function() {};
-
-  Popover.prototype._initLabelWidth = function() {
-    var $fields;
-    $fields = this.el.find('.settings-field');
-    if (!($fields.length > 0)) {
-      return;
-    }
-    this._labelWidth = 0;
-    $fields.each((function(_this) {
-      return function(i, field) {
-        var $field, $label;
-        $field = $(field);
-        $label = $field.find('label');
-        if (!($label.length > 0)) {
-          return;
-        }
-        return _this._labelWidth = Math.max(_this._labelWidth, $label.width());
-      };
-    })(this));
-    return $fields.find('label').width(this._labelWidth);
-  };
-
-  Popover.prototype.show = function($target, position) {
-    if (position == null) {
-      position = 'bottom';
-    }
-    if ($target == null) {
-      return;
-    }
-    this.el.siblings('.wordpad-popover').each(function(i, popover) {
-      popover = $(popover).data('popover');
-      if (popover.active) {
-        return popover.hide();
-      }
-    });
-    if (this.active && this.target) {
-      this.target.removeClass('selected');
-    }
-    this.target = $target.addClass('selected');
-    if (this.active) {
-      this.refresh(position);
-      return this.trigger('popovershow');
-    } else {
-      this.active = true;
-      this.el.css({
-        left: -9999
-      }).show();
-      if (!this._labelWidth) {
-        this._initLabelWidth();
-      }
-      this.editor.editable.util.reflow();
-      this.refresh(position);
-      return this.trigger('popovershow');
-    }
-  };
-
-  Popover.prototype.hide = function() {
-    if (!this.active) {
-      return;
-    }
-    if (this.target) {
-      this.target.removeClass('selected');
-    }
-    this.target = null;
-    this.active = false;
-    this.el.hide();
-    return this.trigger('popoverhide');
-  };
-
-  Popover.prototype.refresh = function(position) {
-    var editorOffset, left, maxLeft, targetH, targetOffset, top;
-    if (position == null) {
-      position = 'bottom';
-    }
-    if (!this.active) {
-      return;
-    }
-    editorOffset = this.editor.el.offset();
-    targetOffset = this.target.offset();
-    targetH = this.target.outerHeight();
-    if (position === 'bottom') {
-      top = targetOffset.top - editorOffset.top + targetH;
-    } else if (position === 'top') {
-      top = targetOffset.top - editorOffset.top - this.el.height();
-    }
-    maxLeft = this.editor.wrapper.width() - this.el.outerWidth() - 10;
-    left = Math.min(targetOffset.left - editorOffset.left, maxLeft);
-    return this.el.css({
-      top: top + this.offset.top,
-      left: left + this.offset.left
-    });
-  };
-
-  Popover.prototype.destroy = function() {
-    this.target = null;
-    this.active = false;
-    this.editor.off('.linkpopover');
-    return this.el.remove();
-  };
-
-  Popover.prototype._t = function(name) {
-    var args, ref, result;
-    args = 1 <= arguments.length ? Array.prototype.slice.call(arguments, 0) : [];
-    result = i18n.translate.apply(i18n, args);
-    return result;
-  };
-
-  Wordpad.Popover = Popover;
-
-  return Popover;
-
-	
 });
 define('skylark-widgets-wordpad/ToolButton',[
   "skylark-langx/langx",
@@ -1017,6 +545,768 @@ define('skylark-widgets-wordpad/Toolbar',[
 
   return Toolbar;
 
+});
+define('skylark-widgets-wordpad/uploader',[
+  "skylark-langx/langx",
+  "skylark-domx-query"
+],function(langx,$){ 
+
+  var Uploader = langx.Evented.inherit({
+    init : function() {
+      this.files = [];
+      this.queue = [];
+      this.id = ++Uploader.count;
+      this.on('uploadcomplete', (function(_this) {
+        return function(e, file) {
+          _this.files.splice(langx.inArray(file, _this.files), 1);
+          if (_this.queue.length > 0 && _this.files.length < _this.opts.connectionCount) {
+            return _this.upload(_this.queue.shift());
+          } else {
+            return _this.uploading = false;
+          }
+        };
+      })(this));
+      return $(window).on('beforeunload.uploader-' + this.id, (function(_this) {
+        return function(e) {
+          if (!_this.uploading) {
+            return;
+          }
+          e.originalEvent.returnValue = _this._t('leaveConfirm');
+          return _this._t('leaveConfirm');  
+        };
+      })(this));
+    }
+
+  });
+
+  Uploader.count = 0;
+
+  Uploader.prototype.opts = {
+    url: '',
+    params: null,
+    fileKey: 'upload_file',
+    connectionCount: 3
+  };
+
+
+
+  Uploader.prototype.generateId = (function() {
+    var id;
+    id = 0;
+    return function() {
+      return id += 1;
+    };
+  })();
+
+  Uploader.prototype.upload = function(file, opts) {
+    var f, i, key, len;
+    if (opts == null) {
+      opts = {};
+    }
+    if (file == null) {
+      return;
+    }
+    if (langx.isArray(file) || file instanceof FileList) {
+      for (i = 0, len = file.length; i < len; i++) {
+        f = file[i];
+        this.upload(f, opts);
+      }
+    } else if ($(file).is('input:file')) {
+      key = $(file).attr('name');
+      if (key) {
+        opts.fileKey = key;
+      }
+      this.upload(langx.makeArray($(file)[0].files), opts);
+    } else if (!file.id || !file.obj) {
+      file = this.getFile(file);
+    }
+    if (!(file && file.obj)) {
+      return;
+    }
+    langx.extend(file, opts);
+    if (this.files.length >= this.opts.connectionCount) {
+      this.queue.push(file);
+      return;
+    }
+    if (this.trigger('beforeupload', [file]) === false) {
+      return;
+    }
+    this.files.push(file);
+    this._xhrUpload(file);
+    return this.uploading = true;
+  };
+
+  Uploader.prototype.getFile = function(fileObj) {
+    var name, ref, ref1;
+    if (fileObj instanceof window.File || fileObj instanceof window.Blob) {
+      name = (ref = fileObj.fileName) != null ? ref : fileObj.name;
+    } else {
+      return null;
+    }
+    return {
+      id: this.generateId(),
+      url: this.opts.url,
+      params: this.opts.params,
+      fileKey: this.opts.fileKey,
+      name: name,
+      size: (ref1 = fileObj.fileSize) != null ? ref1 : fileObj.size,
+      ext: name ? name.split('.').pop().toLowerCase() : '',
+      obj: fileObj
+    };
+  };
+
+  Uploader.prototype._xhrUpload = function(file) {
+    var formData, k, ref, v;
+    formData = new FormData();
+    formData.append(file.fileKey, file.obj);
+    formData.append("original_filename", file.name);
+    if (file.params) {
+      ref = file.params;
+      for (k in ref) {
+        v = ref[k];
+        formData.append(k, v);
+      }
+    }
+
+    //TODO
+    return file.xhr = langx.xhr({
+      url: file.url,
+      data: formData,
+      processData: false,
+      contentType: false,
+      type: 'POST',
+      headers: {
+        'X-File-Name': encodeURIComponent(file.name)
+      },
+      xhr: function() {
+        var req;
+        req = $.ajaxSettings.xhr();
+        if (req) {
+          req.upload.onprogress = (function(_this) {
+            return function(e) {
+              return _this.progress(e);
+            };
+          })(this);
+        }
+        return req;
+      },
+      progress: (function(_this) {
+        return function(e) {
+          if (!e.lengthComputable) {
+            return;
+          }
+          return _this.trigger('uploadprogress', [file, e.loaded, e.total]);
+        };
+      })(this),
+      error: (function(_this) {
+        return function(xhr, status, err) {
+          return _this.trigger('uploaderror', [file, xhr, status]);
+        };
+      })(this),
+      success: (function(_this) {
+        return function(result) {
+          _this.trigger('uploadprogress', [file, file.size, file.size]);
+          _this.trigger('uploadsuccess', [file, result]);
+          return $(document).trigger('uploadsuccess', [file, result, _this]);
+        };
+      })(this),
+      complete: (function(_this) {
+        return function(xhr, status) {
+          return _this.trigger('uploadcomplete', [file, xhr.responseText]);
+        };
+      })(this)
+    });
+  };
+
+  Uploader.prototype.cancel = function(file) {
+    var f, i, len, ref;
+    if (!file.id) {
+      ref = this.files;
+      for (i = 0, len = ref.length; i < len; i++) {
+        f = ref[i];
+        if (f.id === file * 1) {
+          file = f;
+          break;
+        }
+      }
+    }
+    this.trigger('uploadcancel', [file]);
+    if (file.xhr) {
+      file.xhr.abort();
+    }
+    return file.xhr = null;
+  };
+
+  Uploader.prototype.readImageFile = function(fileObj, callback) {
+    var fileReader, img;
+    if (!langx.isFunction(callback)) {
+      return;
+    }
+    img = new Image();
+    img.onload = function() {
+      return callback(img);
+    };
+    img.onerror = function() {
+      return callback();
+    };
+    if (window.FileReader && FileReader.prototype.readAsDataURL && /^image/.test(fileObj.type)) {
+      fileReader = new FileReader();
+      fileReader.onload = function(e) {
+        return img.src = e.target.result;
+      };
+      return fileReader.readAsDataURL(fileObj);
+    } else {
+      return callback();
+    }
+  };
+
+  Uploader.prototype.destroy = function() {
+    var file, i, len, ref;
+    this.queue.length = 0;
+    ref = this.files;
+    for (i = 0, len = ref.length; i < len; i++) {
+      file = ref[i];
+      this.cancel(file);
+    }
+    $(window).off('.uploader-' + this.id);
+    return $(document).off('.uploader-' + this.id);
+  };
+
+  Uploader.i18n = {
+    'zh-CN': {
+      leaveConfirm: '正在上传文件，如果离开上传会自动取消'
+    }
+  };
+
+  Uploader.locale = 'zh-CN';
+
+  return  function(opts) {
+    return new Uploader(opts);
+  };
+
+});
+
+define('skylark-widgets-wordpad/Wordpad',[
+  "skylark-langx/skylark",
+  "skylark-langx/langx",
+  "skylark-domx-query",
+  "skylark-domx-contents/Editable",
+  "skylark-widgets-base/Widget",
+  "./Toolbar",
+  "./uploader",
+  "./i18n",
+  "./addons"
+
+],function(skylark,langx, $, Editable,Widget,Toolbar,uploader,i18n,addons){ 
+
+  var Wordpad = Widget.inherit({
+      options : {
+        srcNodeRef: null,
+        placeholder: '',
+        defaultImage: 'images/image.png',
+        params: {},
+        upload: false,
+        template : "<div class=\"wordpad\">\n  <div class=\"wordpad-wrapper\">\n    <div class=\"wordpad-placeholder\"></div>\n    <div class=\"wordpad-body\" contenteditable=\"true\">\n    </div>\n  </div>\n</div>"
+      },
+
+
+    _init : function() {
+      this._actions = [];
+
+      //this.opts = langx.extend({}, this.opts, opts);
+      this.opts = this.options;
+
+      var e, editor, uploadOpts;
+      this.textarea = $(this.opts.srcNodeRef);
+
+      this.opts.placeholder = this.opts.placeholder || this.textarea.attr('placeholder');
+
+      if (!this.textarea.length) {
+        throw new Error('Wordpad: param textarea is required.');
+        return;
+      }
+
+      editor = this.textarea.data('wordpad');
+      if (editor != null) {
+        editor.destroy();
+      }
+      this.id = ++Wordpad.count;
+      this._render();
+
+
+      var self = this;
+      this.editable = new Editable(this._elm,{
+        classPrefix : "wordpad-",
+        textarea : this.textarea,
+        body : this.body
+      });
+
+      // TODO
+      this.editable.on("all",function(e,data){
+        return self.trigger(e.type,data);
+      });
+
+      if (this.opts.upload && uploader) {
+        uploadOpts = typeof this.opts.upload === 'object' ? this.opts.upload : {};
+        this.uploader = uploader(uploadOpts);
+      }
+
+      this.toolbar = new Toolbar(this,{
+        toolbar: this.opts.toolbar,
+        toolbarFloat:  this.opts.toolbarFloat,
+        toolbarHidden:  this.opts.toolbarHidden,
+        toolbarFloatOffset:  this.opts.toolbarFloatOffset
+
+      });
+
+      if (this.opts.placeholder) {
+        this.on('valuechanged', function() {
+          return self._placeholder();
+        });
+      }
+      this.setValue(this.textarea.val().trim() || '');
+      if (this.textarea.attr('autofocus')) {
+        return self.focus();
+      }
+
+
+    }
+  });
+
+  Wordpad.prototype.triggerHandler =  Wordpad.prototype.trigger = function(type,data) {
+    var args, ref;
+    args = [type];
+    if (data) {
+      args = args.concat(data);
+    }
+    langx.Evented.prototype.trigger.apply(this, args);
+    return this;
+  };
+
+
+  //Wordpad.connect(Util);
+
+  //Wordpad.connect(InputManager);
+
+  //Wordpad.connect(Selection);
+
+  //Wordpad.connect(UndoManager);
+
+  //Wordpad.connect(Keystroke);
+
+  //Wordpad.connect(Formatter);
+
+  //Wordpad.connect(Toolbar);
+
+  //Wordpad.connect(Indentation);
+
+  //Wordpad.connect(Clipboard);
+
+  Wordpad.count = 0;
+
+
+  Wordpad.prototype._render = function() {
+    var key, ref, results, val;
+
+    //this.el = $(this._tpl).insertBefore(this.textarea);
+    this.el = $(this._elm).insertBefore (this.textarea);
+
+    this.wrapper = this.el.find('.wordpad-wrapper');
+    this.body = this.wrapper.find('.wordpad-body');
+    this.placeholderEl = this.wrapper.find('.wordpad-placeholder').append(this.opts.placeholder);
+    this.el.data('wordpad', this);
+    this.wrapper.append(this.textarea);
+    this.textarea.data('wordpad', this).blur();
+    this.body.attr('tabindex', this.textarea.attr('tabindex'));
+
+    if (this.opts.params) {
+      ref = this.opts.params;
+      results = [];
+      for (key in ref) {
+        val = ref[key];
+        results.push($('<input/>', {
+          type: 'hidden',
+          name: key,
+          value: val
+        }).insertAfter(this.textarea));
+      }
+      return results;
+    }
+  };
+
+  Wordpad.prototype._placeholder = function() {
+    var children;
+    children = this.body.children();
+    if (children.length === 0 || (children.length === 1 && this.util.isEmptyNode(children) && parseInt(children.css('margin-left') || 0) < this.opts.indentWidth)) {
+      return this.placeholderEl.show();
+    } else {
+      return this.placeholderEl.hide();
+    }
+  };
+
+  Wordpad.prototype.setValue = function(val) {
+    this.hidePopover();
+
+    this.editable.setValue(val);
+
+    return this.trigger('valuechanged');
+  };
+
+  Wordpad.prototype.getValue = function() {
+    return this.editable.getValue();
+  };
+
+  Wordpad.prototype.focus = function() {
+    return this.editable.focus();
+  };
+
+  Wordpad.prototype.blur = function() {
+    return this.editable.blur();
+  };
+
+  Wordpad.prototype.findAction = function(name) {
+    if (!this._actions[name]) {
+      if (!this.constructor.addons.actions[name]) {
+        throw new Error("Wordpad: invalid action " + name);
+      }
+
+      this._actions[name] = new this.constructor.addons.actions[name]({
+        editor: this
+      });
+
+    }
+
+    return this._actions[name];
+  };
+
+  Wordpad.prototype.hidePopover = function() {
+    return this.el.find('.wordpad-popover').each(function(i, popover) {
+      popover = $(popover).data('popover');
+      if (popover.active) {
+        return popover.hide();
+      }
+    });
+  };
+
+  Wordpad.prototype.destroy = function() {
+    this.trigger('destroy');
+    this.textarea.closest('form').off('.Wordpad .wordpad-' + this.id);
+    this.selection.clear();
+    this.inputManager.focused = false;
+    this.textarea.insertBefore(this.el).hide().val('').removeData('wordpad');
+    this.el.remove();
+    $(document).off('.wordpad-' + this.id);
+    $(window).off('.wordpad-' + this.id);
+    return this.off();
+  };
+
+
+  Wordpad.Toolbar = Toolbar;
+
+  Wordpad.i18n = i18n;
+
+  Wordpad.addons = addons;
+
+
+  return skylark.attach("widgets.Wordpad",Wordpad);
+
+});
+
+define('skylark-widgets-wordpad/Action',[
+  "skylark-langx/langx",
+  "skylark-widgets-base/Action",
+  "./Wordpad",
+  "./i18n"
+],function(langx, _Action, Wordpad,i18n){ 
+  var slice = [].slice;
+
+  var Action = _Action.inherit( {
+    htmlTag : '',
+
+    disableTag : '',
+
+    menu : false,
+
+    active : {
+      get : function() {
+        return this.state.get("active");
+      },
+
+      set : function(value) {
+        return this.state.set("active",value);
+
+      }
+
+    },
+
+    disabled : {
+      get : function() {
+        return this.state.get("disabled");
+      },
+
+      set : function(value) {
+        return this.state.set("disabled",value);
+
+      }
+    },
+
+    needFocus : true,
+
+    _construct  : function(opts) {
+      _Action.prototype._construct.apply(this,arguments);
+      //this.toolbar = opts.toolbar;
+      //this.editor = this.toolbar.editor;
+      this.title = i18n.translate(this.name);
+
+      var _this = this;
+
+      this.editor.on('blur', function() {
+        var editorActive;
+        editorActive = _this.editor.body.is(':visible') && _this.editor.body.is('[contenteditable]');
+        if (!(editorActive && !_this.editor.editable.clipboard.pasting)) {
+          return;
+        }
+        _this.setActive(false);
+        return _this.setDisabled(false);
+      });
+
+      if (this.shortcut != null) {
+        this.editor.editable.hotkeys.add(this.shortcut, function(e) {
+          //_this.el.mousedown();
+          _this.execute();
+          return false;
+        });
+      }
+
+      var ref = this.htmlTag.split(',');
+      for (k = 0, len = ref.length; k < len; k++) {
+        tag = ref[k];
+        tag = langx.trim(tag);
+        if (tag && langx.inArray(tag, this.editor.editable.formatter._allowedTags) < 0) {
+          this.editor.editable.formatter._allowedTags.push(tag);
+        }
+      }
+      this.editor.on('selectionchanged', function(e) {
+        if (_this.editor.editable.inputManager.focused) {
+          return _this._status();
+        }
+      });
+
+      this._init();
+    },
+
+    _init : function() {
+
+
+    },
+
+    _disableStatus : function() {
+      var disabled, endNodes, startNodes;
+      startNodes = this.editor.editable.selection.startNodes();
+      endNodes = this.editor.editable.selection.endNodes();
+      disabled = startNodes.filter(this.disableTag).length > 0 || endNodes.filter(this.disableTag).length > 0;
+      this.setDisabled(disabled);
+      if (this.disabled) {
+        this.setActive(false);
+      }
+      return this.disabled;
+    },
+
+    _activeStatus : function() {
+      var active, endNode, endNodes, startNode, startNodes;
+      startNodes = this.editor.editable.selection.startNodes();
+      endNodes = this.editor.editable.selection.endNodes();
+      startNode = startNodes.filter(this.htmlTag);
+      endNode = endNodes.filter(this.htmlTag);
+      active = startNode.length > 0 && endNode.length > 0 && startNode.is(endNode);
+      this.node = active ? startNode : null;
+      this.setActive(active);
+      return this.active;
+    },
+
+    _status : function() {
+      this._disableStatus();
+      if (this.disabled) {
+        return;
+      }
+      return this._activeStatus();
+    },
+
+    setActive : function(active) {
+      if (active === this.active) {
+        return;
+      }
+      this.active = active;
+    },
+
+    setDisabled : function(disabled) {
+      if (disabled === this.disabled) {
+        return;
+      }
+      this.disabled = disabled;
+    }
+  }); 
+
+
+  Action.prototype._t = i18n.translate;
+
+
+  return Action;
+
+});
+define('skylark-widgets-wordpad/Popover',[
+  "skylark-langx/langx",
+  "skylark-domx-query",
+  "./Wordpad",
+  "./i18n"
+],function(langx,$,Wordpad,i18n){ 
+
+  var Popover = langx.Evented.inherit({
+     init : function(opts) {
+      this.action = opts.action;
+      this.editor = opts.action.editor;
+      this._init();
+    }
+  });
+
+
+  Popover.prototype.offset = {
+    top: 4,
+    left: 0
+  };
+
+  Popover.prototype.target = null;
+
+  Popover.prototype.active = false;
+
+  Popover.prototype._init = function() {
+    this.el = $('<div class="wordpad-popover"></div>').appendTo(this.editor.el).data('popover', this);
+    this.render();
+    this.el.on('mouseenter', (function(_this) {
+      return function(e) {
+        return _this.el.addClass('hover');
+      };
+    })(this));
+    return this.el.on('mouseleave', (function(_this) {
+      return function(e) {
+        return _this.el.removeClass('hover');
+      };
+    })(this));
+  };
+
+  Popover.prototype.render = function() {};
+
+  Popover.prototype._initLabelWidth = function() {
+    var $fields;
+    $fields = this.el.find('.settings-field');
+    if (!($fields.length > 0)) {
+      return;
+    }
+    this._labelWidth = 0;
+    $fields.each((function(_this) {
+      return function(i, field) {
+        var $field, $label;
+        $field = $(field);
+        $label = $field.find('label');
+        if (!($label.length > 0)) {
+          return;
+        }
+        return _this._labelWidth = Math.max(_this._labelWidth, $label.width());
+      };
+    })(this));
+    return $fields.find('label').width(this._labelWidth);
+  };
+
+  Popover.prototype.show = function($target, position) {
+    if (position == null) {
+      position = 'bottom';
+    }
+    if ($target == null) {
+      return;
+    }
+    this.el.siblings('.wordpad-popover').each(function(i, popover) {
+      popover = $(popover).data('popover');
+      if (popover.active) {
+        return popover.hide();
+      }
+    });
+    if (this.active && this.target) {
+      this.target.removeClass('selected');
+    }
+    this.target = $target.addClass('selected');
+    if (this.active) {
+      this.refresh(position);
+      return this.trigger('popovershow');
+    } else {
+      this.active = true;
+      this.el.css({
+        left: -9999
+      }).show();
+      if (!this._labelWidth) {
+        this._initLabelWidth();
+      }
+      this.editor.editable.util.reflow();
+      this.refresh(position);
+      return this.trigger('popovershow');
+    }
+  };
+
+  Popover.prototype.hide = function() {
+    if (!this.active) {
+      return;
+    }
+    if (this.target) {
+      this.target.removeClass('selected');
+    }
+    this.target = null;
+    this.active = false;
+    this.el.hide();
+    return this.trigger('popoverhide');
+  };
+
+  Popover.prototype.refresh = function(position) {
+    var editorOffset, left, maxLeft, targetH, targetOffset, top;
+    if (position == null) {
+      position = 'bottom';
+    }
+    if (!this.active) {
+      return;
+    }
+    editorOffset = this.editor.el.offset();
+    targetOffset = this.target.offset();
+    targetH = this.target.outerHeight();
+    if (position === 'bottom') {
+      top = targetOffset.top - editorOffset.top + targetH;
+    } else if (position === 'top') {
+      top = targetOffset.top - editorOffset.top - this.el.height();
+    }
+    maxLeft = this.editor.wrapper.width() - this.el.outerWidth() - 10;
+    left = Math.min(targetOffset.left - editorOffset.left, maxLeft);
+    return this.el.css({
+      top: top + this.offset.top,
+      left: left + this.offset.left
+    });
+  };
+
+  Popover.prototype.destroy = function() {
+    this.target = null;
+    this.active = false;
+    this.editor.off('.linkpopover');
+    return this.el.remove();
+  };
+
+  Popover.prototype._t = function(name) {
+    var args, ref, result;
+    args = 1 <= arguments.length ? Array.prototype.slice.call(arguments, 0) : [];
+    result = i18n.translate.apply(i18n, args);
+    return result;
+  };
+
+  Wordpad.Popover = Popover;
+
+  return Popover;
+
+	
 });
 define('skylark-widgets-wordpad/addons/actions/AlignmentAction',[
   "skylark-domx-query",

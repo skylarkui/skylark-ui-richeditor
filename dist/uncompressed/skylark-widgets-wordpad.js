@@ -223,9 +223,8 @@ define('skylark-widgets-wordpad/ToolButton',[
   "skylark-langx/langx",
   "skylark-domx-query",
   "skylark-widgets-base/Widget",
-  "./Wordpad",
   "./i18n"
-],function(langx, $, Widget, Wordpad,i18n){ 
+],function(langx, $, Widget, i18n){ 
   var slice = [].slice;
 
   var ToolButton = Widget.inherit( {

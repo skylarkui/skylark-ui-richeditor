@@ -14435,8 +14435,10 @@ define('skylark-widgets-base/Widget',[
     },
 
     emit : function(type,params) {
-      var e = langx.Emitter.createEvent(type,params);
-      return langx.Emitter.prototype.emit.call(this,e);
+      var e = langx.Emitter.createEvent(type,{
+        data : params
+      });
+      return langx.Emitter.prototype.emit.call(this,e,params);
     },
 
     /**
@@ -14782,9 +14784,8 @@ define('skylark-widgets-wordpad/ToolButton',[
   "skylark-langx/langx",
   "skylark-domx-query",
   "skylark-widgets-base/Widget",
-  "./Wordpad",
   "./i18n"
-],function(langx, $, Widget, Wordpad,i18n){ 
+],function(langx, $, Widget, i18n){ 
   var slice = [].slice;
 
   var ToolButton = Widget.inherit( {

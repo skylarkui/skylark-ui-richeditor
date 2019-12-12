@@ -99,7 +99,11 @@ define([
 
     iconClassOf : function(icon) {
       if (icon) {
-        return "wordpad-icon wordpad-icon-" + icon;
+        if (this.editor.options.classes.icons[icon]) {
+          return this.editor.options.classes.icons[icon];
+        } else {
+          return "wordpad-icon wordpad-icon-" + icon;
+        }
       } else {
         return '';
       }

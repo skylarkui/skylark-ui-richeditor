@@ -9,7 +9,7 @@ define([
    var ImageAction = Action.inherit({
       name : 'image',
 
-      icon : 'picture-o',
+      icon : 'image',
 
       htmlTag : 'img',
 

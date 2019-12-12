@@ -22,8 +22,8 @@ define([
             bold : "fa fa-bold",
             italic : "fa fa-italic",
             underline: "fa fa-underline",
-            strike : "fa fa-strikethrough",
-            fontSize : "fa fa-text-height",
+            strikethrough : "fa fa-strikethrough",
+            fontScale: "fa fa-text-height",
             fontColor: "fa fa-font",
             mark : "fa fa-pencil",
 
@@ -37,11 +37,12 @@ define([
 
             emoji: "fa fa-smile-o",
             link : "fa fa-link",
-            image: "fa fa-image",
+            image: "fa fa-picture-o",
             video: "fa fa-video-camera",
+            hr: "fa fa-minus",
 
             indent: "fa fa-indent",
-            dedent: "fa fa-dedent",
+            outdent: "fa fa-dedent",
             alignLeft: "fa fa-align-left",
             alignCenter: "fa fa-align-center",
             alignRight: "fa fa-align-right",

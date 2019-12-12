@@ -1,7 +1,0 @@
-.wordpad.wordpad-html .wordpad-wrapper > textarea {
-  display: block !important;
-}
-.wordpad.wordpad-html .wordpad-body,
-.wordpad.wordpad-html .wordpad-placeholder {
-  display: none;
-}

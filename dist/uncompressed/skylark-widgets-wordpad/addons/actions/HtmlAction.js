@@ -10,7 +10,7 @@ define([
    var HtmlAction = Action.inherit({
     name : 'html',
 
-    icon : 'html5',
+    icon : 'html',
 
     needFocus : false,
 

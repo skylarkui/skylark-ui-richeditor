@@ -9,6 +9,8 @@ define([
   var FullScrennAction = Action.inherit({
     name : 'fullscreen',
 
+    icon : "fullscreen",
+
     needFocus : false,
 
     _init : function() {
@@ -17,10 +19,6 @@ define([
       this.window = $(window);
       this.body = $('body');
       this.editable = this.editor.body;
-    },
-
-    iconClassOf : function() {
-      return 'icon-fullscreen';
     },
 
 
@@ -37,7 +35,7 @@ define([
         this.window.on("resize.wordpad-fullscreen-" + this.editor.id, (function(_this) {
           return function() {
             return _this._resize({
-              height: _this.window.height() - _this.editor.toolbar.outerHeight() - editablePadding
+              height: _this.window.height() - $(_this.editor.toolbar._elm).outerHeight() - editablePadding
             });
           };
         })(this)).resize();

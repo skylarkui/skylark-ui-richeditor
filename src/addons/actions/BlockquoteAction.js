@@ -6,7 +6,7 @@ define([
    var BlockquoteAction = Action.inherit({
       name : 'blockquote',
 
-      icon : 'quote-left',
+      icon : 'blockquote',
 
       htmlTag : 'blockquote',
 

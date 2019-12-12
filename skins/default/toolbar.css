@@ -3,12 +3,6 @@
   line-height: normal;
 }
 
-.wordpad .lark-toolbar > ul > li > .toolbar-item.toolbar-item-title span:before {
-  content: "H";
-  font-size: 19px;
-  font-weight: bold;
-  font-family: 'Times New Roman';
-}
 .wordpad .lark-toolbar > ul > li > .toolbar-item.toolbar-item-title.active-h1 span:before {
   content: 'H1';
   font-size: 18px;

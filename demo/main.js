@@ -183,17 +183,23 @@ require.config({
          },
          {
            name : "skylark-widgets-base",
-           location : "../../skylark-widgets-base/src",
-            main: 'main'
+           location : "../node_modules/skylark-widgets-base/dist/uncompressed/skylark-widgets-base",
+          //location : "../../skylark-widgets-base/src",
+           main: 'main'
          },
          {
            name : "skylark-widgets-swt",
-           location : "../../skylark-widgets-swt/src",
-            main: 'main'
+           location : "../node_modules/skylark-widgets-swt/dist/uncompressed/skylark-widgets-swt",
+           //location : "../../skylark-widgets-swt/src",
+           main: 'main'
          },
-     { name: "skylark-langx", location: "../node_modules/skylark-langx/dist/uncompressed/skylark-langx" },
-     { name: "skylark-domx-contents", location: "../../../domx/skylark-domx-contents/src"},
-     { name: "skylark-widgets-wordpad", location: "../src" }
+        { name: "skylark-langx", location: "../node_modules/skylark-langx/dist/uncompressed/skylark-langx" },
+        { 
+          name: "skylark-domx-contents", 
+          location : "../node_modules/skylark-domx-contents/dist/uncompressed/skylark-domx-contents"
+          //location: "../../../domx/skylark-domx-contents/src"
+        },
+        { name: "skylark-widgets-wordpad", location: "../src" }
   ],
 });
  

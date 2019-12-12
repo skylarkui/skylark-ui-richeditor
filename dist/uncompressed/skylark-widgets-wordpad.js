@@ -800,6 +800,42 @@ define('skylark-widgets-wordpad/Wordpad',[
 
   var Wordpad = Widget.inherit({
       options : {
+        classes : {
+          icons : {
+            html : "fa fa-html5",
+            
+            header: "fa fa-header",
+
+            bold : "fa fa-bold",
+            italic : "fa fa-italic",
+            underline: "fa fa-underline",
+            strike : "fa fa-strikethrough",
+            fontSize : "fa fa-text-height",
+            fontColor: "fa fa-font",
+            mark : "fa fa-pencil",
+
+            blockquote: "fa fa-quote-right",
+            listul : "fa fa-list-ul",
+            listol : "fa fa-list-ol",
+            code: "fa fa-code",
+            table : "fa fa-table",
+
+            fullscreen : "fa fa-expand",
+
+            emoji: "fa fa-smile-o",
+            link : "fa fa-link",
+            image: "fa fa-image",
+            video: "fa fa-video-camera",
+
+            indent: "fa fa-indent",
+            dedent: "fa fa-dedent",
+            alignLeft: "fa fa-align-left",
+            alignCenter: "fa fa-align-center",
+            alignRight: "fa fa-align-right",
+            alignJustify: "fa fa-align-justify",
+
+          }
+        },
         srcNodeRef: null,
         placeholder: '',
         defaultImage: 'images/image.png',
@@ -2338,7 +2374,17 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
             });
           };
         })(this));
+
+        this.popover = new ImagePopover({
+          action: this
+        });
+        if (this.editor.opts.imageAction === 'upload') {
+          return this._initUploader(this.el);
+        }
+
         return Action.prototype._init.call(this);
+
+
       },
 
       render : function() {
@@ -2346,7 +2392,7 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
         args = 1 <= arguments.length ? Array.prototype.slice.call(arguments, 0) : [];
         Action.prototype.render.apply(this, args);
         this.popover = new ImagePopover({
-          Action: this
+          action: this
         });
         if (this.editor.opts.imageAction === 'upload') {
           return this._initUploader(this.el);

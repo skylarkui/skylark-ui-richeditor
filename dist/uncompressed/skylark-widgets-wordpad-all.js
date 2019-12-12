@@ -8645,12 +8645,12 @@ define('skylark-domx-contents/Keystroke',[
           return true;
         }
         $blockEl = _this.editable.selection.blockNodes().last();
-        if ($blockEl.is('.' + this.opts.classPrefix + 'resize-handle') && $rootBlock.is('.' + this.opts.classPrefix + 'table')) {
+        if ($blockEl.is('.' + _this.opts.classPrefix + 'resize-handle') && $rootBlock.is('.' + _this.opts.classPrefix + 'table')) {
           e.preventDefault();
           $rootBlock.remove();
           _this.editable.selection.setRangeAtEndOf($prevBlockEl);
         }
-        if ($prevBlockEl.is('.' + this.opts.classPrefix + 'table') && !$blockEl.is('table') && _this.editable.util.isEmptyNode($blockEl)) {
+        if ($prevBlockEl.is('.' + _this.opts.classPrefix + 'table') && !$blockEl.is('table') && _this.editable.util.isEmptyNode($blockEl)) {
           e.preventDefault();
           $blockEl.remove();
           _this.editable.selection.setRangeAtEndOf($prevBlockEl);
@@ -8667,9 +8667,9 @@ define('skylark-domx-contents/Keystroke',[
     this.add('enter', 'div', (function(_this) {
       return function(e, $node) {
         var $blockEl, $p;
-        if ($node.is('.' + this.opts.classPrefix + 'table')) {
+        if ($node.is('.' + _this.opts.classPrefix + 'table')) {
           $blockEl = _this.editable.selection.blockNodes().last();
-          if ($blockEl.is('.' + this.opts.classPrefix + 'resize-handle')) {
+          if ($blockEl.is('.' + _this.opts.classPrefix + 'resize-handle')) {
             e.preventDefault();
             $p = $('<p/>').append(_this.editable.util.phBr).insertAfter($node);
             return _this.editable.selection.setRangeAtStartOf($p);
@@ -10058,6 +10058,9 @@ define('skylark-domx-contents/Editable',[
 
 	// toggle
 	title : function(param,disableTag) {
+		document.execCommand('formatBlock', false, param);
+
+		/*
 	    var $rootNodes;
 	    $rootNodes = this.selection.rootNodes();
 	    this.selection.save();
@@ -10072,6 +10075,7 @@ define('skylark-domx-contents/Editable',[
 	      };
 	    })(this));
 	    this.selection.restore();
+	    */
 	    return this.trigger('valuechanged');
 
 	}
@@ -13442,50 +13446,6 @@ define('skylark-domx-plugins/plugins',[
         return pluginInstance;
     }
 
-    function shortcutter(pluginName,extfn) {
-       /*
-        * Create or get or destory a plugin instance assocated with the element,
-        * and also you can execute the plugin method directory;
-        */
-        return function (elm,options) {
-            var  plugin = instantiate(elm, pluginName,"instance");
-            if ( options === "instance" ) {
-              return plugin || null;
-            }
-            if (!plugin) {
-                plugin = instantiate(elm, pluginName,typeof options == 'object' && options || {});
-                return this;
-            } else  if (options) {
-                var args = slice.call(arguments,1); //2
-                if (extfn) {
-                    var ret =  extfn.apply(plugin,args);
-                    if (ret === undefined) {
-                        ret = this;
-                    }
-                    return ret;
-                } else {
-                    if (typeof options == 'string') {
-                        var methodName = options;
-
-                        if ( !plugin ) {
-                            throw new Error( "cannot call methods on " + pluginName +
-                                " prior to initialization; " +
-                                "attempted to call method '" + methodName + "'" );
-                        }
-
-                        if ( !langx.isFunction( plugin[ methodName ] ) || methodName.charAt( 0 ) === "_" ) {
-                            throw new Error( "no such method '" + methodName + "' for " + pluginName +
-                                " plugin instance" );
-                        }
-
-                        return plugin[methodName].apply(plugin,args);
-                    }                
-                }                
-            }
-
-        }
-
-    }
 
     function shortcutter(pluginName,extfn) {
        /*
@@ -13497,9 +13457,14 @@ define('skylark-domx-plugins/plugins',[
             if ( options === "instance" ) {
               return plugin || null;
             }
+
             if (!plugin) {
                 plugin = instantiate(elm, pluginName,typeof options == 'object' && options || {});
-            } else  if (options) {
+                if (typeof options != "string") {
+                  return this;
+                }
+            } 
+            if (options) {
                 var args = slice.call(arguments,1); //2
                 if (extfn) {
                     return extfn.apply(plugin,args);
@@ -13556,7 +13521,7 @@ define('skylark-domx-plugins/plugins',[
                   this.each(function () {
                     var args2 = slice.call(args);
                     args2.unshift(this);
-                    var  ret  = shortcut.apply(null,args2);
+                    var  ret  = shortcut.apply(undefined,args2);
                     if (ret !== undefined) {
                         returnValue = ret;
                         return false;
@@ -15361,6 +15326,42 @@ define('skylark-widgets-wordpad/Wordpad',[
 
   var Wordpad = Widget.inherit({
       options : {
+        classes : {
+          icons : {
+            html : "fa fa-html5",
+            
+            header: "fa fa-header",
+
+            bold : "fa fa-bold",
+            italic : "fa fa-italic",
+            underline: "fa fa-underline",
+            strike : "fa fa-strikethrough",
+            fontSize : "fa fa-text-height",
+            fontColor: "fa fa-font",
+            mark : "fa fa-pencil",
+
+            blockquote: "fa fa-quote-right",
+            listul : "fa fa-list-ul",
+            listol : "fa fa-list-ol",
+            code: "fa fa-code",
+            table : "fa fa-table",
+
+            fullscreen : "fa fa-expand",
+
+            emoji: "fa fa-smile-o",
+            link : "fa fa-link",
+            image: "fa fa-image",
+            video: "fa fa-video-camera",
+
+            indent: "fa fa-indent",
+            dedent: "fa fa-dedent",
+            alignLeft: "fa fa-align-left",
+            alignCenter: "fa fa-align-center",
+            alignRight: "fa fa-align-right",
+            alignJustify: "fa fa-align-justify",
+
+          }
+        },
         srcNodeRef: null,
         placeholder: '',
         defaultImage: 'images/image.png',
@@ -16990,7 +16991,17 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
             });
           };
         })(this));
+
+        this.popover = new ImagePopover({
+          action: this
+        });
+        if (this.editor.opts.imageAction === 'upload') {
+          return this._initUploader(this.el);
+        }
+
         return Action.prototype._init.call(this);
+
+
       },
 
       render : function() {
@@ -16998,7 +17009,7 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
         args = 1 <= arguments.length ? Array.prototype.slice.call(arguments, 0) : [];
         Action.prototype.render.apply(this, args);
         this.popover = new ImagePopover({
-          Action: this
+          action: this
         });
         if (this.editor.opts.imageAction === 'upload') {
           return this._initUploader(this.el);

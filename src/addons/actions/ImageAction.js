@@ -117,7 +117,17 @@ define([
             });
           };
         })(this));
+
+        this.popover = new ImagePopover({
+          action: this
+        });
+        if (this.editor.opts.imageAction === 'upload') {
+          return this._initUploader(this.el);
+        }
+
         return Action.prototype._init.call(this);
+
+
       },
 
       render : function() {
@@ -125,7 +135,7 @@ define([
         args = 1 <= arguments.length ? Array.prototype.slice.call(arguments, 0) : [];
         Action.prototype.render.apply(this, args);
         this.popover = new ImagePopover({
-          Action: this
+          action: this
         });
         if (this.editor.opts.imageAction === 'upload') {
           return this._initUploader(this.el);

@@ -196,8 +196,8 @@ require.config({
         { name: "skylark-langx", location: "../node_modules/skylark-langx/dist/uncompressed/skylark-langx" },
         { 
           name: "skylark-domx-contents", 
-          location : "../node_modules/skylark-domx-contents/dist/uncompressed/skylark-domx-contents"
-          //location: "../../../domx/skylark-domx-contents/src"
+          //location : "../node_modules/skylark-domx-contents/dist/uncompressed/skylark-domx-contents"
+          location: "../../../domx/skylark-domx-contents/src"
         },
         { name: "skylark-widgets-wordpad", location: "../src" }
   ],

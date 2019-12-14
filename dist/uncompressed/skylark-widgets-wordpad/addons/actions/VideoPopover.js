@@ -61,8 +61,8 @@ define([
       args = 1 <= arguments.length ? Array.prototype.slice.call(arguments, 0) : [];
       Popover.prototype.show.apply(this, args);
       $video = arguments[0] || this.target;
-      this.width = $video.attr('width') || $video.width();
-      this.height = $video.attr('height') || $video.height();
+      this.width = $video.attr('data-width') || $video.width();
+      this.height = $video.attr('data-height') || $video.height();
       if ($video.attr('data-link')) {
         videoData = {
           link: $video.attr('data-link'),
@@ -70,7 +70,7 @@ define([
           width: this.width,
           height: this.height
         };
-        this.src = this.action.parseVideo(videoData);
+        this.src = videoData.link;
       }
       this.widthEl.val(this.width);
       this.heightEl.val(this.height);

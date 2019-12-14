@@ -3702,8 +3702,8 @@ define('skylark-widgets-wordpad/addons/actions/VideoPopover',[
       args = 1 <= arguments.length ? Array.prototype.slice.call(arguments, 0) : [];
       Popover.prototype.show.apply(this, args);
       $video = arguments[0] || this.target;
-      this.width = $video.attr('width') || $video.width();
-      this.height = $video.attr('height') || $video.height();
+      this.width = $video.attr('data-width') || $video.width();
+      this.height = $video.attr('data-height') || $video.height();
       if ($video.attr('data-link')) {
         videoData = {
           link: $video.attr('data-link'),
@@ -3711,7 +3711,7 @@ define('skylark-widgets-wordpad/addons/actions/VideoPopover',[
           width: this.width,
           height: this.height
         };
-        this.src = this.action.parseVideo(videoData);
+        this.src = videoData.link;
       }
       this.widthEl.val(this.width);
       this.heightEl.val(this.height);
@@ -3730,7 +3730,9 @@ define('skylark-widgets-wordpad/addons/actions/VideoAction',[
   "../../Action",
   "./VideoPopover"
 ],function(langx,$,addons,Action,VideoPopover){ 
-  
+   var reUrlYoutube = /https?:\/\/(?:[0-9A-Z-]+\.)?(?:youtu\.be\/|youtube\.com\S*[^\w\-\s])([\w\-]{11})(?=[^\w\-]|$)(?![?=&+%\w.-]*(?:['"][^<>]*>|<\/a>))[?=&+%\w.-]*/ig,
+      reUrlVimeo = /https?:\/\/(www\.)?vimeo.com\/(\d+)($|\/)/;
+
    var VideoAction = Action.inherit({
       name : 'video',
 
@@ -3744,7 +3746,7 @@ define('skylark-widgets-wordpad/addons/actions/VideoAction',[
 
       videoContainerClass : 'video-container',
 
-      videoPoster : 'http://pic.yupoo.com/ccking/ESzA3WGs/svIoz.png',
+      videoPoster : './video_poster.jpg ',
 
       needFocus : true,
 
@@ -3756,6 +3758,7 @@ define('skylark-widgets-wordpad/addons/actions/VideoAction',[
           iframe: ['class', 'width', 'height', 'src', 'frameborder'],
           video: ['class', 'width', 'height', 'poster', 'controls', 'allowfullscreen', 'src', 'data-link', 'data-tag']
         });
+
         $(document).on('click', '.J_UploadVideoBtn', (function(_this) {
           return function(e) {
             var videoData;
@@ -3767,28 +3770,15 @@ define('skylark-widgets-wordpad/addons/actions/VideoAction',[
             $('.video-link').val('');
             $('#video-width').val('');
             $('#video-height').val('');
-            return _this.loadVideo($('.J_UploadVideoBtn').data('videowrap'), videoData, function() {
+            return _this._insert($('.J_UploadVideoBtn').data('videowrap'), videoData, function() {
               return _this.editor.trigger('valuechanged');
             });
           };
         })(this));
-        this.editor.body.on('click', 'video', (function(_this) {
+
+        this.editor.body.on('click', '.wordpad-video-wrapper', (function(_this) {
           return function(e) {
-            var $video, range;
-            $video = $(e.currentTarget);
-            _this.popover.show($video);
-            range = document.createRange();
-            range.selectNode($video[0]);
-            _this.editor.editable.selection.range(range);
-            if (!_this.editor.editable.util.support.onselectionchange) {
-              _this.editor.trigger('selectionchanged');
-            }
-            return false;
-          };
-        })(this));
-        this.editor.body.on('mouseenter', '.wordpad-video .real-video', (function(_this) {
-          return function(e) {
-            var $video = $(e.currentTarget).siblings('video').show();
+            var $video = $(e.currentTarget).find('video,embed,iframe');//siblings('video').show();
             return _this.popover.show($video);
           };
         })(this));
@@ -3805,14 +3795,14 @@ define('skylark-widgets-wordpad/addons/actions/VideoAction',[
         })(this));
         this.editor.on('decorate', (function(_this) {
           return function(e, $el) {
-            return $el.find('video').each(function(i, video) {
+            return $el.find('video,iframe,embed').each(function(i, video) {
               return _this.decorate($(video));
             });
           };
         })(this));
         this.editor.on('undecorate', (function(_this) {
           return function(e, $el) {
-            return $el.find('video').each(function(i, video) {
+            return $el.find('video,iframe,embed').each(function(i, video) {
               return _this.undecorate($(video));
             });
           };
@@ -3826,35 +3816,22 @@ define('skylark-widgets-wordpad/addons/actions/VideoAction',[
 
 
       decorate : function($video) {
-        var videoData, videoSrc;
-        videoData = {
-          tag: $video.attr('data-tag'),
-          link: $video.attr('data-link'),
-          width: $video.attr('width'),
-          height: $video.attr('height')
-        };
-        videoSrc = this.parseVideo(videoData);
-        if ($video.parent('.wordpad-video').length > 0) {
-          this.undecorate($video);
+        if ($video.parent('.wordpad-video-wrapper').length > 0) {
+          return;
         }
-        $video.wrap('<p class="wordpad-video"></p>');
-        $video.parent().prepend(videoSrc);
-        $video.hide();
+        $video.wrap('<figure class="wordpad-video-wrapper"></figure>');
         return $video.parent();
       },
 
       undecorate : function($video) {
-        if (!($video.parent('.wordpad-video').length > 0)) {
+        if (!($video.parent('.wordpad-video-wrapper').length > 0)) {
           return;
         }
-        $video.siblings('.real-video').remove();
         return $video.parent().replaceWith($video);
       },
 
       _execute : function() {
-        var $video, _self;
-        _self = this;
-        $video = this.createVideo();
+        var $video = this._create();
         return this.popover.show($video);
       },
 
@@ -3862,44 +3839,8 @@ define('skylark-widgets-wordpad/addons/actions/VideoAction',[
         return this._disableStatus();
       },
 
-      loadVideo : function($video, videoData, callback) {
-        var e, originNode, realVideo, videoLink, videoTag;
-        if (!videoData.link && !$video.attr('data-link')) {
-          $video.remove();
-        } else {
-          if (!videoData.link) {
-            videoData.link = $video.attr('data-link');
-          }
-          try {
-            originNode = $(videoData.link);
-            videoTag = originNode.get(0).tagName.toLowerCase();
-            videoLink = originNode.attr('src');
-          } catch (_error) {
-            e = _error;
-            videoLink = videoData.link;
-            videoTag = '';
-          }
-          videoData.tag = videoTag;
-          $video.attr({
-            'data-link': videoLink,
-            'data-tag': videoTag,
-            'width': videoData.width || 100,
-            'height': videoData.height || 100
-          });
-          realVideo = $video.siblings('.real-video');
-          if (realVideo.length) {
-            videoData.link = videoLink;
-            realVideo.replaceWith(this.parseVideo(videoData));
-          } else {
-            this.decorate($video);
-          }
-        }
-        this.popover.hide();
-        return callback($video);
-      },
-
-      createVideo : function() {
-        var $videoWrap, range;
+      _create : function() {
+        var $video, range;
         if (!this.editor.editable.inputManager.focused) {
           this.editor.focus();
         }
@@ -3908,31 +3849,54 @@ define('skylark-widgets-wordpad/addons/actions/VideoAction',[
           range.deleteContents();
           this.editor.editable.selection.range(range);
         }
-        $videoWrap = $('<video/>').attr({
+        $video = $('<video/>').attr({
           'poster': this.videoPoster,
-          'width': 100,
-          'height': 100
+          'width': 500,
+          'height': 281,
+          'class' : 'wordpad-video'
         });
-        range.insertNode($videoWrap[0]);
-        this.editor.editable.selection.setRangeAfter($videoWrap, range);
+        range.insertNode($video[0]);
+        this.editor.editable.selection.setRangeAfter($video, range);
         this.editor.trigger('valuechanged');
-        return $videoWrap;
+        this.decorate($video);
+        return $video;
       },
 
-      parseVideo : function(videoData) {
-        var src;
-        switch (videoData.tag) {
-          case 'embed':
-            src = '<embed class="real-video" width=' + videoData.width + ' height= ' + videoData.height + ' src="' + videoData.link + ' "type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" wmode="transparent" loop="false" menu="false" allowscriptaccess="never" allowfullscreen="true">';
-            break;
-          case 'iframe':
-            src = '<iframe class="real-video" width=' + videoData.width + ' height= ' + videoData.height + ' src=" ' + videoData.link + '" frameborder=0 allowfullscreen></iframe>';
-            break;
-          default:
-            src = videoData.link;
-        }
-        return src;
+      _insert : function($video, videoData, callback) {
+        var e, originNode, realVideo, videoLink, videoTag;
+        if (!videoData.link) {
+          this._remove($video);
+        } else {
+          var data = videoData.link;
+          if (!data.match(/<iframe|<video|<embed/gi)) {
+            // parse if it is link on youtube & vimeo
+            var iframeStart = '<iframe style="width: 500px; height: 281px;" src="',
+              iframeEnd = '" frameborder="0" allowfullscreen></iframe>';
 
+            if (data.match(reUrlYoutube))    {
+              data = data.replace(reUrlYoutube, iframeStart + 'https://www.youtube.com/embed/$1' + iframeEnd);
+            } else if (data.match(reUrlVimeo)) {
+              data = data.replace(reUrlVimeo, iframeStart + 'https://player.vimeo.com/video/$2' + iframeEnd);
+            }
+          }
+          var $video1 = $(data).style({
+            width : videoData.width + "px",
+            height : videoData.height + "px"
+          }).attr({
+            "data-link" : videoData.link,
+            "data-width" : videoData.width,
+            "data-height" : videoData.height
+          });
+          
+          $video.replaceWith($video1);
+          $video = $video1;
+        }
+        this.popover.hide();
+        return callback($video);
+      },
+
+      _remove : function($video) {
+        $video.parent().remove();
       }
 
    });

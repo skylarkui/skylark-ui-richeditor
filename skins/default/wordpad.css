@@ -351,3 +351,25 @@
   width: 200px;
 }
 
+
+.wordpad-video-wrapper {
+  position: relative;
+  display: block;
+}
+
+.wordpad-video-wrapper video,.wordpad-video-wrapper iframe,.wordpad-video-wrapper embed{
+  outline: 5px solid rgba(0,125,255,.5);
+}
+
+.wordpad-video {
+  display: block;
+}
+
+.wordpad-video-wrapper:before {
+    width: 100%;
+    height: 100%;
+    content: "";
+    display: block;
+    position: absolute;
+    z-index: 1;
+}

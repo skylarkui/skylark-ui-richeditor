@@ -210,7 +210,7 @@ require([
 //  $(function() {
     var $preview, editor, mobileToolbar, toolbar;
     Wordpad.i18n.locale = 'en-US';
-    toolbar = ['html','|','title', 'bold', 'italic', 'underline', 'strikethrough', 'fontScale', 'color', 'mark','|', 'ol', 'ul', 'blockquote', 'code', 'table', '|', 'emoji','link', 'image', 'hr', '|', 'indent', 'outdent', 'alignment','|','fullscreen'];
+    toolbar = ['html','|','title', 'bold', 'italic', 'underline', 'strikethrough', 'fontScale', 'color', 'mark','|', 'ol', 'ul', 'blockquote', 'code', 'table', '|', 'emoji','link', 'image', 'video','hr', '|', 'indent', 'outdent', 'alignment','|','fullscreen'];
     mobileToolbar = ["bold", "underline", "strikethrough", "color", "ul", "ol"];
     if (mobilecheck()) {
       toolbar = mobileToolbar;

@@ -332,3 +332,22 @@
   margin: 0 5px;
   vertical-align: middle;
 }
+
+.wordpad. .wordpad-body video{
+    width: 100px;
+    height: 100px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+.wordpad .wordpad-body iframe {
+  border: 0 none;
+}
+
+.wordpad .wordpad-popover .settings-field.video-embed-code {
+  height: 62px;
+}  
+.wordpad .wordpad-popover .video-link {
+  height : 60px;
+  width: 200px;
+}
+

@@ -14668,7 +14668,11 @@ define('skylark-widgets-wordpad/i18n',[
         'fontScaleLarge': '大号字体',
         'fontScaleNormal': '正常大小',
         'fontScaleSmall': '小号字体',
-        'fontScaleXSmall': '超小字体'
+        'fontScaleXSmall': '超小字体',
+        "video": "视屏",
+        "videoSize" : "尺寸",
+        "uploadVideoBtn" : "插入",
+        "videoPlaceholder": "视频嵌入代码"
       },
       'en-US': {
         'blockquote': 'Block Quote',
@@ -14721,7 +14725,69 @@ define('skylark-widgets-wordpad/i18n',[
         'fontScaleLarge': 'Large Size',
         'fontScaleNormal': 'Normal Size',
         'fontScaleSmall': 'Small Size',
-        'fontScaleXSmall': 'X Small Size'
+        'fontScaleXSmall': 'X Small Size',
+        "video": "Video",
+        "videoSize" : "Size",
+        "uploadVideoBtn" : "Insert",
+        "videoPlaceholder": "Video Embed Code"
+      },
+
+      'ja' : {
+        'blockquote': 'ブロック引用文',
+        'bold': '太字',
+        'code': 'コードを挿入',
+        'color': 'フォントの色',
+        'coloredText': 'カラー文字',
+        'hr': '水平線',
+        'image': 'イメージを挿入',
+        'externalImage': '外部イメージ',
+        'uploadImage': 'イメージファイルをアップロード',
+        'uploadFailed': 'アップロードが失敗しまいた',
+        'uploadError': 'アップロードエラー',
+        'imageUrl': 'イメージのURL',
+        'imageSize': 'イメージのサイズ',
+        'imageAlt': 'イメージの説明文',
+        'restoreImageSize': 'イメージのサイズを元に戻す',
+        'uploading': 'アップロード中',
+        'indent': 'インデントを増やす',
+        'outdent': 'インデントを減らす',
+        'italic': '斜体',
+        'link': 'リンクを挿入',
+        'linkText': 'リンクテキスト',
+        'linkUrl': 'リンクURL',
+        'linkTarget': 'リンクの表示先を指定',
+        'openLinkInCurrentWindow': '同じウィンドウで開く',
+        'openLinkInNewWindow': '新規ウインドウで開く',
+        'removeLink': 'リンクを削除',
+        'ol': '段落番号',
+        'ul': '箇条書き',
+        'strikethrough': '取消線',
+        'table': 'テーブル',
+        'deleteRow': '行を削除',
+        'insertRowAbove': '上に行を挿入',
+        'insertRowBelow': '下に行を挿入',
+        'deleteColumn': '列を削除',
+        'insertColumnLeft': '左に列を挿入',
+        'insertColumnRight': '右に列を挿入',
+        'deleteTable': 'テーブルを削除',
+        'title': 'タイトル',
+        'normalText': '標準',
+        'underline': '下線',
+        'alignment': '位置',
+        'alignCenter': '中央揃え',
+        'alignLeft': '左揃え',
+        'alignRight': '右揃え',
+        'selectLanguage': '言語を選択',
+        'fontScale': 'フォントのサイズ',
+        'fontScaleXLarge': '超大きいサイズ',
+        'fontScaleLarge': '大きいサイズ',
+        'fontScaleNormal': '通常サイズ',
+        'fontScaleSmall': '小さいサイズ',
+        'fontScaleXSmall': '超小さいサイズ',
+        "video": "ビデオ",
+        "videoSize" : "サイズ",
+        "uploadVideoBtn" : "挿入",
+        "videoPlaceholder": "ビデオ埋め込みコード"
       },
 
       translate : function() {
@@ -18313,7 +18379,6 @@ define('skylark-widgets-wordpad/addons/actions/TableAction',[
 
     },
 
-
     createTable : function(row, col, phBr) {
       return $(tables.createTable(row,col,phBr ? this.editor.editable.util.phBr : null));
     },
@@ -18555,6 +18620,310 @@ define('skylark-widgets-wordpad/addons/actions/UnorderListAction',[
     addons.actions.ul = UnorderListAction;
 
     return UnorderListAction;
+
+});
+define('skylark-widgets-wordpad/addons/actions/VideoPopover',[
+  "skylark-domx-query",
+  "../../addons",
+  "../../Popover"
+],function($,addons,Popover){ 
+  var VideoPopover = Popover.inherit({
+    offset : {
+      top: 6,
+      left: -4
+    },
+
+    _loadVideo : function(videoData, callback) {
+      if (videoData && this.target.attr('src') === videoData.src) {
+        return;
+      }
+      return $('.J_UploadVideoBtn').data('videowrap') && this.action.loadVideo($('.J_UploadVideoBtn').data('videowrap'), videoData, (function(_this) {
+        return function(img) {
+          if (!img) {
+
+          }
+        };
+      })(this));
+    },
+
+    render : function() {
+      var tpl;
+      tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field video-embed-code\">\n    <label>" + (this._t('video')) + "</label>\n    <textarea placeholder=\"" + (this._t('videoPlaceholder')) + "\" type=\"text\" class=\"video-link\" ></textarea>\n  </div><br>\n  <div class=\"settings-field\">\n    <label>" + (this._t('videoSize')) + "</label>\n    <input class=\"image-size video-size\" id=\"video-width\" type=\"text\" tabindex=\"2\" />\n    <span class=\"times\">×</span>\n    <input class=\"image-size video-size\" id=\"video-height\" type=\"text\" tabindex=\"3\" />\n  </div>\n  <div class=\"video-upload\">\n    <button class=\"btn J_UploadVideoBtn\">" + (this._t('uploadVideoBtn')) + "</div>\n  </div>\n</div>";
+      this.el.addClass('video-popover').append(tpl);
+      this.srcEl = this.el.find('.video-link');
+      this.widthEl = this.el.find('#video-width');
+      this.heightEl = this.el.find('#video-height');
+      this.el.find('.video-size').on('keydown', (function(_this) {
+        return function(e) {
+          if (e.which === 13 || e.which === 27) {
+            e.preventDefault();
+            return $('.J_UploadVideoBtn').click();
+          }
+        };
+      })(this));
+
+      this.srcEl.on('keydown', (function(_this) {
+        return function(e) {
+          if (e.which === 13 || e.which === 27) {
+            e.preventDefault();
+            return $('.J_UploadVideoBtn').click();
+          }
+        };
+      })(this));
+
+      return this.editor.on('valuechanged', (function(_this) {
+        return function(e) {
+          if (_this.active) {
+            return _this.refresh();
+          }
+        };
+      })(this));
+    },
+
+    show : function() {
+      var $video, $videoWrap, args, videoData;
+      args = 1 <= arguments.length ? Array.prototype.slice.call(arguments, 0) : [];
+      Popover.prototype.show.apply(this, args);
+      $video = arguments[0] || this.target;
+      this.width = $video.attr('width') || $video.width();
+      this.height = $video.attr('height') || $video.height();
+      if ($video.attr('data-link')) {
+        videoData = {
+          link: $video.attr('data-link'),
+          tag: $video.attr('data-tag'),
+          width: this.width,
+          height: this.height
+        };
+        this.src = this.action.parseVideo(videoData);
+      }
+      this.widthEl.val(this.width);
+      this.heightEl.val(this.height);
+      this.srcEl.val(this.src);
+      $('.J_UploadVideoBtn').data('videowrap', $video);
+      return $videoWrap = this.target;
+    }
+  });
+
+  return VideoPopover;
+});
+define('skylark-widgets-wordpad/addons/actions/VideoAction',[
+  "skylark-langx/langx",
+  "skylark-domx-query",
+  "../../addons",
+  "../../Action",
+  "./VideoPopover"
+],function(langx,$,addons,Action,VideoPopover){ 
+  
+   var VideoAction = Action.inherit({
+      name : 'video',
+
+      icon : 'video',
+
+      htmlTag : 'embed, iframe',
+
+      disableTag : 'pre, table, div',
+
+      videoPlaceholder : 'video',
+
+      videoContainerClass : 'video-container',
+
+      videoPoster : 'http://pic.yupoo.com/ccking/ESzA3WGs/svIoz.png',
+
+      needFocus : true,
+
+      _init : function() {
+        this.title = this._t(this.name);
+        langx.merge(this.editor.editable.formatter._allowedTags, ['embed', 'iframe', 'video']);
+        langx.extend(this.editor.editable.formatter._allowedAttributes, {
+          embed: ['class', 'width', 'height', 'type', 'pluginspage', 'src', 'wmode', 'play', 'loop', 'menu', 'allowscriptaccess', 'allowfullscreen'],
+          iframe: ['class', 'width', 'height', 'src', 'frameborder'],
+          video: ['class', 'width', 'height', 'poster', 'controls', 'allowfullscreen', 'src', 'data-link', 'data-tag']
+        });
+        $(document).on('click', '.J_UploadVideoBtn', (function(_this) {
+          return function(e) {
+            var videoData;
+            videoData = {
+              link: $('.video-link').val(),
+              width: $('#video-width').val() || 100,
+              height: $('#video-height').val() || 100
+            };
+            $('.video-link').val('');
+            $('#video-width').val('');
+            $('#video-height').val('');
+            return _this.loadVideo($('.J_UploadVideoBtn').data('videowrap'), videoData, function() {
+              return _this.editor.trigger('valuechanged');
+            });
+          };
+        })(this));
+        this.editor.body.on('click', 'video', (function(_this) {
+          return function(e) {
+            var $video, range;
+            $video = $(e.currentTarget);
+            _this.popover.show($video);
+            range = document.createRange();
+            range.selectNode($video[0]);
+            _this.editor.editable.selection.range(range);
+            if (!_this.editor.editable.util.support.onselectionchange) {
+              _this.editor.trigger('selectionchanged');
+            }
+            return false;
+          };
+        })(this));
+        this.editor.body.on('mouseenter', '.wordpad-video .real-video', (function(_this) {
+          return function(e) {
+            var $video = $(e.currentTarget).siblings('video').show();
+            return _this.popover.show($video);
+          };
+        })(this));
+        this.editor.body.on('mousedown', (function(_this) {
+          return function() {
+            var $videoWrap;
+            $videoWrap = $('.J_UploadVideoBtn').data('videowrap');
+            if ($videoWrap && $videoWrap.html() === _this.videoPlaceholder) {
+              $videoWrap.remove();
+              $('.J_UploadVideoBtn').data('videowrap', null);
+            }
+            return _this.popover.hide();
+          };
+        })(this));
+        this.editor.on('decorate', (function(_this) {
+          return function(e, $el) {
+            return $el.find('video').each(function(i, video) {
+              return _this.decorate($(video));
+            });
+          };
+        })(this));
+        this.editor.on('undecorate', (function(_this) {
+          return function(e, $el) {
+            return $el.find('video').each(function(i, video) {
+              return _this.undecorate($(video));
+            });
+          };
+        })(this));
+
+        this.popover = new VideoPopover({
+          action: this
+        });
+        return Action.prototype._init.call(this);
+      },
+
+
+      decorate : function($video) {
+        var videoData, videoSrc;
+        videoData = {
+          tag: $video.attr('data-tag'),
+          link: $video.attr('data-link'),
+          width: $video.attr('width'),
+          height: $video.attr('height')
+        };
+        videoSrc = this.parseVideo(videoData);
+        if ($video.parent('.wordpad-video').length > 0) {
+          this.undecorate($video);
+        }
+        $video.wrap('<p class="wordpad-video"></p>');
+        $video.parent().prepend(videoSrc);
+        $video.hide();
+        return $video.parent();
+      },
+
+      undecorate : function($video) {
+        if (!($video.parent('.wordpad-video').length > 0)) {
+          return;
+        }
+        $video.siblings('.real-video').remove();
+        return $video.parent().replaceWith($video);
+      },
+
+      _execute : function() {
+        var $video, _self;
+        _self = this;
+        $video = this.createVideo();
+        return this.popover.show($video);
+      },
+
+      _status : function() {
+        return this._disableStatus();
+      },
+
+      loadVideo : function($video, videoData, callback) {
+        var e, originNode, realVideo, videoLink, videoTag;
+        if (!videoData.link && !$video.attr('data-link')) {
+          $video.remove();
+        } else {
+          if (!videoData.link) {
+            videoData.link = $video.attr('data-link');
+          }
+          try {
+            originNode = $(videoData.link);
+            videoTag = originNode.get(0).tagName.toLowerCase();
+            videoLink = originNode.attr('src');
+          } catch (_error) {
+            e = _error;
+            videoLink = videoData.link;
+            videoTag = '';
+          }
+          videoData.tag = videoTag;
+          $video.attr({
+            'data-link': videoLink,
+            'data-tag': videoTag,
+            'width': videoData.width || 100,
+            'height': videoData.height || 100
+          });
+          realVideo = $video.siblings('.real-video');
+          if (realVideo.length) {
+            videoData.link = videoLink;
+            realVideo.replaceWith(this.parseVideo(videoData));
+          } else {
+            this.decorate($video);
+          }
+        }
+        this.popover.hide();
+        return callback($video);
+      },
+
+      createVideo : function() {
+        var $videoWrap, range;
+        if (!this.editor.editable.inputManager.focused) {
+          this.editor.focus();
+        }
+        range = this.editor.editable.selection.range();
+        if (range) {
+          range.deleteContents();
+          this.editor.editable.selection.range(range);
+        }
+        $videoWrap = $('<video/>').attr({
+          'poster': this.videoPoster,
+          'width': 100,
+          'height': 100
+        });
+        range.insertNode($videoWrap[0]);
+        this.editor.editable.selection.setRangeAfter($videoWrap, range);
+        this.editor.trigger('valuechanged');
+        return $videoWrap;
+      },
+
+      parseVideo : function(videoData) {
+        var src;
+        switch (videoData.tag) {
+          case 'embed':
+            src = '<embed class="real-video" width=' + videoData.width + ' height= ' + videoData.height + ' src="' + videoData.link + ' "type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" wmode="transparent" loop="false" menu="false" allowscriptaccess="never" allowfullscreen="true">';
+            break;
+          case 'iframe':
+            src = '<iframe class="real-video" width=' + videoData.width + ' height= ' + videoData.height + ' src=" ' + videoData.link + '" frameborder=0 allowfullscreen></iframe>';
+            break;
+          default:
+            src = videoData.link;
+        }
+        return src;
+
+      }
+
+   });
+
+
+   addons.actions.video = VideoAction; 
+
+   return VideoAction;
 
 });
 define('skylark-widgets-wordpad/addons/toolbar/items/AlignmentButton',[
@@ -19130,6 +19499,7 @@ define('skylark-widgets-wordpad/main',[
   "./addons/actions/TitleAction", 
   "./addons/actions/UnderlineAction", 
   "./addons/actions/UnorderListAction",
+  "./addons/actions/VideoAction",
 
   "./addons/toolbar/items/AlignmentButton",
   "./addons/toolbar/items/ColorButton",

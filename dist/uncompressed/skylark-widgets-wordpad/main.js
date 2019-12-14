@@ -31,6 +31,7 @@ define([
   "./addons/actions/TitleAction", 
   "./addons/actions/UnderlineAction", 
   "./addons/actions/UnorderListAction",
+  "./addons/actions/VideoAction",
 
   "./addons/toolbar/items/AlignmentButton",
   "./addons/toolbar/items/ColorButton",

@@ -211,7 +211,6 @@ define([
 
     },
 
-
     createTable : function(row, col, phBr) {
       return $(tables.createTable(row,col,phBr ? this.editor.editable.util.phBr : null));
     },

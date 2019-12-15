@@ -14,7 +14,7 @@ define([
       opts = langx.extend({
         imagePath: 'images/emoji/',
         images: EmojiButton.images
-      }, this.editor.opts.emoji || {});
+      }, this.editor.options.emoji || {});
       html = "";
       dir = opts.imagePath.replace(/\/$/, '') + '/';
       _ref = opts.images;

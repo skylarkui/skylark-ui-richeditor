@@ -29,7 +29,7 @@ define([
         }
         e.preventDefault();
         range = document.createRange();
-        _this.Action.editor.editable.selection.setRangeAfter(_this.target, range);
+        _this.action.editor.editable.selection.setRangeAfter(_this.target, range);
         return _this.hide();
       };
     })(this));
@@ -67,7 +67,7 @@ define([
           $img = _this.target;
           _this.hide();
           range = document.createRange();
-          return _this.Action.editor.editable.selection.setRangeAfter($img, range);
+          return _this.action.editor.editable.selection.setRangeAfter($img, range);
         } else if (e.which === 9) {
           return _this.el.data('popover').refresh();
         }
@@ -79,7 +79,7 @@ define([
         if (e.which === 13) {
           e.preventDefault();
           range = document.createRange();
-          _this.Action.editor.editable.selection.setRangeAfter(_this.target, range);
+          _this.action.editor.editable.selection.setRangeAfter(_this.target, range);
           return _this.hide();
         }
       };
@@ -193,7 +193,7 @@ define([
     if (this.target.attr('src') === src) {
       return;
     }
-    return this.Action.loadImage(this.target, src, (function(_this) {
+    return this.action.loadImage(this.target, src, (function(_this) {
       return function(img) {
         var blob;
         if (!img) {

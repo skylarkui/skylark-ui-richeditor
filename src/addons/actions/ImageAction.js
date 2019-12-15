@@ -1,11 +1,12 @@
 define([
   "skylark-langx/langx",
   "skylark-domx-query",
+  "skylark-storages-diskfs/readImage",  
   "../../addons",
   "../../Action",
   "./ImagePopover",
   "../../i18n"
-],function(langx, $,addons,Action,ImagePopover,i18n){ 
+],function(langx, $, readImage, addons,Action,ImagePopover,i18n){ 
    var ImageAction = Action.inherit({
       name : 'image',
 
@@ -21,10 +22,10 @@ define([
 
       _init : function() {
         var item, k, len, ref;
-        if (this.editor.opts.imageAction) {
-          if (Array.isArray(this.editor.opts.imageAction)) {
+        if (this.editor.options.imageAction) {
+          if (Array.isArray(this.editor.options.imageAction)) {
             this.menu = [];
-            ref = this.editor.opts.imageAction;
+            ref = this.editor.options.imageAction;
             for (k = 0, len = ref.length; k < len; k++) {
               item = ref[k];
               this.menu.push({
@@ -50,7 +51,7 @@ define([
             this.menu = false;
           }
         }
-        this.defaultImage = this.editor.opts.defaultImage;
+        this.defaultImage = this.editor.options.defaultImage;
         this.editor.body.on('click', 'img:not([data-non-image])', (function(_this) {
           return function(e) {
             var $img, range;
@@ -121,7 +122,7 @@ define([
         this.popover = new ImagePopover({
           action: this
         });
-        if (this.editor.opts.imageAction === 'upload') {
+        if (this.editor.options.imageAction === 'upload') {
           return this._initUploader(this.el);
         }
 
@@ -137,7 +138,7 @@ define([
         this.popover = new ImagePopover({
           action: this
         });
-        if (this.editor.opts.imageAction === 'upload') {
+        if (this.editor.options.imageAction === 'upload') {
           return this._initUploader(this.el);
         }
       },
@@ -207,7 +208,7 @@ define([
             }
             $img.addClass('uploading');
             $img.data('file', file);
-            return _this.editor.uploader.readImageFile(file.obj, function(img) {
+            return readImage(file.obj).then(function(img) {
               var src;
               if (!$img.hasClass('uploading')) {
                 return;

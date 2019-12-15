@@ -78,8 +78,6 @@ require.config({
            location : "../node_modules/skylark-langx-xhr/dist/uncompressed/skylark-langx-xhr",
             main: 'main'
          },
-
-
          {
            name : "skylark-domx-browser",
            location : "../node_modules/skylark-domx-browser/dist/uncompressed/skylark-domx-browser",
@@ -177,6 +175,11 @@ require.config({
             main: 'main'
          },
          {
+           name : "skylark-net-http",
+           location : "../node_modules/skylark-net-http/dist/uncompressed/skylark-net-http",
+            main: 'main'
+         },
+         {
            name : "skylark-storages-diskfs",
            location : "../node_modules/skylark-storages-diskfs/dist/uncompressed/skylark-storages-diskfs",
             main: 'main'
@@ -196,8 +199,8 @@ require.config({
         { name: "skylark-langx", location: "../node_modules/skylark-langx/dist/uncompressed/skylark-langx" },
         { 
           name: "skylark-domx-contents", 
-          //location : "../node_modules/skylark-domx-contents/dist/uncompressed/skylark-domx-contents"
-          location: "../../../domx/skylark-domx-contents/src"
+          location : "../node_modules/skylark-domx-contents/dist/uncompressed/skylark-domx-contents"
+          //location: "../../../domx/skylark-domx-contents/src"
         },
         { name: "skylark-widgets-wordpad", location: "../src" }
   ],
@@ -223,7 +226,7 @@ require([
       defaultImage: './fork.png',
       autosave: 'editor-content',
       upload: location.search === '?upload' ? {
-        url: '/upload'
+        url: 'http://localhost:3001/upload/default'
       } : false,
 
       addons : {

@@ -28,8 +28,10 @@
     "skylark-domx-contents": "git+https://github.com/skylark-domx/skylark-domx-contents.git#master",
     "skylark-domx-tables": "git+https://github.com/skylark-domx/skylark-domx-tables.git#master",
     "skylark-langx": "git+https://github.com/skylark-langx/skylark-langx.git#master",
+    "skylark-storages-diskfs": "git+https://github.com/skylark-storages/skylark-storages-diskfs.git#master",
     "skylark-widgets-base": "git+https://github.com/skylark-widgets/skylark-widgets-base.git#master",
-    "skylark-widgets-swt": "git+https://github.com/skylark-widgets/skylark-widgets-swt.git#master"
+    "skylark-widgets-swt": "git+https://github.com/skylark-widgets/skylark-widgets-swt.git#master",
+    "skylark-widgets-uploads": "git+https://github.com/skylark-widgets/skylark-widgets-uploads.git#master"
   },
   "skylarkjs": {
     "build": {

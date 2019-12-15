@@ -8372,7 +8372,7 @@ define('skylark-domx-contents/UndoManager',[
     if (this._index < 1 || this._stack.length < 2) {
       return;
     }
-    this.editable.hidePopover();
+    //this.editable.hidePopover();
     this._index -= 1;
     state = this._stack[this._index];
     this.editable.body.get(0).innerHTML = state.html;
@@ -8387,7 +8387,7 @@ define('skylark-domx-contents/UndoManager',[
     if (this._index < 0 || this._stack.length < this._index + 2) {
       return;
     }
-    this.editable.hidePopover();
+    //this.editable.hidePopover();
     this._index += 1;
     state = this._stack[this._index];
     this.editable.body.get(0).innerHTML = state.html;
@@ -9475,7 +9475,7 @@ define('skylark-domx-contents/Clipboard',[
     return setTimeout((function(_this) {
       return function() {
         var pasteContent;
-        _this.editable.hidePopover();
+        //_this.editable.hidePopover();
         _this.editable.body.get(0).innerHTML = state.html;
         _this.editable.undoManager.caretPosition(state.caret);
         _this.editable.body.focus();
@@ -15141,27 +15141,394 @@ define('skylark-widgets-wordpad/Toolbar',[
   return Toolbar;
 
 });
+define('skylark-net-http/http',[
+  "skylark-langx-ns/ns",
+],function(skylark){
+	return skylark.attach("net.http",{});
+});
+define('skylark-net-http/Xhr',[
+  "skylark-langx-ns/ns",
+  "skylark-langx-types",
+  "skylark-langx-objects",
+  "skylark-langx-arrays",
+  "skylark-langx-funcs",
+  "skylark-langx-async/Deferred",
+  "skylark-langx-emitter/Evented",
+  "./http"
+],function(skylark,types,objects,arrays,funcs,Deferred,Evented,http){
+
+    var each = objects.each,
+        mixin = objects.mixin,
+        noop = funcs.noop,
+        isArray = types.isArray,
+        isFunction = types.isFunction,
+        isPlainObject = types.isPlainObject,
+        type = types.type;
+ 
+     var getAbsoluteUrl = (function() {
+        var a;
+
+        return function(url) {
+            if (!a) a = document.createElement('a');
+            a.href = url;
+
+            return a.href;
+        };
+    })();
+   
+    var Xhr = (function(){
+        var jsonpID = 0,
+            key,
+            name,
+            rscript = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+            scriptTypeRE = /^(?:text|application)\/javascript/i,
+            xmlTypeRE = /^(?:text|application)\/xml/i,
+            jsonType = 'application/json',
+            htmlType = 'text/html',
+            blankRE = /^\s*$/;
+
+        var XhrDefaultOptions = {
+            async: true,
+
+            // Default type of request
+            type: 'GET',
+            // Callback that is executed before request
+            beforeSend: noop,
+            // Callback that is executed if the request succeeds
+            success: noop,
+            // Callback that is executed the the server drops error
+            error: noop,
+            // Callback that is executed on request complete (both: error and success)
+            complete: noop,
+            // The context for the callbacks
+            context: null,
+            // Whether to trigger "global" Ajax events
+            global: true,
+
+            // MIME types mapping
+            // IIS returns Javascript as "application/x-javascript"
+            accepts: {
+                script: 'text/javascript, application/javascript, application/x-javascript',
+                json: 'application/json',
+                xml: 'application/xml, text/xml',
+                html: 'text/html',
+                text: 'text/plain'
+            },
+            // Whether the request is to another domain
+            crossDomain: false,
+            // Default timeout
+            timeout: 0,
+            // Whether data should be serialized to string
+            processData: false,
+            // Whether the browser should be allowed to cache GET responses
+            cache: true,
+
+            xhrFields : {
+                withCredentials : true
+            }
+        };
+
+        function mimeToDataType(mime) {
+            if (mime) {
+                mime = mime.split(';', 2)[0];
+            }
+            if (mime) {
+                if (mime == htmlType) {
+                    return "html";
+                } else if (mime == jsonType) {
+                    return "json";
+                } else if (scriptTypeRE.test(mime)) {
+                    return "script";
+                } else if (xmlTypeRE.test(mime)) {
+                    return "xml";
+                }
+            }
+            return "text";
+        }
+
+        function appendQuery(url, query) {
+            if (query == '') return url
+            return (url + '&' + query).replace(/[&?]{1,2}/, '?')
+        }
+
+        // serialize payload and append it to the URL for GET requests
+        function serializeData(options) {
+            options.data = options.data || options.query;
+            if (options.processData && options.data && type(options.data) != "string") {
+                options.data = param(options.data, options.traditional);
+            }
+            if (options.data && (!options.type || options.type.toUpperCase() == 'GET')) {
+                options.url = appendQuery(options.url, options.data);
+                options.data = undefined;
+            }
+        }
+
+        function serialize(params, obj, traditional, scope) {
+            var t, array = isArray(obj),
+                hash = isPlainObject(obj)
+            each(obj, function(key, value) {
+                t =type(value);
+                if (scope) key = traditional ? scope :
+                    scope + '[' + (hash || t == 'object' || t == 'array' ? key : '') + ']'
+                // handle data in serializeArray() format
+                if (!scope && array) params.add(value.name, value.value)
+                // recurse into nested objects
+                else if (t == "array" || (!traditional && t == "object"))
+                    serialize(params, value, traditional, key)
+                else params.add(key, value)
+            })
+        }
+
+        var param = function(obj, traditional) {
+            var params = []
+            params.add = function(key, value) {
+                if (isFunction(value)) {
+                  value = value();
+                }
+                if (value == null) {
+                  value = "";
+                }
+                this.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+            };
+            serialize(params, obj, traditional)
+            return params.join('&').replace(/%20/g, '+')
+        };
+
+        var Xhr = Evented.inherit({
+            klassName : "Xhr",
+
+            _request  : function(args) {
+                var _ = this._,
+                    self = this,
+                    options = mixin({},XhrDefaultOptions,_.options,args),
+                    xhr = _.xhr = new XMLHttpRequest();
+
+                serializeData(options)
+
+                if (options.beforeSend) {
+                    options.beforeSend.call(this, xhr, options);
+                }                
+
+                var dataType = options.dataType || options.handleAs,
+                    mime = options.mimeType || options.accepts[dataType],
+                    headers = options.headers,
+                    xhrFields = options.xhrFields,
+                    isFormData = options.data && options.data instanceof FormData,
+                    basicAuthorizationToken = options.basicAuthorizationToken,
+                    type = options.type,
+                    url = options.url,
+                    async = options.async,
+                    user = options.user , 
+                    password = options.password,
+                    deferred = new Deferred(),
+                    contentType = isFormData ? false : 'application/x-www-form-urlencoded';
+
+                if (xhrFields) {
+                    for (name in xhrFields) {
+                        xhr[name] = xhrFields[name];
+                    }
+                }
+
+                if (mime && mime.indexOf(',') > -1) {
+                    mime = mime.split(',', 2)[0];
+                }
+                if (mime && xhr.overrideMimeType) {
+                    xhr.overrideMimeType(mime);
+                }
+
+                //if (dataType) {
+                //    xhr.responseType = dataType;
+                //}
+
+                var finish = function() {
+                    xhr.onloadend = noop;
+                    xhr.onabort = noop;
+                    xhr.onprogress = noop;
+                    xhr.ontimeout = noop;
+                    xhr = null;
+                }
+                var onloadend = function() {
+                    var result, error = false
+                    if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304 || (xhr.status == 0 && getAbsoluteUrl(url).startsWith('file:'))) {
+                        dataType = dataType || mimeToDataType(options.mimeType || xhr.getResponseHeader('content-type'));
+
+                        result = xhr.responseText;
+                        try {
+                            if (dataType == 'script') {
+                                eval(result);
+                            } else if (dataType == 'xml') {
+                                result = xhr.responseXML;
+                            } else if (dataType == 'json') {
+                                result = blankRE.test(result) ? null : JSON.parse(result);
+                            } else if (dataType == "blob") {
+                                result = Blob([xhrObj.response]);
+                            } else if (dataType == "arraybuffer") {
+                                result = xhr.reponse;
+                            }
+                        } catch (e) { 
+                            error = e;
+                        }
+
+                        if (error) {
+                            deferred.reject(error,xhr.status,xhr);
+                        } else {
+                            deferred.resolve(result,xhr.status,xhr);
+                        }
+                    } else {
+                        deferred.reject(new Error(xhr.statusText),xhr.status,xhr);
+                    }
+                    finish();
+                };
+
+                var onabort = function() {
+                    if (deferred) {
+                        deferred.reject(new Error("abort"),xhr.status,xhr);
+                    }
+                    finish();                 
+                }
+ 
+                var ontimeout = function() {
+                    if (deferred) {
+                        deferred.reject(new Error("timeout"),xhr.status,xhr);
+                    }
+                    finish();                 
+                }
+
+                var onprogress = function(evt) {
+                    if (deferred) {
+                        deferred.notify(evt,xhr.status,xhr);
+                    }
+                }
+
+                xhr.onloadend = onloadend;
+                xhr.onabort = onabort;
+                xhr.ontimeout = ontimeout;
+                xhr.onprogress = onprogress;
+
+                xhr.open(type, url, async, user, password);
+               
+                if (headers) {
+                    for ( var key in headers) {
+                        var value = headers[key];
+ 
+                        if(key.toLowerCase() === 'content-type'){
+                            contentType = value;
+                        } else {
+                           xhr.setRequestHeader(key, value);
+                        }
+                    }
+                }   
+
+                if  (contentType && contentType !== false){
+                    xhr.setRequestHeader('Content-Type', contentType);
+                }
+
+                if(!headers || !('X-Requested-With' in headers)){
+                    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                }
+
+
+                //If basicAuthorizationToken is defined set its value into "Authorization" header
+                if (basicAuthorizationToken) {
+                    xhr.setRequestHeader("Authorization", basicAuthorizationToken);
+                }
+
+                xhr.send(options.data ? options.data : null);
+
+                return deferred.promise;
+
+            },
+
+            "abort": function() {
+                var _ = this._,
+                    xhr = _.xhr;
+
+                if (xhr) {
+                    xhr.abort();
+                }    
+            },
+
+
+            "request": function(args) {
+                return this._request(args);
+            },
+
+            get : function(args) {
+                args = args || {};
+                args.type = "GET";
+                return this._request(args);
+            },
+
+            post : function(args) {
+                args = args || {};
+                args.type = "POST";
+                return this._request(args);
+            },
+
+            patch : function(args) {
+                args = args || {};
+                args.type = "PATCH";
+                return this._request(args);
+            },
+
+            put : function(args) {
+                args = args || {};
+                args.type = "PUT";
+                return this._request(args);
+            },
+
+            del : function(args) {
+                args = args || {};
+                args.type = "DELETE";
+                return this._request(args);
+            },
+
+            "init": function(options) {
+                this._ = {
+                    options : options || {}
+                };
+            }
+        });
+
+        ["request","get","post","put","del","patch"].forEach(function(name){
+            Xhr[name] = function(url,args) {
+                var xhr = new Xhr({"url" : url});
+                return xhr[name](args);
+            };
+        });
+
+        Xhr.defaultOptions = XhrDefaultOptions;
+        Xhr.param = param;
+
+        return Xhr;
+    })();
+
+	return http.Xhr = Xhr;	
+});
 define('skylark-widgets-wordpad/uploader',[
   "skylark-langx/langx",
-  "skylark-domx-query"
-],function(langx,$){ 
+  "skylark-domx-query",
+  "skylark-net-http/Xhr"
+],function(langx,$,Xhr){ 
 
   var Uploader = langx.Evented.inherit({
-    init : function() {
+    init : function(options){
+      this.options = langx.mixin({},this.options,options);
+
       this.files = [];
       this.queue = [];
       this.id = ++Uploader.count;
       this.on('uploadcomplete', (function(_this) {
         return function(e, file) {
           _this.files.splice(langx.inArray(file, _this.files), 1);
-          if (_this.queue.length > 0 && _this.files.length < _this.opts.connectionCount) {
+          if (_this.queue.length > 0 && _this.files.length < _this.options.connectionCount) {
             return _this.upload(_this.queue.shift());
           } else {
             return _this.uploading = false;
           }
         };
       })(this));
-      return $(window).on('beforeunload.uploader-' + this.id, (function(_this) {
+      $(window).on('beforeunload.uploader-' + this.id, (function(_this) {
         return function(e) {
           if (!_this.uploading) {
             return;
@@ -15176,7 +15543,7 @@ define('skylark-widgets-wordpad/uploader',[
 
   Uploader.count = 0;
 
-  Uploader.prototype.opts = {
+  Uploader.prototype.options = {
     url: '',
     params: null,
     fileKey: 'upload_file',
@@ -15193,10 +15560,10 @@ define('skylark-widgets-wordpad/uploader',[
     };
   })();
 
-  Uploader.prototype.upload = function(file, opts) {
+  Uploader.prototype.upload = function(file, options) {
     var f, i, key, len;
-    if (opts == null) {
-      opts = {};
+    if (options == null) {
+      options = {};
     }
     if (file == null) {
       return;
@@ -15204,22 +15571,22 @@ define('skylark-widgets-wordpad/uploader',[
     if (langx.isArray(file) || file instanceof FileList) {
       for (i = 0, len = file.length; i < len; i++) {
         f = file[i];
-        this.upload(f, opts);
+        this.upload(f, options);
       }
     } else if ($(file).is('input:file')) {
       key = $(file).attr('name');
       if (key) {
-        opts.fileKey = key;
+        options.fileKey = key;
       }
-      this.upload(langx.makeArray($(file)[0].files), opts);
+      this.upload(langx.makeArray($(file)[0].files), options);
     } else if (!file.id || !file.obj) {
       file = this.getFile(file);
     }
     if (!(file && file.obj)) {
       return;
     }
-    langx.extend(file, opts);
-    if (this.files.length >= this.opts.connectionCount) {
+    langx.extend(file, options);
+    if (this.files.length >= this.options.connectionCount) {
       this.queue.push(file);
       return;
     }
@@ -15240,9 +15607,9 @@ define('skylark-widgets-wordpad/uploader',[
     }
     return {
       id: this.generateId(),
-      url: this.opts.url,
-      params: this.opts.params,
-      fileKey: this.opts.fileKey,
+      url: this.options.url,
+      params: this.options.params,
+      fileKey: this.options.fileKey,
       name: name,
       size: (ref1 = fileObj.fileSize) != null ? ref1 : fileObj.size,
       ext: name ? name.split('.').pop().toLowerCase() : '',
@@ -15264,12 +15631,14 @@ define('skylark-widgets-wordpad/uploader',[
     }
 
     //TODO
-    return file.xhr = langx.xhr({
-      url: file.url,
+    var xhr =  file.xhr = new Xhr({
+      url: this.options.url
+    });
+
+    xhr.post({
       data: formData,
       processData: false,
       contentType: false,
-      type: 'POST',
       headers: {
         'X-File-Name': encodeURIComponent(file.name)
       },
@@ -15311,6 +15680,8 @@ define('skylark-widgets-wordpad/uploader',[
         };
       })(this)
     });
+
+    return xhr;
   };
 
   Uploader.prototype.cancel = function(file) {
@@ -15332,28 +15703,6 @@ define('skylark-widgets-wordpad/uploader',[
     return file.xhr = null;
   };
 
-  Uploader.prototype.readImageFile = function(fileObj, callback) {
-    var fileReader, img;
-    if (!langx.isFunction(callback)) {
-      return;
-    }
-    img = new Image();
-    img.onload = function() {
-      return callback(img);
-    };
-    img.onerror = function() {
-      return callback();
-    };
-    if (window.FileReader && FileReader.prototype.readAsDataURL && /^image/.test(fileObj.type)) {
-      fileReader = new FileReader();
-      fileReader.onload = function(e) {
-        return img.src = e.target.result;
-      };
-      return fileReader.readAsDataURL(fileObj);
-    } else {
-      return callback();
-    }
-  };
 
   Uploader.prototype.destroy = function() {
     var file, i, len, ref;
@@ -15375,8 +15724,8 @@ define('skylark-widgets-wordpad/uploader',[
 
   Uploader.locale = 'zh-CN';
 
-  return  function(opts) {
-    return new Uploader(opts);
+  return  function(options) {
+    return new Uploader(options);
   };
 
 });
@@ -16174,7 +16523,7 @@ define('skylark-widgets-wordpad/addons/actions/CodePopover',[
      render : function() {
       var $option, k, lang, len, ref;
       this._tpl = "<div class=\"code-settings\">\n  <div class=\"settings-field\">\n    <select class=\"select-lang\">\n      <option value=\"-1\">" + (this._t('selectLanguage')) + "</option>\n    </select>\n  </div>\n</div>";
-      this.langs = this.editor.opts.codeLanguages || [
+      this.langs = this.editor.options.codeLanguages || [
         {
           name: 'Bash',
           value: 'bash'
@@ -16696,6 +17045,76 @@ define('skylark-widgets-wordpad/addons/actions/HtmlAction',[
 
    return HtmlAction;
 });
+define('skylark-storages-diskfs/read',[
+    "skylark-langx-async/Deferred",
+    "./diskfs"
+],function(Deferred, diskfs){
+
+    function readFile(file, params) {
+        params = params || {};
+        var d = new Deferred,
+            reader = new FileReader();
+
+        reader.onload = function(evt) {
+            d.resolve(evt.target.result);
+        };
+        reader.onerror = function(e) {
+            var code = e.target.error.code;
+            if (code === 2) {
+                alert('please don\'t open this page using protocol fill:///');
+            } else {
+                alert('error code: ' + code);
+            }
+        };
+
+        if (params.asArrayBuffer) {
+            reader.readAsArrayBuffer(file);
+        } else if (params.asDataUrl) {
+            reader.readAsDataURL(file);
+        } else if (params.asText) {
+            reader.readAsText(file);
+        } else {
+            reader.readAsArrayBuffer(file);
+        }
+
+        return d.promise;
+    }
+
+    return diskfs.read = diskfs.readFile = readFile;
+    
+});
+
+define('skylark-storages-diskfs/readImage',[
+    "skylark-langx/Deferred",
+    "./diskfs",
+    "./read"
+],function(Deferred, diskfs,read){
+
+	function readImage(fileObj) {
+        var d = new Deferred,
+	    	img = new Image();
+
+	    img.onload = function() {
+	      d.resolve(img);
+	    };
+	    img.onerror = function(e) {
+	      d.reject(e);
+	    };
+
+	    read(fileObj,{
+	    	asDataUrl : true
+	    }).then(function(dataUrl){
+	        img.src = dataUrl;
+	    }).catch(function(e){
+	    	d.reject(e);
+	    });
+
+	    return d.promise;
+	}
+
+	return diskfs.readImage = readImage;
+
+});
 define('skylark-widgets-wordpad/addons/actions/ImagePopover',[
   "skylark-langx/langx",
   "skylark-domx-query",
@@ -16727,7 +17146,7 @@ define('skylark-widgets-wordpad/addons/actions/ImagePopover',[
         }
         e.preventDefault();
         range = document.createRange();
-        _this.Action.editor.editable.selection.setRangeAfter(_this.target, range);
+        _this.action.editor.editable.selection.setRangeAfter(_this.target, range);
         return _this.hide();
       };
     })(this));
@@ -16765,7 +17184,7 @@ define('skylark-widgets-wordpad/addons/actions/ImagePopover',[
           $img = _this.target;
           _this.hide();
           range = document.createRange();
-          return _this.Action.editor.editable.selection.setRangeAfter($img, range);
+          return _this.action.editor.editable.selection.setRangeAfter($img, range);
         } else if (e.which === 9) {
           return _this.el.data('popover').refresh();
         }
@@ -16777,7 +17196,7 @@ define('skylark-widgets-wordpad/addons/actions/ImagePopover',[
         if (e.which === 13) {
           e.preventDefault();
           range = document.createRange();
-          _this.Action.editor.editable.selection.setRangeAfter(_this.target, range);
+          _this.action.editor.editable.selection.setRangeAfter(_this.target, range);
           return _this.hide();
         }
       };
@@ -16891,7 +17310,7 @@ define('skylark-widgets-wordpad/addons/actions/ImagePopover',[
     if (this.target.attr('src') === src) {
       return;
     }
-    return this.Action.loadImage(this.target, src, (function(_this) {
+    return this.action.loadImage(this.target, src, (function(_this) {
       return function(img) {
         var blob;
         if (!img) {
@@ -16944,11 +17363,12 @@ define('skylark-widgets-wordpad/addons/actions/ImagePopover',[
 define('skylark-widgets-wordpad/addons/actions/ImageAction',[
   "skylark-langx/langx",
   "skylark-domx-query",
+  "skylark-storages-diskfs/readImage",  
   "../../addons",
   "../../Action",
   "./ImagePopover",
   "../../i18n"
-],function(langx, $,addons,Action,ImagePopover,i18n){ 
+],function(langx, $, readImage, addons,Action,ImagePopover,i18n){ 
    var ImageAction = Action.inherit({
       name : 'image',
 
@@ -16964,10 +17384,10 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
 
       _init : function() {
         var item, k, len, ref;
-        if (this.editor.opts.imageAction) {
-          if (Array.isArray(this.editor.opts.imageAction)) {
+        if (this.editor.options.imageAction) {
+          if (Array.isArray(this.editor.options.imageAction)) {
             this.menu = [];
-            ref = this.editor.opts.imageAction;
+            ref = this.editor.options.imageAction;
             for (k = 0, len = ref.length; k < len; k++) {
               item = ref[k];
               this.menu.push({
@@ -16993,7 +17413,7 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
             this.menu = false;
           }
         }
-        this.defaultImage = this.editor.opts.defaultImage;
+        this.defaultImage = this.editor.options.defaultImage;
         this.editor.body.on('click', 'img:not([data-non-image])', (function(_this) {
           return function(e) {
             var $img, range;
@@ -17064,7 +17484,7 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
         this.popover = new ImagePopover({
           action: this
         });
-        if (this.editor.opts.imageAction === 'upload') {
+        if (this.editor.options.imageAction === 'upload') {
           return this._initUploader(this.el);
         }
 
@@ -17080,7 +17500,7 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
         this.popover = new ImagePopover({
           action: this
         });
-        if (this.editor.opts.imageAction === 'upload') {
+        if (this.editor.options.imageAction === 'upload') {
           return this._initUploader(this.el);
         }
       },
@@ -17150,7 +17570,7 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
             }
             $img.addClass('uploading');
             $img.data('file', file);
-            return _this.editor.uploader.readImageFile(file.obj, function(img) {
+            return readImage(file.obj).then(function(img) {
               var src;
               if (!$img.hasClass('uploading')) {
                 return;
@@ -17396,7 +17816,7 @@ define('skylark-widgets-wordpad/addons/actions/IndentAction',[
 
       _init : function() {
         var hotkey;
-        hotkey = this.editor.opts.tabIndent === false ? '' : ' (Tab)';
+        hotkey = this.editor.options.tabIndent === false ? '' : ' (Tab)';
         this.title = this._t(this.name) + hotkey;
         return Action.prototype._init.call(this);
       },
@@ -17750,7 +18170,7 @@ define('skylark-widgets-wordpad/addons/actions/OutdentAction',[
 
     _init : function() {
       var hotkey;
-      hotkey = this.editor.opts.tabIndent === false ? '' : ' (Shift + Tab)';
+      hotkey = this.editor.options.tabIndent === false ? '' : ' (Shift + Tab)';
       this.title = this._t(this.name) + hotkey;
       return Action.prototype._init.call(this);
     },
@@ -19013,7 +19433,7 @@ define('skylark-widgets-wordpad/addons/toolbar/items/EmojiButton',[
       opts = langx.extend({
         imagePath: 'images/emoji/',
         images: EmojiButton.images
-      }, this.editor.opts.emoji || {});
+      }, this.editor.options.emoji || {});
       html = "";
       dir = opts.imagePath.replace(/\/$/, '') + '/';
       _ref = opts.images;

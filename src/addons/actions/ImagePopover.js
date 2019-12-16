@@ -116,32 +116,20 @@ define([
       $uploadBtn.remove();
       return;
     }
-    createInput = (function(_this) {
-      return function() {
-        if (_this.input) {
-          _this.input.remove();
-        }
-        return _this.input = $('<input/>', {
-          type: 'file',
-          title: _this._t('uploadImage'),
-          multiple: true,
-          accept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg'
-        }).appendTo($uploadBtn);
-      };
-    })(this);
-    createInput();
-    this.el.on('click mousedown', 'input[type=file]', function(e) {
-      return e.stopPropagation();
-    });
-    return this.el.on('change', 'input[type=file]', (function(_this) {
-      return function(e) {
-        _this.editor.uploader.upload(_this.input, {
+
+    var _this = this;
+    $uploadBtn.picker({
+      title: _this._t('uploadImage'),
+      multiple: true,
+      accept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg',
+      picked : function(files){
+        _this.editor.uploader.upload(files, {
           inline: true,
           img: _this.target
         });
-        return createInput();
-      };
-    })(this));
+      }      
+
+    });
   };
 
   ImagePopover.prototype._resizeImg = function(inputEl, onlySetVal) {

@@ -83,7 +83,7 @@ define([
       this.queue.push(file);
       return;
     }
-    if (this.trigger('beforeupload', [file]) === false) {
+    if (this.trigger('beforeupload', file) === false) {
       return;
     }
     this.files.push(file);
@@ -128,6 +128,9 @@ define([
       url: this.options.url
     });
 
+
+    var _this = this;
+
     xhr.post({
       data: formData,
       processData: false,
@@ -135,43 +138,19 @@ define([
       headers: {
         'X-File-Name': encodeURIComponent(file.name)
       },
-      xhr: function() {
-        var req;
-        req = $.ajaxSettings.xhr();
-        if (req) {
-          req.upload.onprogress = (function(_this) {
-            return function(e) {
-              return _this.progress(e);
-            };
-          })(this);
-        }
-        return req;
-      },
-      progress: (function(_this) {
-        return function(e) {
-          if (!e.lengthComputable) {
-            return;
-          }
-          return _this.trigger('uploadprogress', [file, e.loaded, e.total]);
-        };
-      })(this),
-      error: (function(_this) {
-        return function(xhr, status, err) {
-          return _this.trigger('uploaderror', [file, xhr, status]);
-        };
-      })(this),
-      success: (function(_this) {
-        return function(result) {
-          _this.trigger('uploadprogress', [file, file.size, file.size]);
-          _this.trigger('uploadsuccess', [file, result]);
-          return $(document).trigger('uploadsuccess', [file, result, _this]);
-        };
-      })(this),
-      complete: (function(_this) {
-        return function(xhr, status) {
-          return _this.trigger('uploadcomplete', [file, xhr.responseText]);
-        };
-      })(this)
+    }).progress(function(e){
+      if (!e.lengthComputable) {
+        return;
+      }
+      return _this.trigger('uploadprogress', file, e.loaded, e.total);
+    }).then(function(result){
+      _this.trigger('uploadsuccess', file, result);
+
+      _this.trigger('uploadcomplete');
+
+    }).catch(function(e,status){
+      _this.trigger('uploaderror', file,xhr);
+      _this.trigger('uploadcomplete');
     });
 
     return xhr;

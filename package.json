@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "skylark-domx-contents": "git+https://github.com/skylark-domx/skylark-domx-contents.git#master",
+    "skylark-domx-files": "git+https://github.com/skylark-domx/skylark-domx-files.git#master",
     "skylark-domx-tables": "git+https://github.com/skylark-domx/skylark-domx-tables.git#master",
     "skylark-langx": "git+https://github.com/skylark-langx/skylark-langx.git#master",
     "skylark-storages-diskfs": "git+https://github.com/skylark-storages/skylark-storages-diskfs.git#master",

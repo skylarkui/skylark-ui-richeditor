@@ -21,6 +21,8 @@ define([
       needFocus : false,
 
       _init : function() {
+        Action.prototype._init.call(this);
+
         var item, k, len, ref;
         if (this.editor.options.imageAction) {
           if (Array.isArray(this.editor.options.imageAction)) {
@@ -122,78 +124,16 @@ define([
         this.popover = new ImagePopover({
           action: this
         });
-        if (this.editor.options.imageAction === 'upload') {
-          return this._initUploader(this.el);
+
+        if (this.editor.options.upload) {
+          return this._initUploader();
         }
 
-        return Action.prototype._init.call(this);
 
-
-      },
-
-      render : function() {
-        var args;
-        args = 1 <= arguments.length ? Array.prototype.slice.call(arguments, 0) : [];
-        Action.prototype.render.apply(this, args);
-        this.popover = new ImagePopover({
-          action: this
-        });
-        if (this.editor.options.imageAction === 'upload') {
-          return this._initUploader(this.el);
-        }
-      },
-
-      renderMenu : function() {
-        Action.prototype.renderMenu.call(this);
-        return this._initUploader();
       },
 
       _initUploader : function($uploadItem) {
-        var $input, createInput, uploadProgress;
-        if ($uploadItem == null) {
-          $uploadItem = this.menuEl.find('.menu-item-upload-image');
-        }
-        if (this.editor.uploader == null) {
-          this.el.find('.btn-upload').remove();
-          return;
-        }
-        $input = null;
-        createInput = (function(_this) {
-          return function() {
-            if ($input) {
-              $input.remove();
-            }
-            return $input = $('<input/>', {
-              type: 'file',
-              title: _this._t('uploadImage'),
-              multiple: true,
-              accept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg'
-            }).appendTo($uploadItem);
-          };
-        })(this);
-        createInput();
-        $uploadItem.on('click mousedown', 'input[type=file]', function(e) {
-          return e.stopPropagation();
-        });
-        $uploadItem.on('change', 'input[type=file]', (function(_this) {
-          return function(e) {
-            if (_this.editor.editable.inputManager.focused) {
-              _this.editor.uploader.upload($input, {
-                inline: true
-              });
-              createInput();
-            } else {
-              _this.editor.one('focus', function(e) {
-                _this.editor.uploader.upload($input, {
-                  inline: true
-                });
-                return createInput();
-              });
-              _this.editor.focus();
-            }
-            return _this.wrapper.removeClass('menu-on');
-          };
-        })(this));
+
         this.editor.uploader.on('beforeupload', (function(_this) {
           return function(e, file) {
             var $img;
@@ -258,19 +198,13 @@ define([
             if (typeof result !== 'object') {
               try {
                 result = JSON.parse(result);
+                img_path = result.files[0].url;
               } catch (_error) {
                 e = _error;
                 result = {
                   success: false
                 };
               }
-            }
-            if (result.success === false) {
-              msg = result.msg || _this._t('uploadFailed');
-              alert(msg);
-              img_path = _this.defaultImage;
-            } else {
-              img_path = result.file_path;
             }
             _this.loadImage($img, img_path, function() {
               var $mask;

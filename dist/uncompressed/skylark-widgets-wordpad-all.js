@@ -11439,6 +11439,8 @@ define('skylark-storages-diskfs/select',[
         params = params || {};
         var directory = params.directory || false,
             multiple = params.multiple || false,
+            accept = params.accept || "", //'image/gif,image/jpeg,image/jpg,image/png,image/svg'
+            title = params.title || "",
             fileSelected = params.picked;
         if (!fileInput) {
             var input = fileInput = document.createElement("input");
@@ -11474,6 +11476,9 @@ define('skylark-storages-diskfs/select',[
             };
         }
         fileInput.multiple = multiple;
+        fileInput.accept = accept;
+        fileInput.title = title;
+
         fileInput.webkitdirectory = directory;
         fileInput.click();
     }
@@ -15590,7 +15595,7 @@ define('skylark-widgets-wordpad/uploader',[
       this.queue.push(file);
       return;
     }
-    if (this.trigger('beforeupload', [file]) === false) {
+    if (this.trigger('beforeupload', file) === false) {
       return;
     }
     this.files.push(file);
@@ -15635,6 +15640,9 @@ define('skylark-widgets-wordpad/uploader',[
       url: this.options.url
     });
 
+
+    var _this = this;
+
     xhr.post({
       data: formData,
       processData: false,
@@ -15642,43 +15650,19 @@ define('skylark-widgets-wordpad/uploader',[
       headers: {
         'X-File-Name': encodeURIComponent(file.name)
       },
-      xhr: function() {
-        var req;
-        req = $.ajaxSettings.xhr();
-        if (req) {
-          req.upload.onprogress = (function(_this) {
-            return function(e) {
-              return _this.progress(e);
-            };
-          })(this);
-        }
-        return req;
-      },
-      progress: (function(_this) {
-        return function(e) {
-          if (!e.lengthComputable) {
-            return;
-          }
-          return _this.trigger('uploadprogress', [file, e.loaded, e.total]);
-        };
-      })(this),
-      error: (function(_this) {
-        return function(xhr, status, err) {
-          return _this.trigger('uploaderror', [file, xhr, status]);
-        };
-      })(this),
-      success: (function(_this) {
-        return function(result) {
-          _this.trigger('uploadprogress', [file, file.size, file.size]);
-          _this.trigger('uploadsuccess', [file, result]);
-          return $(document).trigger('uploadsuccess', [file, result, _this]);
-        };
-      })(this),
-      complete: (function(_this) {
-        return function(xhr, status) {
-          return _this.trigger('uploadcomplete', [file, xhr.responseText]);
-        };
-      })(this)
+    }).progress(function(e){
+      if (!e.lengthComputable) {
+        return;
+      }
+      return _this.trigger('uploadprogress', file, e.loaded, e.total);
+    }).then(function(result){
+      _this.trigger('uploadsuccess', file, result);
+
+      _this.trigger('uploadcomplete');
+
+    }).catch(function(e,status){
+      _this.trigger('uploaderror', file,xhr);
+      _this.trigger('uploadcomplete');
     });
 
     return xhr;
@@ -15798,9 +15782,9 @@ define('skylark-widgets-wordpad/Wordpad',[
       this.opts = this.options;
 
       var e, editor, uploadOpts;
-      this.textarea = $(this.opts.srcNodeRef);
+      this.textarea = $(this.options.srcNodeRef);
 
-      this.opts.placeholder = this.opts.placeholder || this.textarea.attr('placeholder');
+      this.options.placeholder = this.options.placeholder || this.textarea.attr('placeholder');
 
       if (!this.textarea.length) {
         throw new Error('Wordpad: param textarea is required.');
@@ -15827,20 +15811,20 @@ define('skylark-widgets-wordpad/Wordpad',[
         return self.trigger(e.type,data);
       });
 
-      if (this.opts.upload && uploader) {
-        uploadOpts = typeof this.opts.upload === 'object' ? this.opts.upload : {};
+      if (this.options.upload && uploader) {
+        uploadOpts = typeof this.options.upload === 'object' ? this.options.upload : {};
         this.uploader = uploader(uploadOpts);
       }
 
       this.toolbar = new Toolbar(this,{
-        toolbar: this.opts.toolbar,
-        toolbarFloat:  this.opts.toolbarFloat,
-        toolbarHidden:  this.opts.toolbarHidden,
-        toolbarFloatOffset:  this.opts.toolbarFloatOffset
+        toolbar: this.options.toolbar,
+        toolbarFloat:  this.options.toolbarFloat,
+        toolbarHidden:  this.options.toolbarHidden,
+        toolbarFloatOffset:  this.options.toolbarFloatOffset
 
       });
 
-      if (this.opts.placeholder) {
+      if (this.options.placeholder) {
         this.on('valuechanged', function() {
           return self._placeholder();
         });
@@ -15854,6 +15838,7 @@ define('skylark-widgets-wordpad/Wordpad',[
     }
   });
 
+ 
   Wordpad.prototype.triggerHandler =  Wordpad.prototype.trigger = function(type,data) {
     var args, ref;
     args = [type];
@@ -15894,14 +15879,14 @@ define('skylark-widgets-wordpad/Wordpad',[
 
     this.wrapper = this.el.find('.wordpad-wrapper');
     this.body = this.wrapper.find('.wordpad-body');
-    this.placeholderEl = this.wrapper.find('.wordpad-placeholder').append(this.opts.placeholder);
+    this.placeholderEl = this.wrapper.find('.wordpad-placeholder').append(this.options.placeholder);
     this.el.data('wordpad', this);
     this.wrapper.append(this.textarea);
     this.textarea.data('wordpad', this).blur();
     this.body.attr('tabindex', this.textarea.attr('tabindex'));
 
-    if (this.opts.params) {
-      ref = this.opts.params;
+    if (this.options.params) {
+      ref = this.options.params;
       results = [];
       for (key in ref) {
         val = ref[key];
@@ -15918,7 +15903,7 @@ define('skylark-widgets-wordpad/Wordpad',[
   Wordpad.prototype._placeholder = function() {
     var children;
     children = this.body.children();
-    if (children.length === 0 || (children.length === 1 && this.util.isEmptyNode(children) && parseInt(children.css('margin-left') || 0) < this.opts.indentWidth)) {
+    if (children.length === 0 || (children.length === 1 && this.util.isEmptyNode(children) && parseInt(children.css('margin-left') || 0) < this.options.indentWidth)) {
       return this.placeholderEl.show();
     } else {
       return this.placeholderEl.hide();
@@ -17233,32 +17218,20 @@ define('skylark-widgets-wordpad/addons/actions/ImagePopover',[
       $uploadBtn.remove();
       return;
     }
-    createInput = (function(_this) {
-      return function() {
-        if (_this.input) {
-          _this.input.remove();
-        }
-        return _this.input = $('<input/>', {
-          type: 'file',
-          title: _this._t('uploadImage'),
-          multiple: true,
-          accept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg'
-        }).appendTo($uploadBtn);
-      };
-    })(this);
-    createInput();
-    this.el.on('click mousedown', 'input[type=file]', function(e) {
-      return e.stopPropagation();
-    });
-    return this.el.on('change', 'input[type=file]', (function(_this) {
-      return function(e) {
-        _this.editor.uploader.upload(_this.input, {
+
+    var _this = this;
+    $uploadBtn.picker({
+      title: _this._t('uploadImage'),
+      multiple: true,
+      accept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg',
+      picked : function(files){
+        _this.editor.uploader.upload(files, {
           inline: true,
           img: _this.target
         });
-        return createInput();
-      };
-    })(this));
+      }      
+
+    });
   };
 
   ImagePopover.prototype._resizeImg = function(inputEl, onlySetVal) {
@@ -17383,6 +17356,8 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
       needFocus : false,
 
       _init : function() {
+        Action.prototype._init.call(this);
+
         var item, k, len, ref;
         if (this.editor.options.imageAction) {
           if (Array.isArray(this.editor.options.imageAction)) {
@@ -17484,78 +17459,16 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
         this.popover = new ImagePopover({
           action: this
         });
-        if (this.editor.options.imageAction === 'upload') {
-          return this._initUploader(this.el);
+
+        if (this.editor.options.upload) {
+          return this._initUploader();
         }
 
-        return Action.prototype._init.call(this);
 
-
-      },
-
-      render : function() {
-        var args;
-        args = 1 <= arguments.length ? Array.prototype.slice.call(arguments, 0) : [];
-        Action.prototype.render.apply(this, args);
-        this.popover = new ImagePopover({
-          action: this
-        });
-        if (this.editor.options.imageAction === 'upload') {
-          return this._initUploader(this.el);
-        }
-      },
-
-      renderMenu : function() {
-        Action.prototype.renderMenu.call(this);
-        return this._initUploader();
       },
 
       _initUploader : function($uploadItem) {
-        var $input, createInput, uploadProgress;
-        if ($uploadItem == null) {
-          $uploadItem = this.menuEl.find('.menu-item-upload-image');
-        }
-        if (this.editor.uploader == null) {
-          this.el.find('.btn-upload').remove();
-          return;
-        }
-        $input = null;
-        createInput = (function(_this) {
-          return function() {
-            if ($input) {
-              $input.remove();
-            }
-            return $input = $('<input/>', {
-              type: 'file',
-              title: _this._t('uploadImage'),
-              multiple: true,
-              accept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg'
-            }).appendTo($uploadItem);
-          };
-        })(this);
-        createInput();
-        $uploadItem.on('click mousedown', 'input[type=file]', function(e) {
-          return e.stopPropagation();
-        });
-        $uploadItem.on('change', 'input[type=file]', (function(_this) {
-          return function(e) {
-            if (_this.editor.editable.inputManager.focused) {
-              _this.editor.uploader.upload($input, {
-                inline: true
-              });
-              createInput();
-            } else {
-              _this.editor.one('focus', function(e) {
-                _this.editor.uploader.upload($input, {
-                  inline: true
-                });
-                return createInput();
-              });
-              _this.editor.focus();
-            }
-            return _this.wrapper.removeClass('menu-on');
-          };
-        })(this));
+
         this.editor.uploader.on('beforeupload', (function(_this) {
           return function(e, file) {
             var $img;
@@ -17620,19 +17533,13 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
             if (typeof result !== 'object') {
               try {
                 result = JSON.parse(result);
+                img_path = result.files[0].url;
               } catch (_error) {
                 e = _error;
                 result = {
                   success: false
                 };
               }
-            }
-            if (result.success === false) {
-              msg = result.msg || _this._t('uploadFailed');
-              alert(msg);
-              img_path = _this.defaultImage;
-            } else {
-              img_path = result.file_path;
             }
             _this.loadImage($img, img_path, function() {
               var $mask;

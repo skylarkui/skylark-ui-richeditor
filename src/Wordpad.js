@@ -66,9 +66,9 @@ define([
       this.opts = this.options;
 
       var e, editor, uploadOpts;
-      this.textarea = $(this.opts.srcNodeRef);
+      this.textarea = $(this.options.srcNodeRef);
 
-      this.opts.placeholder = this.opts.placeholder || this.textarea.attr('placeholder');
+      this.options.placeholder = this.options.placeholder || this.textarea.attr('placeholder');
 
       if (!this.textarea.length) {
         throw new Error('Wordpad: param textarea is required.');
@@ -95,20 +95,20 @@ define([
         return self.trigger(e.type,data);
       });
 
-      if (this.opts.upload && uploader) {
-        uploadOpts = typeof this.opts.upload === 'object' ? this.opts.upload : {};
+      if (this.options.upload && uploader) {
+        uploadOpts = typeof this.options.upload === 'object' ? this.options.upload : {};
         this.uploader = uploader(uploadOpts);
       }
 
       this.toolbar = new Toolbar(this,{
-        toolbar: this.opts.toolbar,
-        toolbarFloat:  this.opts.toolbarFloat,
-        toolbarHidden:  this.opts.toolbarHidden,
-        toolbarFloatOffset:  this.opts.toolbarFloatOffset
+        toolbar: this.options.toolbar,
+        toolbarFloat:  this.options.toolbarFloat,
+        toolbarHidden:  this.options.toolbarHidden,
+        toolbarFloatOffset:  this.options.toolbarFloatOffset
 
       });
 
-      if (this.opts.placeholder) {
+      if (this.options.placeholder) {
         this.on('valuechanged', function() {
           return self._placeholder();
         });
@@ -122,6 +122,7 @@ define([
     }
   });
 
+ 
   Wordpad.prototype.triggerHandler =  Wordpad.prototype.trigger = function(type,data) {
     var args, ref;
     args = [type];
@@ -162,14 +163,14 @@ define([
 
     this.wrapper = this.el.find('.wordpad-wrapper');
     this.body = this.wrapper.find('.wordpad-body');
-    this.placeholderEl = this.wrapper.find('.wordpad-placeholder').append(this.opts.placeholder);
+    this.placeholderEl = this.wrapper.find('.wordpad-placeholder').append(this.options.placeholder);
     this.el.data('wordpad', this);
     this.wrapper.append(this.textarea);
     this.textarea.data('wordpad', this).blur();
     this.body.attr('tabindex', this.textarea.attr('tabindex'));
 
-    if (this.opts.params) {
-      ref = this.opts.params;
+    if (this.options.params) {
+      ref = this.options.params;
       results = [];
       for (key in ref) {
         val = ref[key];
@@ -186,7 +187,7 @@ define([
   Wordpad.prototype._placeholder = function() {
     var children;
     children = this.body.children();
-    if (children.length === 0 || (children.length === 1 && this.util.isEmptyNode(children) && parseInt(children.css('margin-left') || 0) < this.opts.indentWidth)) {
+    if (children.length === 0 || (children.length === 1 && this.util.isEmptyNode(children) && parseInt(children.css('margin-left') || 0) < this.options.indentWidth)) {
       return this.placeholderEl.show();
     } else {
       return this.placeholderEl.hide();

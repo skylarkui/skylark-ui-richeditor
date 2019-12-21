@@ -1,8 +1,22 @@
 define([
   "skylark-domx-query",
+  "skylark-codemirror/CodeMirror",
   "../../addons",
-  "../../Action"
-],function($,addons,Action){ 
+  "../../Action",
+//  "skylark-codemirror/addon/fold/foldcode",
+//  "skylark-codemirror/addon/fold/foldgutter",
+//  "skylark-codemirror/addon/fold/brace-fold",
+//  "skylark-codemirror/addon/fold/xml-fold",
+//  "skylark-codemirror/addon/fold/indent-fold",
+//  "skylark-codemirror/addon/fold/markdown-fold",
+//  "skylark-codemirror/addon/fold/comment-fold",  
+  "skylark-parsers-html",
+  "skylark-codemirror/addon/beautify/beautify",  
+  "skylark-codemirror/mode/xml/xml",
+  "skylark-codemirror/mode/css/css",
+  "skylark-codemirror/mode/javascript/javascript",
+  "skylark-codemirror/mode/htmlmixed/htmlmixed"
+],function($,CodeMirror,addons,Action,html){ 
    var  hasProp = {}.hasOwnProperty,
         slice = [].slice;
   
@@ -44,9 +58,41 @@ define([
       if (this.editor.htmlMode) {
         this.editor.hidePopover();
         this.editor.textarea.val(this.beautifyHTML(this.editor.textarea.val()));
-        this._resizeTextarea();
+        var  codemirrorOptions =  { 
+          mode: 'htmlmixed', 
+          lineWrapping: true, 
+          dragDrop: false, 
+          autoCloseTags: true, 
+          matchTags: true, 
+          autoCloseBrackets: true, 
+          matchBrackets: true, 
+          indentUnit: 4, 
+          indentWithTabs: false, 
+          tabSize: 4, 
+          hintOptions: {
+              completionSingle:
+              false
+          },
+          beautify : {
+            html : {
+              beautifyFunc: html.beautify
+            }
+          },
+          
+  //        extraKeys: {"Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); }},
+  //        foldGutter: true,
+  //        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+        lineNumbers: true
+  
+        };
+       if (!this.CodeMirrorEditor) {
+         this.CodeMirrorEditor = CodeMirror.fromTextArea(this.editor.textarea[0], codemirrorOptions);
+       }
+       //this._resizeTextarea();
+
       } else {
-        this.editor.setValue(this.editor.textarea.val());
+        this.editor.setValue(this.CodeMirrorEditor.getValue());
+        //this.editor.setValue(this.editor.textarea.val());
       }
       ref = this.editor._actions;
       for (i = 0, len = ref.length; i < len; i++) {

@@ -1,12 +1,12 @@
-.wordpad {
+.lark-wordpad {
   position: relative;
   border: 1px solid #c9d8db;
 }
-.wordpad .wordpad-wrapper {
+.lark-wordpad .wordpad-wrapper {
   position: relative;
   background: #ffffff;
 }
-.wordpad .wordpad-wrapper > textarea {
+.lark-wordpad .wordpad-wrapper > textarea {
   display: none !important;
   width: 100%;
   box-sizing: border-box;
@@ -20,7 +20,7 @@
   background: transparent;
   resize: none;
 }
-.wordpad .wordpad-wrapper .wordpad-placeholder {
+.lark-wordpad .wordpad-wrapper .wordpad-placeholder {
   display: none;
   position: absolute;
   left: 0;
@@ -33,7 +33,7 @@
   background: transparent;
 }
 
-.wordpad .wordpad-wrapper .wordpad-image-loading {
+.lark-wordpad .wordpad-wrapper .wordpad-image-loading {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -41,7 +41,7 @@
   left: 0;
   z-index: 2;
 }
-.wordpad .wordpad-wrapper .wordpad-image-loading .progress {
+.lark-wordpad .wordpad-wrapper .wordpad-image-loading .progress {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.4);
@@ -49,7 +49,7 @@
   bottom: 0;
   left: 0;
 }
-.wordpad .wordpad-body {
+.lark-wordpad .wordpad-body {
   padding: 22px 15px 40px;
   min-height: 300px;
   outline: none;
@@ -58,19 +58,19 @@
   z-index: 1;
   background: transparent;
 }
-.wordpad .wordpad-body a.selected {
+.lark-wordpad .wordpad-body a.selected {
   background: #b3d4fd;
 }
-.wordpad .wordpad-body a.wordpad-mention {
+.lark-wordpad .wordpad-body a.wordpad-mention {
   cursor: pointer;
 }
-.wordpad .wordpad-body .wordpad-table {
+.lark-wordpad .wordpad-body .wordpad-table {
   position: relative;
 }
-.wordpad .wordpad-body .wordpad-table.resizing {
+.lark-wordpad .wordpad-body .wordpad-table.resizing {
   cursor: col-resize;
 }
-.wordpad .wordpad-body .wordpad-table .wordpad-resize-handle {
+.lark-wordpad .wordpad-body .wordpad-table .wordpad-resize-handle {
   position: absolute;
   left: 0;
   top: 0;
@@ -78,20 +78,20 @@
   height: 100%;
   cursor: col-resize;
 }
-.wordpad .wordpad-body pre {
+.lark-wordpad .wordpad-body pre {
   /*min-height: 28px;*/
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   word-wrap: break-word !important;
   white-space: pre-wrap !important;
 }
-.wordpad .wordpad-body img {
+.lark-wordpad .wordpad-body img {
   cursor: pointer;
 }
-.wordpad .wordpad-body img.selected {
+.lark-wordpad .wordpad-body img.selected {
   box-shadow: 0 0 0 4px #cccccc;
 }
-.wordpad .wordpad-paste-bin {
+.lark-wordpad .paste-bin {
   position: fixed;
   bottom: 10px;
   right: 10px;
@@ -107,7 +107,7 @@
 }
 
 
-.wordpad .wordpad-popover {
+.lark-wordpad .wordpad-popover {
   display: none;
   padding: 5px 8px 0;
   background: #ffffff;
@@ -116,51 +116,51 @@
   position: absolute;
   z-index: 2;
 }
-.wordpad .wordpad-popover .settings-field {
+.lark-wordpad .wordpad-popover .settings-field {
   margin: 0 0 5px 0;
   font-size: 12px;
   height: 25px;
   line-height: 25px;
 }
-.wordpad .wordpad-popover .settings-field label {
+.lark-wordpad .wordpad-popover .settings-field label {
   display: inline-block;
   margin: 0 5px 0 0;
 }
-.wordpad .wordpad-popover .settings-field input[type=text] {
+.lark-wordpad .wordpad-popover .settings-field input[type=text] {
   display: inline-block;
   width: 200px;
   box-sizing: border-box;
   font-size: 12px;
 }
-.wordpad .wordpad-popover .settings-field input[type=text].image-size {
+.lark-wordpad .wordpad-popover .settings-field input[type=text].image-size {
   width: 83px;
 }
-.wordpad .wordpad-popover .settings-field .times {
+.lark-wordpad .wordpad-popover .settings-field .times {
   display: inline-block;
   width: 26px;
   font-size: 12px;
   text-align: center;
 }
-.wordpad .wordpad-popover.link-popover .btn-unlink, .wordpad .wordpad-popover.image-popover .btn-upload, .wordpad .wordpad-popover.image-popover .btn-restore {
+.lark-wordpad .wordpad-popover.link-popover .btn-unlink, .lark-wordpad .wordpad-popover.image-popover .btn-upload, .lark-wordpad .wordpad-popover.image-popover .btn-restore {
   display: inline-block;
   margin: 0 0 0 5px;
   color: #333333;
   font-size: 14px;
   outline: 0;
 }
-.wordpad .wordpad-popover.link-popover .btn-unlink span, .wordpad .wordpad-popover.image-popover .btn-upload span, .wordpad .wordpad-popover.image-popover .btn-restore span {
+.lark-wordpad .wordpad-popover.link-popover .btn-unlink span, .lark-wordpad .wordpad-popover.image-popover .btn-upload span, .lark-wordpad .wordpad-popover.image-popover .btn-restore span {
   opacity: 0.6;
 }
-.wordpad .wordpad-popover.link-popover .btn-unlink:hover span, .wordpad .wordpad-popover.image-popover .btn-upload:hover span, .wordpad .wordpad-popover.image-popover .btn-restore:hover span {
+.lark-wordpad .wordpad-popover.link-popover .btn-unlink:hover span, .lark-wordpad .wordpad-popover.image-popover .btn-upload:hover span, .lark-wordpad .wordpad-popover.image-popover .btn-restore:hover span {
   opacity: 1;
 }
-.wordpad .wordpad-popover.image-popover .btn-upload {
+.lark-wordpad .wordpad-popover.image-popover .btn-upload {
   position: relative;
   display: inline-block;
   overflow: hidden;
   vertical-align: middle;
 }
-.wordpad .wordpad-popover.image-popover .btn-upload input[type=file] {
+.lark-wordpad .wordpad-popover.image-popover .btn-upload input[type=file] {
   position: absolute;
   right: 0px;
   top: 0px;
@@ -169,7 +169,7 @@
   width: 28px;
 }
 
-.wordpad .wordpad-body, .editor-style {
+.lark-wordpad .wordpad-body, .lark-wordpad-style {
   font-size: 16px;
   font-family: arial, sans-serif;
   line-height: 1.6;
@@ -177,97 +177,97 @@
   outline: none;
   word-wrap: break-word;
 }
-.wordpad .wordpad-body > :first-child, .editor-style > :first-child {
+.lark-wordpad .wordpad-body > :first-child, .lark-wordpad-style > :first-child {
   margin-top: 0 !important;
 }
-.wordpad .wordpad-body a, .editor-style a {
+.lark-wordpad .wordpad-body a, .lark-wordpad-style a {
   color: #4298BA;
   text-decoration: none;
   word-break: break-all;
 }
-.wordpad .wordpad-body a:visited, .editor-style a:visited {
+.lark-wordpad .wordpad-body a:visited, .lark-wordpad-style a:visited {
   color: #4298BA;
 }
-.wordpad .wordpad-body a:hover, .editor-style a:hover {
+.lark-wordpad .wordpad-body a:hover, .lark-wordpad-style a:hover {
   color: #0F769F;
 }
-.wordpad .wordpad-body a:active, .editor-style a:active {
+.lark-wordpad .wordpad-body a:active, .lark-wordpad-style a:active {
   color: #9E792E;
 }
-.wordpad .wordpad-body a:hover, .wordpad .wordpad-body a:active, .editor-style a:hover, .editor-style a:active {
+.lark-wordpad .wordpad-body a:hover, .lark-wordpad .wordpad-body a:active, .lark-wordpad-style a:hover, .lark-wordpad-style a:active {
   outline: 0;
 }
-.wordpad .wordpad-body h1, .wordpad .wordpad-body h2, .wordpad .wordpad-body h3, .wordpad .wordpad-body h4, .wordpad .wordpad-body h5, .wordpad .wordpad-body h6, .editor-style h1, .editor-style h2, .editor-style h3, .editor-style h4, .editor-style h5, .editor-style h6 {
+.lark-wordpad .wordpad-body h1, .lark-wordpad .wordpad-body h2, .lark-wordpad .wordpad-body h3, .lark-wordpad .wordpad-body h4, .lark-wordpad .wordpad-body h5, .lark-wordpad .wordpad-body h6, .lark-wordpad-style h1, .lark-wordpad-style h2, .lark-wordpad-style h3, .lark-wordpad-style h4, .lark-wordpad-style h5, .lark-wordpad-style h6 {
   font-weight: normal;
   margin: 40px 0 20px;
   color: #000000;
 }
-.wordpad .wordpad-body h1, .editor-style h1 {
+.lark-wordpad .wordpad-body h1, .lark-wordpad-style h1 {
   font-size: 24px;
 }
-.wordpad .wordpad-body h2, .editor-style h2 {
+.lark-wordpad .wordpad-body h2, .lark-wordpad-style h2 {
   font-size: 22px;
 }
-.wordpad .wordpad-body h3, .editor-style h3 {
+.lark-wordpad .wordpad-body h3, .lark-wordpad-style h3 {
   font-size: 20px;
 }
-.wordpad .wordpad-body h4, .editor-style h4 {
+.lark-wordpad .wordpad-body h4, .lark-wordpad-style h4 {
   font-size: 18px;
 }
-.wordpad .wordpad-body h5, .editor-style h5 {
+.lark-wordpad .wordpad-body h5, .lark-wordpad-style h5 {
   font-size: 16px;
 }
-.wordpad .wordpad-body h6, .editor-style h6 {
+.lark-wordpad .wordpad-body h6, .lark-wordpad-style h6 {
   font-size: 16px;
 }
-.wordpad .wordpad-body p, .wordpad .wordpad-body div, .editor-style p, .editor-style div {
+.lark-wordpad .wordpad-body p, .lark-wordpad .wordpad-body div, .lark-wordpad-style p, .lark-wordpad-style div {
   word-wrap: break-word;
   margin: 0 0 15px 0;
   color: #333;
   word-wrap: break-word;
 }
-.wordpad .wordpad-body b, .wordpad .wordpad-body strong, .editor-style b, .editor-style strong {
+.lark-wordpad .wordpad-body b, .lark-wordpad .wordpad-body strong, .lark-wordpad-style b, .lark-wordpad-style strong {
   font-weight: bold;
 }
-.wordpad .wordpad-body i, .wordpad .wordpad-body em, .editor-style i, .editor-style em {
+.lark-wordpad .wordpad-body i, .lark-wordpad .wordpad-body em, .lark-wordpad-style i, .lark-wordpad-style em {
   font-style: italic;
 }
-.wordpad .wordpad-body u, .editor-style u {
+.lark-wordpad .wordpad-body u, .lark-wordpad-style u {
   text-decoration: underline;
 }
-.wordpad .wordpad-body strike, .wordpad .wordpad-body del, .editor-style strike, .editor-style del {
+.lark-wordpad .wordpad-body strike, .lark-wordpad .wordpad-body del, .lark-wordpad-style strike, .lark-wordpad-style del {
   text-decoration: line-through;
 }
-.wordpad .wordpad-body ul, .wordpad .wordpad-body ol, .editor-style ul, .editor-style ol {
+.lark-wordpad .wordpad-body ul, .lark-wordpad .wordpad-body ol, .lark-wordpad-style ul, .lark-wordpad-style ol {
   list-style: disc outside none;
   margin: 1px 0;
   padding: 0 0 0 40px;
   line-height: 1.6;
 }
-.wordpad .wordpad-body ul li, .wordpad .wordpad-body ol li, .editor-style ul li, .editor-style ol li {
+.lark-wordpad .wordpad-body ul li, .lark-wordpad .wordpad-body ol li, .lark-wordpad-style ul li, .lark-wordpad-style ol li {
   list-style-type: inherit;
 }
-.wordpad .wordpad-body ul ul, .wordpad .wordpad-body ul ol, .wordpad .wordpad-body ol ul, .wordpad .wordpad-body ol ol, .editor-style ul ul, .editor-style ul ol, .editor-style ol ul, .editor-style ol ol {
+.lark-wordpad .wordpad-body ul ul, .lark-wordpad .wordpad-body ul ol, .lark-wordpad .wordpad-body ol ul, .lark-wordpad .wordpad-body ol ol, .lark-wordpad-style ul ul, .lark-wordpad-style ul ol, .lark-wordpad-style ol ul, .lark-wordpad-style ol ol {
   padding-left: 30px;
 }
-.wordpad .wordpad-body ul ul, .wordpad .wordpad-body ol ul, .editor-style ul ul, .editor-style ol ul {
+.lark-wordpad .wordpad-body ul ul, .lark-wordpad .wordpad-body ol ul, .lark-wordpad-style ul ul, .lark-wordpad-style ol ul {
   list-style: circle outside none;
 }
-.wordpad .wordpad-body ul ul ul, .wordpad .wordpad-body ol ul ul, .editor-style ul ul ul, .editor-style ol ul ul {
+.lark-wordpad .wordpad-body ul ul ul, .lark-wordpad .wordpad-body ol ul ul, .lark-wordpad-style ul ul ul, .lark-wordpad-style ol ul ul {
   list-style: square outside none;
 }
-.wordpad .wordpad-body ol, .editor-style ol {
+.lark-wordpad .wordpad-body ol, .lark-wordpad-style ol {
   list-style: decimal;
 }
-.wordpad .wordpad-body blockquote, .editor-style blockquote {
+.lark-wordpad .wordpad-body blockquote, .lark-wordpad-style blockquote {
   border-left: 6px solid #ddd;
   padding: 5px 0 5px 10px;
   margin: 15px 0 15px 15px;
 }
-.wordpad .wordpad-body blockquote > :first-child, .editor-style blockquote > :first-child {
+.lark-wordpad .wordpad-body blockquote > :first-child, .lark-wordpad-style blockquote > :first-child {
   margin-top: 0;
 }
-.wordpad .wordpad-body code, .editor-style code {
+.lark-wordpad .wordpad-body code, .lark-wordpad-style code {
   display: inline-block;
   padding: 0 4px;
   margin: 0 5px;
@@ -278,7 +278,7 @@
   word-break: break-all;
   word-wrap: break-word;
 }
-.wordpad .wordpad-body pre, .editor-style pre {
+.lark-wordpad .wordpad-body pre, .lark-wordpad-style pre {
   padding: 10px 5px 10px 10px;
   margin: 15px 0;
   display: block;
@@ -291,14 +291,14 @@
   word-wrap: normal;
   overflow-x: auto;
 }
-.wordpad .wordpad-body pre code, .editor-style pre code {
+.lark-wordpad .wordpad-body pre code, .lark-wordpad-style pre code {
   display: block;
   padding: 0;
   margin: 0;
   background: none;
   border-radius: 0;
 }
-.wordpad .wordpad-body hr, .editor-style hr {
+.lark-wordpad .wordpad-body hr, .lark-wordpad-style hr {
   display: block;
   height: 0px;
   border: 0;
@@ -306,17 +306,17 @@
   margin: 15px 0;
   padding: 0;
 }
-.wordpad .wordpad-body table, .editor-style table {
+.lark-wordpad .wordpad-body table, .lark-wordpad-style table {
   width: 100%;
   table-layout: fixed;
   border-collapse: collapse;
   border-spacing: 0;
   margin: 15px 0;
 }
-.wordpad .wordpad-body table thead, .editor-style table thead {
+.lark-wordpad .wordpad-body table thead, .lark-wordpad-style table thead {
   background-color: #f9f9f9;
 }
-.wordpad .wordpad-body table td, .wordpad .wordpad-body table th, .editor-style table td, .editor-style table th {
+.lark-wordpad .wordpad-body table td, .lark-wordpad .wordpad-body table th, .lark-wordpad-style table td, .lark-wordpad-style table th {
   min-width: 40px;
   height: 30px;
   border: 1px solid #ccc;
@@ -325,10 +325,10 @@
   text-align: left;
   box-sizing: border-box;
 }
-.wordpad .wordpad-body table td.active, .wordpad .wordpad-body table th.active, .editor-style table td.active, .editor-style table th.active {
+.lark-wordpad .wordpad-body table td.active, .lark-wordpad .wordpad-body table th.active, .lark-wordpad-style table td.active, .lark-wordpad-style table th.active {
   background-color: #ffffee;
 }
-.wordpad .wordpad-body img, .editor-style img {
+.lark-wordpad .wordpad-body img, .lark-wordpad-style img {
   margin: 0 5px;
   vertical-align: middle;
 }
@@ -339,7 +339,7 @@
     border: 1px solid #ccc;
     cursor: pointer;
 }
-.wordpad .wordpad-body iframe {
+.lark-wordpad .wordpad-body iframe {
   border: 0 none;
 }
 
@@ -373,3 +373,180 @@
     position: absolute;
     z-index: 1;
 }
+
+.wordpad-fullscreen {
+  overflow: hidden;
+}
+.wordpad-fullscreen .lark-wordpad {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 100%;
+}
+.wordpad-fullscreen .lark-wordpad .wordpad-body {
+  overflow: auto;
+}
+
+.lark-wordpad .lark-toolbar > ul > li > .toolbar-item span.wordpad-icon {
+  display: inline;
+  line-height: normal;
+}
+
+.lark-wordpad .lark-toolbar > ul > li > .toolbar-item.toolbar-item-title.active-h1 span:before {
+  content: 'H1';
+  font-size: 18px;
+}
+.lark-wordpad .lark-toolbar > ul > li > .toolbar-item.toolbar-item-title.active-h2 span:before {
+  content: 'H2';
+  font-size: 18px;
+}
+.lark-wordpad .lark-toolbar > ul > li > .toolbar-item.toolbar-item-title.active-h3 span:before {
+  content: 'H3';
+  font-size: 18px;
+}
+.lark-wordpad .lark-toolbar > ul > li > .toolbar-item.toolbar-item-image {
+  position: relative;
+  overflow: hidden;
+}
+.lark-wordpad .lark-toolbar > ul > li > .toolbar-item.toolbar-item-image > input[type=file] {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  opacity: 0;
+  font-size: 100px;
+  cursor: pointer;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu ul > li .menu-item.menu-item-h1 {
+  font-size: 24px;
+  color: #333333;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu ul > li .menu-item.menu-item-h2 {
+  font-size: 22px;
+  color: #333333;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu ul > li .menu-item.menu-item-h3 {
+  font-size: 20px;
+  color: #333333;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu ul > li .menu-item.menu-item-h4 {
+  font-size: 18px;
+  color: #333333;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu ul > li .menu-item.menu-item-h5 {
+  font-size: 16px;
+  color: #333333;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-color {
+  width: 96px;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-color .color-list {
+  height: 40px;
+  margin: 10px 6px 6px 10px;
+  padding: 0;
+  min-width: 0;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-color .color-list li {
+  float: left;
+  margin: 0 4px 4px 0;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color {
+  display: block;
+  width: 16px;
+  height: 16px;
+  background: #dfdfdf;
+  border-radius: 2px;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color:hover {
+  opacity: 0.8;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color.font-color-default {
+  background: #333333;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color-1 {
+  background: #E33737;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color-2 {
+  background: #e28b41;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color-3 {
+  background: #c8a732;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color-4 {
+  background: #209361;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color-5 {
+  background: #418caf;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color-6 {
+  background: #aa8773;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color-7 {
+  background: #999999;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-table .menu-create-table {
+  background: #ffffff;
+  padding: 1px;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-table .menu-create-table table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-table .menu-create-table table td {
+  padding: 0;
+  cursor: pointer;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-table .menu-create-table table td:before {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #ffffff;
+  background: #f3f3f3;
+  display: block;
+  content: "";
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-table .menu-create-table table td.selected:before {
+  background: #cfcfcf;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-table .menu-edit-table {
+  display: none;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-table .menu-edit-table ul li {
+  white-space: nowrap;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-image .menu-item-upload-image {
+  position: relative;
+  overflow: hidden;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-image .menu-item-upload-image input[type=file] {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  opacity: 0;
+  font-size: 100px;
+  cursor: pointer;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-alignment {
+  width: 100%;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-alignment ul {
+  min-width: 100%;
+}
+.lark-wordpad .lark-toolbar .toolbar-menu.toolbar-menu-alignment .menu-item {
+  text-align: center;
+}
+
+/*html*/
+.CodeMirror {
+  display: none;  
+}
+.lark-wordpad.wordpad-html .wordpad-wrapper > .CodeMirror {
+  display: block !important;
+}
+
+.lark-wordpad.wordpad-html .wordpad-body,
+.lark-wordpad.wordpad-html .wordpad-placeholder {
+  display: none;
+}
+w

@@ -13,7 +13,7 @@ define([
       disableTag : 'pre, table',
 
       _execute : function() {
-        return this.editor.editable.blockquote(this.htmlTag,this.disableTag);
+        return this.editor.editable.blockquote(this.disableTag);
       }
    });
 

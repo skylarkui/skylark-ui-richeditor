@@ -3,7 +3,35 @@ require.config({
   , shim: {
   }
   ,packages : [
-           {
+          {
+            name: 'skylark-parsers-css',
+            location : "../node_modules/skylark-parsers-css/dist/uncompressed/skylark-parsers-css",
+            //location : "../../../parsers/skylark-parsers-css/src",
+            main: 'main'
+          },
+          {
+            name: 'skylark-parsers-javascript',
+            location : "../node_modules/skylark-parsers-javascript/dist/uncompressed/skylark-parsers-javascript",
+            //location : "../../../parsers/skylark-parsers-javascript/src",
+            main: 'main'
+          },
+          {
+            name: 'skylark-parsers-html',
+            location : "../node_modules/skylark-parsers-html/dist/uncompressed/skylark-parsers-html",
+            //location : "../../../parsers/skylark-parsers-html/src",
+            main: 'main'
+          },
+          {
+            name: 'skylark-bootstrap3',
+            location : "../node_modules/skylark-bootstrap3/dist/uncompressed/skylark-bootstrap3",
+            main: 'main'
+          },
+          { 
+           name: "skylark-codemirror", 
+           location : "../node_modules/skylark-codemirror/dist/uncompressed/skylark-codemirror"
+           //location: "../../../intg/editor/skylark-codemirror/src"
+         },
+         {
            name : "skylark-langx-arrays",
            location : "../node_modules/skylark-langx-arrays/dist/uncompressed/skylark-langx-arrays",
             main: 'main'
@@ -101,7 +129,8 @@ require.config({
          {
            name : "skylark-domx-eventer",
            location : "../node_modules/skylark-domx-eventer/dist/uncompressed/skylark-domx-eventer",
-            main: 'main'
+           //location: "../../../domx/skylark-domx-eventer/src",
+           main: 'main'
          },
          {
            name : "skylark-domx-files",
@@ -111,7 +140,8 @@ require.config({
          {
            name : "skylark-domx-finder",
            location : "../node_modules/skylark-domx-finder/dist/uncompressed/skylark-domx-finder",
-            main: 'main'
+           //location: "../../../domx/skylark-domx-finder/src",
+           main: 'main'
          },
          {
            name : "skylark-domx-fx",
@@ -141,6 +171,7 @@ require.config({
          {
            name : "skylark-domx-query",
            location : "../node_modules/skylark-domx-query/dist/uncompressed/skylark-domx-query",
+           //location: "../../../domx/skylark-domx-query/src",
             main: 'main'
          },
 
@@ -225,9 +256,9 @@ require([
       pasteImage: true,
       defaultImage: './fork.png',
       autosave: 'editor-content',
-      upload: location.search === '?upload' ? {
+      upload : {
         url: 'http://localhost:3001/upload/default'
-      } : false,
+      },
 
       addons : {
         "general" : [

@@ -55,7 +55,7 @@ define([
         defaultImage: 'images/image.png',
         params: {},
         upload: false,
-        template : "<div class=\"wordpad\">\n  <div class=\"wordpad-wrapper\">\n    <div class=\"wordpad-placeholder\"></div>\n    <div class=\"wordpad-body\" contenteditable=\"true\">\n    </div>\n  </div>\n</div>"
+        template : "<div class=\"lark-wordpad\">\n  <div class=\"wordpad-wrapper\">\n    <div class=\"wordpad-placeholder\"></div>\n    <div class=\"wordpad-body\" contenteditable=\"true\">\n    </div>\n  </div>\n</div>"
       },
 
 
@@ -85,7 +85,7 @@ define([
 
       var self = this;
       this.editable = new Editable(this._elm,{
-        classPrefix : "wordpad-",
+        classPrefix : "lark-wordpad-",
         textarea : this.textarea,
         body : this.body
       });
@@ -215,18 +215,20 @@ define([
   };
 
   Wordpad.prototype.findAction = function(name) {
-    if (!this._actions[name]) {
+    var action = this._actions[name];
+    if (!action) {
       if (!this.constructor.addons.actions[name]) {
         throw new Error("Wordpad: invalid action " + name);
       }
 
-      this._actions[name] = new this.constructor.addons.actions[name]({
+      action = this._actions[name] = new this.constructor.addons.actions[name]({
         editor: this
       });
 
+      this._actions.push(action);
     }
 
-    return this._actions[name];
+    return action;
   };
 
   Wordpad.prototype.hidePopover = function() {

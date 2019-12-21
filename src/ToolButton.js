@@ -90,11 +90,11 @@ define([
     },
 
     _doActive : function(value) {
-      return this.el.toggleClass('active', this.active);
+      return this.el.toggleClass('active', value);
     },
 
     _doDisabled : function(value) {
-      return this.el.toggleClass('disabled', this.disabled);
+      return this.el.toggleClass('disabled', value);
     },
 
     iconClassOf : function(icon) {

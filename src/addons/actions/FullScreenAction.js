@@ -38,16 +38,16 @@ define([
               height: _this.window.height() - $(_this.editor.toolbar._elm).outerHeight() - editablePadding
             });
           };
-        })(this)).resize();
+        })(this));
       } else {
-        this.window.off("resize.wordpad-fullscreen-" + this.editor.id).resize();
-        this._resize({
-          height: 'auto'
-        });
+        this.window.off("resize.wordpad-fullscreen-" + this.editor.id);
+        //this._resize({
+        //  height: 'auto'
+        //});
       }
       return this.setActive(isFullscreen);
     },
-
+    
     _resize : function(size) {
       return this.editable.height(size.height);
     }

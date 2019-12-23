@@ -28,8 +28,8 @@ require.config({
           },
           { 
            name: "skylark-codemirror", 
-           location : "../node_modules/skylark-codemirror/dist/uncompressed/skylark-codemirror"
-           //location: "../../../intg/editor/skylark-codemirror/src"
+           //location : "../node_modules/skylark-codemirror/dist/uncompressed/skylark-codemirror"
+           location: "../../../intg/editor/skylark-codemirror/src"
          },
          {
            name : "skylark-langx-arrays",

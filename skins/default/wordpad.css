@@ -2,10 +2,17 @@
   position: relative;
   border: 1px solid #c9d8db;
 }
+
+
 .lark-wordpad .wordpad-wrapper {
   position: relative;
   background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  height : 100%;
 }
+
+
 .lark-wordpad .wordpad-wrapper > textarea {
   display: none !important;
   width: 100%;
@@ -49,15 +56,19 @@
   bottom: 0;
   left: 0;
 }
-.lark-wordpad .wordpad-body {
+.lark-wordpad .wordpad-wrapper .wordpad-body{
   padding: 22px 15px 40px;
-  min-height: 300px;
   outline: none;
   cursor: text;
+  min-height: 300px;
   position: relative;
   z-index: 1;
   background: transparent;
+
+  flex:2;
+  overflow: auto;
 }
+
 .lark-wordpad .wordpad-body a.selected {
   background: #b3d4fd;
 }
@@ -383,10 +394,9 @@
   left: 0;
   z-index: 9999;
   width: 100%;
+  height:100%;
 }
-.wordpad-fullscreen .lark-wordpad .wordpad-body {
-  overflow: auto;
-}
+
 
 .lark-wordpad .lark-toolbar > ul > li > .toolbar-item span.wordpad-icon {
   display: inline;
@@ -538,15 +548,19 @@
 }
 
 /*html*/
-.CodeMirror {
+.lark-wordpad .CodeMirror {
   display: none;  
 }
 .lark-wordpad.wordpad-html .wordpad-wrapper > .CodeMirror {
   display: block !important;
+  min-height: 300px;
+  z-index: 1;
+  background: transparent;
+
+  flex:2;
 }
 
 .lark-wordpad.wordpad-html .wordpad-body,
 .lark-wordpad.wordpad-html .wordpad-placeholder {
   display: none;
 }
-w

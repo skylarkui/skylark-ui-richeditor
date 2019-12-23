@@ -30929,9 +30929,9 @@ define('skylark-codemirror/addon/beautify/beautify',[
       };
 
       if (typeof val === 'object')
-        cm.state.beautify = langx.mixin({}, defaultOptions, cmOptions, val);
+        cm.state.beautify = langx.mixin({}, defaultOptions, cmOptions, val,true);
       else
-        cm.state.beautify = langx.mixin({}, defaultOptions, cmOptions);
+        cm.state.beautify = langx.mixin({}, defaultOptions, cmOptions,true);
 
       if (cm.state.beautify.initialBeautify)
         beautify(cm);
@@ -33291,7 +33291,7 @@ define('skylark-widgets-wordpad/addons/actions/HtmlAction',[
       this.editor.htmlMode = this.editor.el.hasClass('wordpad-html');
       if (this.editor.htmlMode) {
         this.editor.hidePopover();
-        this.editor.textarea.val(this.beautifyHTML(this.editor.textarea.val()));
+        //this.editor.textarea.val(this.beautifyHTML(this.editor.textarea.val()));
         var  codemirrorOptions =  { 
           mode: 'htmlmixed', 
           lineWrapping: true, 
@@ -33321,6 +33321,9 @@ define('skylark-widgets-wordpad/addons/actions/HtmlAction',[
         };
        if (!this.CodeMirrorEditor) {
          this.CodeMirrorEditor = CodeMirror.fromTextArea(this.editor.textarea[0], codemirrorOptions);
+       } else {
+         this.CodeMirrorEditor.setValue(this.editor.textarea.val());
+         this.CodeMirrorEditor.beautify();
        }
        //this._resizeTextarea();
 

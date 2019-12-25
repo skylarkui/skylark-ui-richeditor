@@ -40,7 +40,8 @@ define([
     url: '',
     params: null,
     fileKey: 'upload_file',
-    connectionCount: 3
+    connectionCount: 3,
+    headers: null
   };
 
 
@@ -104,6 +105,7 @@ define([
       params: this.options.params,
       fileKey: this.options.fileKey,
       name: name,
+      headers : this.options.headers,
       size: (ref1 = fileObj.fileSize) != null ? ref1 : fileObj.size,
       ext: name ? name.split('.').pop().toLowerCase() : '',
       obj: fileObj
@@ -128,6 +130,17 @@ define([
       url: this.options.url
     });
 
+    var headers = {
+        'X-File-Name': encodeURIComponent(file.name)
+    };
+
+    if (file.headers) {
+      ref = file.headers;
+      for (k in ref) {
+        v = ref[k];
+        headers[k] =  v;
+      }
+    }
 
     var _this = this;
 
@@ -135,9 +148,7 @@ define([
       data: formData,
       processData: false,
       contentType: false,
-      headers: {
-        'X-File-Name': encodeURIComponent(file.name)
-      },
+      headers: headers
     }).progress(function(e){
       if (!e.lengthComputable) {
         return;

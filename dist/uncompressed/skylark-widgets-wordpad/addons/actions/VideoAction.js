@@ -29,9 +29,9 @@ define([
         this.title = this._t(this.name);
         langx.merge(this.editor.editable.formatter._allowedTags, ['embed', 'iframe', 'video']);
         langx.extend(this.editor.editable.formatter._allowedAttributes, {
-          embed: ['class', 'width', 'height', 'type', 'pluginspage', 'src', 'wmode', 'play', 'loop', 'menu', 'allowscriptaccess', 'allowfullscreen'],
-          iframe: ['class', 'width', 'height', 'src', 'frameborder'],
-          video: ['class', 'width', 'height', 'poster', 'controls', 'allowfullscreen', 'src', 'data-link', 'data-tag']
+          embed: ['class', 'width', 'height', 'style','type', 'pluginspage', 'src', 'wmode', 'play', 'loop', 'menu', 'allowscriptaccess', 'allowfullscreen'],
+          iframe: ['class', 'width', 'height','style', 'src', 'frameborder','data-link','data-width','data-height'],
+          video: ['class', 'width', 'height', 'style','poster', 'controls', 'allowfullscreen', 'src', 'data-link', 'data-tag']
         });
 
         this.placeholderPoster =  this.editor.options.addons.actions.video.placeholderPoster;
@@ -129,8 +129,8 @@ define([
         }
         $video = $('<video/>').attr({
           'poster': this.placeholderPoster,
-          'width': 500,
-          'height': 281,
+          'width': 225,
+          'height': 225,
           'class' : 'wordpad-video'
         });
         range.insertNode($video[0]);

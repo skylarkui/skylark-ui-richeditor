@@ -15641,7 +15641,8 @@ define('skylark-widgets-wordpad/uploader',[
     url: '',
     params: null,
     fileKey: 'upload_file',
-    connectionCount: 3
+    connectionCount: 3,
+    headers: null
   };
 
 
@@ -15705,6 +15706,7 @@ define('skylark-widgets-wordpad/uploader',[
       params: this.options.params,
       fileKey: this.options.fileKey,
       name: name,
+      headers : this.options.headers,
       size: (ref1 = fileObj.fileSize) != null ? ref1 : fileObj.size,
       ext: name ? name.split('.').pop().toLowerCase() : '',
       obj: fileObj
@@ -15729,6 +15731,17 @@ define('skylark-widgets-wordpad/uploader',[
       url: this.options.url
     });
 
+    var headers = {
+        'X-File-Name': encodeURIComponent(file.name)
+    };
+
+    if (file.headers) {
+      ref = file.headers;
+      for (k in ref) {
+        v = ref[k];
+        headers[k] =  v;
+      }
+    }
 
     var _this = this;
 
@@ -15736,9 +15749,7 @@ define('skylark-widgets-wordpad/uploader',[
       data: formData,
       processData: false,
       contentType: false,
-      headers: {
-        'X-File-Name': encodeURIComponent(file.name)
-      },
+      headers: headers
     }).progress(function(e){
       if (!e.lengthComputable) {
         return;
@@ -33885,17 +33896,22 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
             if (!($img.hasClass('uploading') && $img.parent().length > 0)) {
               return;
             }
-            if (typeof result !== 'object') {
-              try {
-                result = JSON.parse(result);
-                img_path = result.files[0].url;
-              } catch (_error) {
+            try {
+                if (typeof result !== 'object') {
+                   result = JSON.parse(result);
+                }
+                if (_this.editor.options.upload.uploadedImagePath) {
+                	img_path = _this.editor.options.upload.uploadedImagePath(result);
+                } else {
+	                img_path = result.files[0].url;
+                }
+            } catch (_error) {
                 e = _error;
                 result = {
                   success: false
                 };
-              }
             }
+
             _this.loadImage($img, img_path, function() {
               var $mask;
               $img.removeData('file');
@@ -35419,9 +35435,9 @@ define('skylark-widgets-wordpad/addons/actions/VideoAction',[
         this.title = this._t(this.name);
         langx.merge(this.editor.editable.formatter._allowedTags, ['embed', 'iframe', 'video']);
         langx.extend(this.editor.editable.formatter._allowedAttributes, {
-          embed: ['class', 'width', 'height', 'type', 'pluginspage', 'src', 'wmode', 'play', 'loop', 'menu', 'allowscriptaccess', 'allowfullscreen'],
-          iframe: ['class', 'width', 'height', 'src', 'frameborder'],
-          video: ['class', 'width', 'height', 'poster', 'controls', 'allowfullscreen', 'src', 'data-link', 'data-tag']
+          embed: ['class', 'width', 'height', 'style','type', 'pluginspage', 'src', 'wmode', 'play', 'loop', 'menu', 'allowscriptaccess', 'allowfullscreen'],
+          iframe: ['class', 'width', 'height','style', 'src', 'frameborder','data-link','data-width','data-height'],
+          video: ['class', 'width', 'height', 'style','poster', 'controls', 'allowfullscreen', 'src', 'data-link', 'data-tag']
         });
 
         this.placeholderPoster =  this.editor.options.addons.actions.video.placeholderPoster;
@@ -35519,8 +35535,8 @@ define('skylark-widgets-wordpad/addons/actions/VideoAction',[
         }
         $video = $('<video/>').attr({
           'poster': this.placeholderPoster,
-          'width': 500,
-          'height': 281,
+          'width': 225,
+          'height': 225,
           'class' : 'wordpad-video'
         });
         range.insertNode($video[0]);

@@ -195,17 +195,22 @@ define([
             if (!($img.hasClass('uploading') && $img.parent().length > 0)) {
               return;
             }
-            if (typeof result !== 'object') {
-              try {
-                result = JSON.parse(result);
-                img_path = result.files[0].url;
-              } catch (_error) {
+            try {
+                if (typeof result !== 'object') {
+                   result = JSON.parse(result);
+                }
+                if (_this.editor.options.upload.uploadedImagePath) {
+                	img_path = _this.editor.options.upload.uploadedImagePath(result);
+                } else {
+	                img_path = result.files[0].url;
+                }
+            } catch (_error) {
                 e = _error;
                 result = {
                   success: false
                 };
-              }
             }
+
             _this.loadImage($img, img_path, function() {
               var $mask;
               $img.removeData('file');

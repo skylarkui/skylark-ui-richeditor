@@ -354,10 +354,12 @@
   border: 0 none;
 }
 
-.wordpad .wordpad-popover .settings-field.video-embed-code {
+.lark-wordpad .wordpad-popover .settings-field.video-embed-code {
   height: 62px;
 }  
-.wordpad .wordpad-popover .video-link {
+
+
+.lark-wordpad .wordpad-popover .video-link {
   height : 60px;
   width: 200px;
 }

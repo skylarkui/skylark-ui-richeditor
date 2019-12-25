@@ -21,7 +21,7 @@ define([
 
       videoContainerClass : 'video-container',
 
-      videoPoster : './video_poster.jpg ',
+      placeholderPoster : '',
 
       needFocus : true,
 
@@ -33,6 +33,9 @@ define([
           iframe: ['class', 'width', 'height', 'src', 'frameborder'],
           video: ['class', 'width', 'height', 'poster', 'controls', 'allowfullscreen', 'src', 'data-link', 'data-tag']
         });
+
+        this.placeholderPoster =  this.editor.options.addons.actions.video.placeholderPoster;
+
 
         $(document).on('click', '.J_UploadVideoBtn', (function(_this) {
           return function(e) {
@@ -125,7 +128,7 @@ define([
           this.editor.editable.selection.range(range);
         }
         $video = $('<video/>').attr({
-          'poster': this.videoPoster,
+          'poster': this.placeholderPoster,
           'width': 500,
           'height': 281,
           'class' : 'wordpad-video'

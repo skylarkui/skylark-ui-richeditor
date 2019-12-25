@@ -16,7 +16,7 @@ define([
 
       disableTag : 'pre, table',
 
-      defaultImage : '',
+      placeholderImage : '',
 
       needFocus : false,
 
@@ -53,7 +53,7 @@ define([
             this.menu = false;
           }
         }
-        this.defaultImage = this.editor.options.defaultImage;
+        this.placeholderImage = this.editor.options.addons.actions.image.placeholderImage;
         this.editor.body.on('click', 'img:not([data-non-image])', (function(_this) {
           return function(e) {
             var $img, range;
@@ -153,7 +153,7 @@ define([
               if (!$img.hasClass('uploading')) {
                 return;
               }
-              src = img ? img.src : _this.defaultImage;
+              src = img ? img.src : _this.placeholderImage;
               return _this.loadImage($img, src, function() {
                 if (_this.popover.active) {
                   _this.popover.refresh();
@@ -248,7 +248,7 @@ define([
             if (!($img.hasClass('uploading') && $img.parent().length > 0)) {
               return;
             }
-            _this.loadImage($img, _this.defaultImage, function() {
+            _this.loadImage($img, _this.placeholderImage, function() {
               var $mask;
               $img.removeData('file');
               $img.removeClass('uploading').removeClass('loading');
@@ -260,7 +260,7 @@ define([
             });
             if (_this.popover.active) {
               _this.popover.srcEl.prop('disabled', false);
-              _this.popover.srcEl.val(_this.defaultImage);
+              _this.popover.srcEl.val(_this.placeholderImage);
             }
             _this.editor.trigger('valuechanged');
             if (_this.editor.body.find('img.uploading').length < 1) {
@@ -355,7 +355,7 @@ define([
       _execute : function(src) {
         var $img;
         $img = this.createImage();
-        return this.loadImage($img, src || this.defaultImage, (function(_this) {
+        return this.loadImage($img, src || this.placeholderImage, (function(_this) {
           return function() {
             _this.editor.trigger('valuechanged');
             _this.editor.editable.util.reflow($img);

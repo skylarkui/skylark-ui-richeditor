@@ -254,16 +254,29 @@ require([
       placeholder: '这里输入文字...',
       toolbar: toolbar,
       pasteImage: true,
-      defaultImage: './fork.png',
       autosave: 'editor-content',
       upload : {
         url: 'http://localhost:3001/upload/default'
       },
-
       addons : {
         "general" : [
             "dropzone"
-         ]
+         ],
+         actions : {
+            image : {
+              placeholderImage: './fork.png'
+            },
+            video :  {
+              placeholderPoster : './video_poster.jpg '
+            }
+         },
+         toolbar : {
+          items : {
+            emoji : {
+              imagePath: "./images/emoji/"
+            }
+          }
+         }
       }
     });
     $preview = $('#preview');

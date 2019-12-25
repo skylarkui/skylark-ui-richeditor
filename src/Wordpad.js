@@ -52,7 +52,24 @@ define([
         },
         srcNodeRef: null,
         placeholder: '',
-        defaultImage: 'images/image.png',
+        addons : {
+          actions : {
+            image : {
+               placeholderImage: 'images/image.png',
+            },
+            video : {
+              placeholderPoster: "images/poster.jpg"
+            }
+          },
+          toolbar : {
+            items : {
+              emoji : {
+
+              }
+            }
+          }
+        },
+       
         params: {},
         upload: false,
         template : "<div class=\"lark-wordpad\">\n  <div class=\"wordpad-wrapper\">\n    <div class=\"wordpad-placeholder\"></div>\n    <div class=\"wordpad-body\" contenteditable=\"true\">\n    </div>\n  </div>\n</div>"

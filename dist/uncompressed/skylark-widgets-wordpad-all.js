@@ -15315,8 +15315,10 @@ define('skylark-net-http/Xhr',[
             // Whether the browser should be allowed to cache GET responses
             cache: true,
 
+            traditional : false,
+            
             xhrFields : {
-                withCredentials : true
+                withCredentials : false
             }
         };
 
@@ -15855,7 +15857,24 @@ define('skylark-widgets-wordpad/Wordpad',[
         },
         srcNodeRef: null,
         placeholder: '',
-        defaultImage: 'images/image.png',
+        addons : {
+          actions : {
+            image : {
+               placeholderImage: 'images/image.png',
+            },
+            video : {
+              placeholderPoster: "images/poster.jpg"
+            }
+          },
+          toolbar : {
+            items : {
+              emoji : {
+
+              }
+            }
+          }
+        },
+       
         params: {},
         upload: false,
         template : "<div class=\"lark-wordpad\">\n  <div class=\"wordpad-wrapper\">\n    <div class=\"wordpad-placeholder\"></div>\n    <div class=\"wordpad-body\" contenteditable=\"true\">\n    </div>\n  </div>\n</div>"
@@ -33687,7 +33706,7 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
 
       disableTag : 'pre, table',
 
-      defaultImage : '',
+      placeholderImage : '',
 
       needFocus : false,
 
@@ -33724,7 +33743,7 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
             this.menu = false;
           }
         }
-        this.defaultImage = this.editor.options.defaultImage;
+        this.placeholderImage = this.editor.options.addons.actions.image.placeholderImage;
         this.editor.body.on('click', 'img:not([data-non-image])', (function(_this) {
           return function(e) {
             var $img, range;
@@ -33824,7 +33843,7 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
               if (!$img.hasClass('uploading')) {
                 return;
               }
-              src = img ? img.src : _this.defaultImage;
+              src = img ? img.src : _this.placeholderImage;
               return _this.loadImage($img, src, function() {
                 if (_this.popover.active) {
                   _this.popover.refresh();
@@ -33919,7 +33938,7 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
             if (!($img.hasClass('uploading') && $img.parent().length > 0)) {
               return;
             }
-            _this.loadImage($img, _this.defaultImage, function() {
+            _this.loadImage($img, _this.placeholderImage, function() {
               var $mask;
               $img.removeData('file');
               $img.removeClass('uploading').removeClass('loading');
@@ -33931,7 +33950,7 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
             });
             if (_this.popover.active) {
               _this.popover.srcEl.prop('disabled', false);
-              _this.popover.srcEl.val(_this.defaultImage);
+              _this.popover.srcEl.val(_this.placeholderImage);
             }
             _this.editor.trigger('valuechanged');
             if (_this.editor.body.find('img.uploading').length < 1) {
@@ -34026,7 +34045,7 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
       _execute : function(src) {
         var $img;
         $img = this.createImage();
-        return this.loadImage($img, src || this.defaultImage, (function(_this) {
+        return this.loadImage($img, src || this.placeholderImage, (function(_this) {
           return function() {
             _this.editor.trigger('valuechanged');
             _this.editor.editable.util.reflow($img);
@@ -35392,7 +35411,7 @@ define('skylark-widgets-wordpad/addons/actions/VideoAction',[
 
       videoContainerClass : 'video-container',
 
-      videoPoster : './video_poster.jpg ',
+      placeholderPoster : '',
 
       needFocus : true,
 
@@ -35404,6 +35423,9 @@ define('skylark-widgets-wordpad/addons/actions/VideoAction',[
           iframe: ['class', 'width', 'height', 'src', 'frameborder'],
           video: ['class', 'width', 'height', 'poster', 'controls', 'allowfullscreen', 'src', 'data-link', 'data-tag']
         });
+
+        this.placeholderPoster =  this.editor.options.addons.actions.video.placeholderPoster;
+
 
         $(document).on('click', '.J_UploadVideoBtn', (function(_this) {
           return function(e) {
@@ -35496,7 +35518,7 @@ define('skylark-widgets-wordpad/addons/actions/VideoAction',[
           this.editor.editable.selection.range(range);
         }
         $video = $('<video/>').attr({
-          'poster': this.videoPoster,
+          'poster': this.placeholderPoster,
           'width': 500,
           'height': 281,
           'class' : 'wordpad-video'
@@ -35672,11 +35694,11 @@ define('skylark-widgets-wordpad/addons/toolbar/items/EmojiButton',[
 
     renderMenu : function() {
       var $list, dir, html, name, opts, src, tpl, _i, _len, _ref;
-      tpl = '<ul class="emoji-list">\n</ul>';
+      tpl = '<ul class="emoji-list">\n</ul>'; 
       opts = langx.extend({
         imagePath: 'images/emoji/',
         images: EmojiButton.images
-      }, this.editor.options.emoji || {});
+      }, this.editor.options.addons.toolbar.items.emoji || {});
       html = "";
       dir = opts.imagePath.replace(/\/$/, '') + '/';
       _ref = opts.images;

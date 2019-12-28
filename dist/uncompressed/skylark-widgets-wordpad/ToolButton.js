@@ -176,7 +176,8 @@ define([
 
     "title" : {
       get : function() {
-        return this.action.tooltip;
+        return this.action.tooltip || i18n.translate(this.action.name);
+;
       }
     },
 

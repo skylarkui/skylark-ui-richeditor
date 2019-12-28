@@ -92,6 +92,9 @@ define('skylark-widgets-wordpad/i18n',[
 
     var i18n =  {
       'zh-CN': {
+        'html' : 'HTML源码',
+        'emoji' : '表情',
+        'mark' : '标记',
         'blockquote': '引用',
         'bold': '加粗文字',
         'code': '插入代码',
@@ -149,6 +152,9 @@ define('skylark-widgets-wordpad/i18n',[
         "videoPlaceholder": "视频嵌入代码"
       },
       'en-US': {
+        'html' : 'HTML Source',
+        'emoji' : 'Emoji',
+        'mark' : 'Mark',
         'blockquote': 'Block Quote',
         'bold': 'Bold',
         'code': 'Code',
@@ -207,6 +213,9 @@ define('skylark-widgets-wordpad/i18n',[
       },
 
       'ja' : {
+        'html' : 'HTMLソースコード',
+        'emoji' : '表情',
+        'mark' : 'マーク',
         'blockquote': 'ブロック引用文',
         'bold': '太字',
         'code': 'コードを挿入',
@@ -463,7 +472,8 @@ define('skylark-widgets-wordpad/ToolButton',[
 
     "title" : {
       get : function() {
-        return this.action.tooltip;
+        return this.action.tooltip || i18n.translate(this.action.name);
+;
       }
     },
 
@@ -1055,12 +1065,19 @@ define('skylark-widgets-wordpad/Wordpad',[
     return this.editable.getValue();
   };
 
+  Wordpad.prototype.sync = function() {
+    this.editable.sync();
+    return this;
+  };
+
   Wordpad.prototype.focus = function() {
-    return this.editable.focus();
+    this.editable.focus();
+    return this;
   };
 
   Wordpad.prototype.blur = function() {
-    return this.editable.blur();
+    this.editable.blur();
+    return this;
   };
 
   Wordpad.prototype.findAction = function(name) {
@@ -4453,7 +4470,8 @@ define('skylark-widgets-wordpad/addons/actions/HtmlAction',[
     status : function() {},
 
     _execute : function() {
-      var action, i, len, ref;
+      var action, i, len, ref,
+          self = this;
       this.editor.blur();
       this.editor.el.toggleClass('wordpad-html');
       this.editor.htmlMode = this.editor.el.hasClass('wordpad-html');
@@ -4489,6 +4507,9 @@ define('skylark-widgets-wordpad/addons/actions/HtmlAction',[
         };
        if (!this.CodeMirrorEditor) {
          this.CodeMirrorEditor = CodeMirror.fromTextArea(this.editor.textarea[0], codemirrorOptions);
+         this.CodeMirrorEditor.on("blur",function(){
+           self.editor.setValue(self.CodeMirrorEditor.getValue());
+         })
        } else {
          this.CodeMirrorEditor.setValue(this.editor.textarea.val());
          this.CodeMirrorEditor.beautify();
@@ -5589,6 +5610,7 @@ define('skylark-widgets-wordpad/addons/actions/TableAction',[
       langx.merge(this.editor.editable.formatter._allowedTags, ['thead', 'th', 'tbody', 'tr', 'td', 'colgroup', 'col']);
       langx.extend(this.editor.editable.formatter._allowedAttributes, {
         td: ['rowspan', 'colspan'],
+        th: ['rowspan', 'colspan'],
         col: ['width']
       });
       langx.extend(this.editor.editable.formatter._allowedStyles, {

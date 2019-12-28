@@ -223,12 +223,19 @@ define([
     return this.editable.getValue();
   };
 
+  Wordpad.prototype.sync = function() {
+    this.editable.sync();
+    return this;
+  };
+
   Wordpad.prototype.focus = function() {
-    return this.editable.focus();
+    this.editable.focus();
+    return this;
   };
 
   Wordpad.prototype.blur = function() {
-    return this.editable.blur();
+    this.editable.blur();
+    return this;
   };
 
   Wordpad.prototype.findAction = function(name) {

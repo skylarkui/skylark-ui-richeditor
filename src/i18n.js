@@ -4,6 +4,9 @@ define([
 
     var i18n =  {
       'zh-CN': {
+        'html' : 'HTML源码',
+        'emoji' : '表情',
+        'mark' : '标记',
         'blockquote': '引用',
         'bold': '加粗文字',
         'code': '插入代码',
@@ -61,6 +64,9 @@ define([
         "videoPlaceholder": "视频嵌入代码"
       },
       'en-US': {
+        'html' : 'HTML Source',
+        'emoji' : 'Emoji',
+        'mark' : 'Mark',
         'blockquote': 'Block Quote',
         'bold': 'Bold',
         'code': 'Code',
@@ -119,6 +125,9 @@ define([
       },
 
       'ja' : {
+        'html' : 'HTMLソースコード',
+        'emoji' : '表情',
+        'mark' : 'マーク',
         'blockquote': 'ブロック引用文',
         'bold': '太字',
         'code': 'コードを挿入',

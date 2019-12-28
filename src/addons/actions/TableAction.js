@@ -21,6 +21,7 @@ define([
       langx.merge(this.editor.editable.formatter._allowedTags, ['thead', 'th', 'tbody', 'tr', 'td', 'colgroup', 'col']);
       langx.extend(this.editor.editable.formatter._allowedAttributes, {
         td: ['rowspan', 'colspan'],
+        th: ['rowspan', 'colspan'],
         col: ['width']
       });
       langx.extend(this.editor.editable.formatter._allowedStyles, {

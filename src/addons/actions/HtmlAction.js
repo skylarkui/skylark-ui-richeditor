@@ -51,7 +51,8 @@ define([
     status : function() {},
 
     _execute : function() {
-      var action, i, len, ref;
+      var action, i, len, ref,
+          self = this;
       this.editor.blur();
       this.editor.el.toggleClass('wordpad-html');
       this.editor.htmlMode = this.editor.el.hasClass('wordpad-html');
@@ -87,6 +88,9 @@ define([
         };
        if (!this.CodeMirrorEditor) {
          this.CodeMirrorEditor = CodeMirror.fromTextArea(this.editor.textarea[0], codemirrorOptions);
+         this.CodeMirrorEditor.on("blur",function(){
+           self.editor.setValue(self.CodeMirrorEditor.getValue());
+         })
        } else {
          this.CodeMirrorEditor.setValue(this.editor.textarea.val());
          this.CodeMirrorEditor.beautify();

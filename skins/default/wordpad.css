@@ -367,7 +367,8 @@
 
 .wordpad-video-wrapper {
   position: relative;
-  display: block;
+/*  display: block;*/
+  display: inline-block;
 }
 
 .wordpad-video-wrapper video,.wordpad-video-wrapper iframe,.wordpad-video-wrapper embed{
@@ -375,14 +376,13 @@
 }
 
 .wordpad-video {
-  display: block;
+/*  display: block;*/
 }
 
 .wordpad-video-wrapper:before {
     width: 100%;
     height: 100%;
     content: "";
-    display: block;
     position: absolute;
     z-index: 1;
 }

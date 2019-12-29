@@ -13,7 +13,7 @@ define([
       if (videoData && this.target.attr('src') === videoData.src) {
         return;
       }
-      return $('.J_UploadVideoBtn').data('videowrap') && this.action.loadVideo($('.J_UploadVideoBtn').data('videowrap'), videoData, (function(_this) {
+      return $('.insertVideoBtn').data('videowrap') && this.action.loadVideo($('.insertVideoBtn').data('videowrap'), videoData, (function(_this) {
         return function(img) {
           if (!img) {
 
@@ -24,7 +24,7 @@ define([
 
     render : function() {
       var tpl;
-      tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field video-embed-code\">\n    <label>" + (this._t('video')) + "</label>\n    <textarea placeholder=\"" + (this._t('videoPlaceholder')) + "\" type=\"text\" class=\"video-link\" ></textarea>\n  </div><br>\n  <div class=\"settings-field\">\n    <label>" + (this._t('videoSize')) + "</label>\n    <input class=\"image-size video-size\" id=\"video-width\" type=\"text\" tabindex=\"2\" />\n    <span class=\"times\">×</span>\n    <input class=\"image-size video-size\" id=\"video-height\" type=\"text\" tabindex=\"3\" />\n  </div>\n  <div class=\"video-upload\">\n    <button class=\"btn J_UploadVideoBtn\">" + (this._t('uploadVideoBtn')) + "</div>\n  </div>\n</div>";
+      tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field video-embed-code\">\n    <label>" + (this._t('video')) + "</label>\n    <textarea placeholder=\"" + (this._t('videoPlaceholder')) + "\" type=\"text\" class=\"video-link\" ></textarea>\n  </div><br>\n  <div class=\"settings-field\">\n    <label>" + (this._t('videoSize')) + "</label>\n    <input class=\"image-size video-size\" id=\"video-width\" type=\"text\" tabindex=\"2\" />\n    <span class=\"times\">×</span>\n    <input class=\"image-size video-size\" id=\"video-height\" type=\"text\" tabindex=\"3\" />\n  </div>\n  <div class=\"video-upload\">\n    <button class=\"btn insertVideoBtn\">" + (this._t('uploadVideoBtn')) + "</div>\n  </div>\n</div>";
       this.el.addClass('video-popover').append(tpl);
       this.srcEl = this.el.find('.video-link');
       this.widthEl = this.el.find('#video-width');
@@ -33,7 +33,7 @@ define([
         return function(e) {
           if (e.which === 13 || e.which === 27) {
             e.preventDefault();
-            return $('.J_UploadVideoBtn').click();
+            return $('.insertVideoBtn').click();
           }
         };
       })(this));
@@ -42,7 +42,7 @@ define([
         return function(e) {
           if (e.which === 13 || e.which === 27) {
             e.preventDefault();
-            return $('.J_UploadVideoBtn').click();
+            return $('.insertVideoBtn').click();
           }
         };
       })(this));
@@ -75,7 +75,7 @@ define([
       this.widthEl.val(this.width);
       this.heightEl.val(this.height);
       this.srcEl.val(this.src);
-      $('.J_UploadVideoBtn').data('videowrap', $video);
+      $('.insertVideoBtn').data('videowrap', $video);
       return $videoWrap = this.target;
     }
   });

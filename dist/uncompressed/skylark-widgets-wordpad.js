@@ -1268,7 +1268,8 @@ define('skylark-widgets-wordpad/Action',[
 
   Action.prototype._t = i18n.translate;
 
-
+  Action.i18n = i18n;
+  
   return Action;
 
 });
@@ -6059,7 +6060,7 @@ define('skylark-widgets-wordpad/addons/actions/VideoPopover',[
       if (videoData && this.target.attr('src') === videoData.src) {
         return;
       }
-      return $('.J_UploadVideoBtn').data('videowrap') && this.action.loadVideo($('.J_UploadVideoBtn').data('videowrap'), videoData, (function(_this) {
+      return $('.insertVideoBtn').data('videowrap') && this.action.loadVideo($('.insertVideoBtn').data('videowrap'), videoData, (function(_this) {
         return function(img) {
           if (!img) {
 
@@ -6070,7 +6071,7 @@ define('skylark-widgets-wordpad/addons/actions/VideoPopover',[
 
     render : function() {
       var tpl;
-      tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field video-embed-code\">\n    <label>" + (this._t('video')) + "</label>\n    <textarea placeholder=\"" + (this._t('videoPlaceholder')) + "\" type=\"text\" class=\"video-link\" ></textarea>\n  </div><br>\n  <div class=\"settings-field\">\n    <label>" + (this._t('videoSize')) + "</label>\n    <input class=\"image-size video-size\" id=\"video-width\" type=\"text\" tabindex=\"2\" />\n    <span class=\"times\">×</span>\n    <input class=\"image-size video-size\" id=\"video-height\" type=\"text\" tabindex=\"3\" />\n  </div>\n  <div class=\"video-upload\">\n    <button class=\"btn J_UploadVideoBtn\">" + (this._t('uploadVideoBtn')) + "</div>\n  </div>\n</div>";
+      tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field video-embed-code\">\n    <label>" + (this._t('video')) + "</label>\n    <textarea placeholder=\"" + (this._t('videoPlaceholder')) + "\" type=\"text\" class=\"video-link\" ></textarea>\n  </div><br>\n  <div class=\"settings-field\">\n    <label>" + (this._t('videoSize')) + "</label>\n    <input class=\"image-size video-size\" id=\"video-width\" type=\"text\" tabindex=\"2\" />\n    <span class=\"times\">×</span>\n    <input class=\"image-size video-size\" id=\"video-height\" type=\"text\" tabindex=\"3\" />\n  </div>\n  <div class=\"video-upload\">\n    <button class=\"btn insertVideoBtn\">" + (this._t('uploadVideoBtn')) + "</div>\n  </div>\n</div>";
       this.el.addClass('video-popover').append(tpl);
       this.srcEl = this.el.find('.video-link');
       this.widthEl = this.el.find('#video-width');
@@ -6079,7 +6080,7 @@ define('skylark-widgets-wordpad/addons/actions/VideoPopover',[
         return function(e) {
           if (e.which === 13 || e.which === 27) {
             e.preventDefault();
-            return $('.J_UploadVideoBtn').click();
+            return $('.insertVideoBtn').click();
           }
         };
       })(this));
@@ -6088,7 +6089,7 @@ define('skylark-widgets-wordpad/addons/actions/VideoPopover',[
         return function(e) {
           if (e.which === 13 || e.which === 27) {
             e.preventDefault();
-            return $('.J_UploadVideoBtn').click();
+            return $('.insertVideoBtn').click();
           }
         };
       })(this));
@@ -6121,7 +6122,7 @@ define('skylark-widgets-wordpad/addons/actions/VideoPopover',[
       this.widthEl.val(this.width);
       this.heightEl.val(this.height);
       this.srcEl.val(this.src);
-      $('.J_UploadVideoBtn').data('videowrap', $video);
+      $('.insertVideoBtn').data('videowrap', $video);
       return $videoWrap = this.target;
     }
   });
@@ -6167,7 +6168,7 @@ define('skylark-widgets-wordpad/addons/actions/VideoAction',[
         this.placeholderPoster =  this.editor.options.addons.actions.video.placeholderPoster;
 
 
-        $(document).on('click', '.J_UploadVideoBtn', (function(_this) {
+        $(document).on('click', '.insertVideoBtn', (function(_this) {
           return function(e) {
             var videoData;
             videoData = {
@@ -6178,7 +6179,7 @@ define('skylark-widgets-wordpad/addons/actions/VideoAction',[
             $('.video-link').val('');
             $('#video-width').val('');
             $('#video-height').val('');
-            return _this._insert($('.J_UploadVideoBtn').data('videowrap'), videoData, function() {
+            return _this._insert($('.insertVideoBtn').data('videowrap'), videoData, function() {
               return _this.editor.trigger('valuechanged');
             });
           };
@@ -6186,31 +6187,31 @@ define('skylark-widgets-wordpad/addons/actions/VideoAction',[
 
         this.editor.body.on('click', '.wordpad-video-wrapper', (function(_this) {
           return function(e) {
-            var $video = $(e.currentTarget).find('video,embed,iframe');//siblings('video').show();
+            var $video = $(e.currentTarget).find('.wordpad-video');//siblings('video').show();
             return _this.popover.show($video);
           };
         })(this));
         this.editor.body.on('mousedown', (function(_this) {
           return function() {
             var $videoWrap;
-            $videoWrap = $('.J_UploadVideoBtn').data('videowrap');
+            $videoWrap = $('.insertVideoBtn').data('videowrap');
             if ($videoWrap && $videoWrap.html() === _this.videoPlaceholder) {
               $videoWrap.remove();
-              $('.J_UploadVideoBtn').data('videowrap', null);
+              $('.insertVideoBtn').data('videowrap', null);
             }
             return _this.popover.hide();
           };
         })(this));
         this.editor.on('decorate', (function(_this) {
           return function(e, $el) {
-            return $el.find('video,iframe,embed').each(function(i, video) {
+            return $el.find('.wordpad-video').each(function(i, video) {
               return _this.decorate($(video));
             });
           };
         })(this));
         this.editor.on('undecorate', (function(_this) {
           return function(e, $el) {
-            return $el.find('video,iframe,embed').each(function(i, video) {
+            return $el.find('.wordpad-video').each(function(i, video) {
               return _this.undecorate($(video));
             });
           };
@@ -6291,6 +6292,7 @@ define('skylark-widgets-wordpad/addons/actions/VideoAction',[
             width : videoData.width + "px",
             height : videoData.height + "px"
           }).attr({
+            'class' : 'wordpad-video',
             "data-link" : videoData.link,
             "data-width" : videoData.width,
             "data-height" : videoData.height

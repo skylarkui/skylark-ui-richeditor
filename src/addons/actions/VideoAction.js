@@ -37,7 +37,7 @@ define([
         this.placeholderPoster =  this.editor.options.addons.actions.video.placeholderPoster;
 
 
-        $(document).on('click', '.J_UploadVideoBtn', (function(_this) {
+        $(document).on('click', '.insertVideoBtn', (function(_this) {
           return function(e) {
             var videoData;
             videoData = {
@@ -48,7 +48,7 @@ define([
             $('.video-link').val('');
             $('#video-width').val('');
             $('#video-height').val('');
-            return _this._insert($('.J_UploadVideoBtn').data('videowrap'), videoData, function() {
+            return _this._insert($('.insertVideoBtn').data('videowrap'), videoData, function() {
               return _this.editor.trigger('valuechanged');
             });
           };
@@ -56,31 +56,31 @@ define([
 
         this.editor.body.on('click', '.wordpad-video-wrapper', (function(_this) {
           return function(e) {
-            var $video = $(e.currentTarget).find('video,embed,iframe');//siblings('video').show();
+            var $video = $(e.currentTarget).find('.wordpad-video');//siblings('video').show();
             return _this.popover.show($video);
           };
         })(this));
         this.editor.body.on('mousedown', (function(_this) {
           return function() {
             var $videoWrap;
-            $videoWrap = $('.J_UploadVideoBtn').data('videowrap');
+            $videoWrap = $('.insertVideoBtn').data('videowrap');
             if ($videoWrap && $videoWrap.html() === _this.videoPlaceholder) {
               $videoWrap.remove();
-              $('.J_UploadVideoBtn').data('videowrap', null);
+              $('.insertVideoBtn').data('videowrap', null);
             }
             return _this.popover.hide();
           };
         })(this));
         this.editor.on('decorate', (function(_this) {
           return function(e, $el) {
-            return $el.find('video,iframe,embed').each(function(i, video) {
+            return $el.find('.wordpad-video').each(function(i, video) {
               return _this.decorate($(video));
             });
           };
         })(this));
         this.editor.on('undecorate', (function(_this) {
           return function(e, $el) {
-            return $el.find('video,iframe,embed').each(function(i, video) {
+            return $el.find('.wordpad-video').each(function(i, video) {
               return _this.undecorate($(video));
             });
           };
@@ -161,6 +161,7 @@ define([
             width : videoData.width + "px",
             height : videoData.height + "px"
           }).attr({
+            'class' : 'wordpad-video',
             "data-link" : videoData.link,
             "data-width" : videoData.width,
             "data-height" : videoData.height

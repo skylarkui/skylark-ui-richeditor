@@ -324,6 +324,7 @@ define([
               $mask.remove();
               $img.removeData('mask');
             }
+            _this.editor.trigger('valuechanged');
             if (langx.isFunction(callback)) {
               return callback(img);
             }

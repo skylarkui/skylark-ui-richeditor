@@ -170,6 +170,7 @@ define([
           $video.replaceWith($video1);
           $video = $video1;
         }
+        this.editor.trigger('valuechanged');
         this.popover.hide();
         return callback($video);
       },

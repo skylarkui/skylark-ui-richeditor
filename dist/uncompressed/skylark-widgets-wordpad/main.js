@@ -37,10 +37,7 @@ define([
   "./addons/toolbar/items/ColorButton",
   "./addons/toolbar/items/EmojiButton",
   "./addons/toolbar/items/TableButton",
-  "./addons/toolbar/items/TitleButton",
-
-  "./addons/AutoSave",
-  "./addons/Dropzone"
+  "./addons/toolbar/items/TitleButton"
 ],function(Wordpad){
 	
   return Wordpad;

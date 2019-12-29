@@ -8934,7 +8934,7 @@ define('skylark-domx-contents/Formatter',[
       this._allowedTags = langx.merge(['br', 'span', 'a', 'img', 'b', 'strong', 'i', 'strike', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'hr'], this.opts.allowedTags);
       this._allowedAttributes = langx.extend({
         img: ['src', 'alt', 'width', 'height', 'data-non-image'],
-        a: ['href', 'target'],
+        a: ['href', 'target','download'],
         font: ['color'],
         code: ['class']
       }, this.opts.allowedAttributes);

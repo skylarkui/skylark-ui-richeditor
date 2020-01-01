@@ -35591,6 +35591,9 @@ define('skylark-widgets-wordpad/addons/actions/VideoAction',[
             width : videoData.width + "px",
             height : videoData.height + "px"
           }).attr({
+            "width" : videoData.width + "px",
+            "height" : videoData.height + "px",
+
             'class' : 'wordpad-video',
             "data-link" : videoData.link,
             "data-width" : videoData.width,

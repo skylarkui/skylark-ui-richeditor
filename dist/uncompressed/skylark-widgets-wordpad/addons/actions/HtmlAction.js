@@ -86,6 +86,7 @@ define([
         lineNumbers: true
   
         };
+       this.editor.sync(); 
        if (!this.CodeMirrorEditor) {
          this.CodeMirrorEditor = CodeMirror.fromTextArea(this.editor.textarea[0], codemirrorOptions);
          this.CodeMirrorEditor.on("blur",function(){

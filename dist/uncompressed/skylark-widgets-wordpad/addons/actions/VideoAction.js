@@ -163,7 +163,6 @@ define([
           }).attr({
             "width" : videoData.width + "px",
             "height" : videoData.height + "px",
-
             'class' : 'wordpad-video',
             "data-link" : videoData.link,
             "data-width" : videoData.width,

@@ -6580,9 +6580,7 @@ define('skylark-domx-data/data',[
                 }
                 return this;
             } else {
-                if (elm.hasAttribute && elm.hasAttribute(name)) {
-                    return elm.getAttribute(name);
-                }
+                return elm.getAttribute(name);
             }
         } else {
             elm.setAttribute(name, value);
@@ -14720,7 +14718,7 @@ define('skylark-widgets-wordpad/i18n',[
         'coloredText': '彩色文字',
         'hr': '分隔线',
         'image': '插入图片',
-        'externalImage': '外链图片',
+        'externalImage': '指定链接',
         'uploadImage': '上传图片',
         'uploadFailed': '上传失败了',
         'uploadError': '上传出错了',
@@ -14841,8 +14839,8 @@ define('skylark-widgets-wordpad/i18n',[
         'coloredText': 'カラー文字',
         'hr': '水平線',
         'image': 'イメージを挿入',
-        'externalImage': '外部イメージ',
-        'uploadImage': 'イメージファイルをアップロード',
+        'externalImage': 'リンクを指定',
+        'uploadImage': 'アップロード',
         'uploadFailed': 'アップロードが失敗しまいた',
         'uploadError': 'アップロードエラー',
         'imageUrl': 'イメージのURL',
@@ -33611,7 +33609,7 @@ define('skylark-widgets-wordpad/addons/actions/ImagePopover',[
     var _this = this;
     $uploadBtn.picker({
       title: _this._t('uploadImage'),
-      multiple: true,
+      multiple: false,
       accept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg',
       picked : function(files){
         _this.editor.uploader.upload(files, {
@@ -33725,12 +33723,13 @@ define('skylark-widgets-wordpad/addons/actions/ImagePopover',[
 define('skylark-widgets-wordpad/addons/actions/ImageAction',[
   "skylark-langx/langx",
   "skylark-domx-query",
+  "skylark-storages-diskfs/select",
   "skylark-storages-diskfs/readImage",  
   "../../addons",
   "../../Action",
   "./ImagePopover",
   "../../i18n"
-],function(langx, $, readImage, addons,Action,ImagePopover,i18n){ 
+],function(langx, $, selectFile,readImage, addons,Action,ImagePopover,i18n){ 
    var ImageAction = Action.inherit({
       name : 'image',
 
@@ -33767,10 +33766,12 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
             this.menu = [
               {
                 name: 'upload-image',
-                text: i18n.translate('uploadImage')
+                text: i18n.translate('uploadImage'),
+                param: 'uploadImage'
               }, {
                 name: 'external-image',
-                text: i18n.translate('externalImage')
+                text: i18n.translate('externalImage'),
+                param : 'externalImage'
               }
             ];
           } else {
@@ -33951,7 +33952,7 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
             });
             if (_this.popover.active) {
               _this.popover.srcEl.prop('disabled', false);
-              return _this.popover.srcEl.val(result.file_path);
+              return _this.popover.srcEl.val(img_path);
             }
           };
         })(this));
@@ -34082,20 +34083,36 @@ define('skylark-widgets-wordpad/addons/actions/ImageAction',[
         return $img;
       },
 
-      _execute : function(src) {
-        var $img;
-        $img = this.createImage();
-        return this.loadImage($img, src || this.placeholderImage, (function(_this) {
-          return function() {
-            _this.editor.trigger('valuechanged');
-            _this.editor.editable.util.reflow($img);
-            $img.click();
-            return _this.popover.one('popovershow', function() {
-              _this.popover.srcEl.focus();
-              return _this.popover.srcEl[0].select();
-            });
-          };
-        })(this));
+      _execute : function(menuItem) {
+        var self = this;
+        if (menuItem=="uploadImage") {
+          selectFile({
+            title: this._t('uploadImage'),
+            multiple: true,
+            accept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg',
+            picked : function(files){
+              self.editor.uploader.upload(files, {
+                inline: true,
+//                img: $img
+              });
+            }      
+
+          });
+        } else {
+          var $img = this.createImage();
+          return this.loadImage($img, this.placeholderImage, (function(_this) {
+            return function() {
+              _this.editor.trigger('valuechanged');
+              _this.editor.editable.util.reflow($img);
+              $img.click();
+              return _this.popover.one('popovershow', function() {
+                _this.popover.srcEl.focus();
+                return _this.popover.srcEl[0].select();
+              });
+            };
+          })(this));
+
+        }
       }
 
    });

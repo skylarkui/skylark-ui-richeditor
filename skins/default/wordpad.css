@@ -60,7 +60,7 @@
   padding: 22px 15px 40px;
   outline: none;
   cursor: text;
-  min-height: 300px;
+  /*min-height: 300px;*/
   position: relative;
   z-index: 1;
   background: transparent;
@@ -555,7 +555,7 @@
 }
 .lark-wordpad.wordpad-html .wordpad-wrapper > .CodeMirror {
   display: block !important;
-  min-height: 300px;
+  /*min-height: 300px;*/
   z-index: 1;
   background: transparent;
 

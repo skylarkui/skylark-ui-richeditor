@@ -566,7 +566,7 @@ define('skylark-widgets-wordpad/Toolbar',[
 ],function(langx,$,_Toolbar, ToolButton,addons){ 
 
   var Toolbar = _Toolbar.inherit({
-    pluginName : "lark.Wordpad.toolbar",
+    pluginName : "lark.wordpad.toolbar",
 
     _construct : function(editor,opts) {
       this.editor =editor;
@@ -854,6 +854,9 @@ define('skylark-widgets-wordpad/Wordpad',[
 ],function(skylark,langx, $, Editable,Widget,Toolbar,uploader,i18n,addons){ 
 
   var Wordpad = Widget.inherit({
+      klassName : "Wordpad",
+      pluginName : "lark.wordpad",
+
       options : {
         classes : {
           icons : {
@@ -1046,7 +1049,7 @@ define('skylark-widgets-wordpad/Wordpad',[
   Wordpad.prototype._placeholder = function() {
     var children;
     children = this.body.children();
-    if (children.length === 0 || (children.length === 1 && this.util.isEmptyNode(children) && parseInt(children.css('margin-left') || 0) < this.options.indentWidth)) {
+    if (children.length === 0 || (children.length === 1 && this.editable.util.isEmptyNode(children) && parseInt(children.css('margin-left') || 0) < this.options.indentWidth)) {
       return this.placeholderEl.show();
     } else {
       return this.placeholderEl.hide();

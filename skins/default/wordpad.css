@@ -18,7 +18,7 @@
   width: 100%;
   box-sizing: border-box;
   font-family: monaco;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.6;
   border: none;
   padding: 22px 15px 40px;
@@ -33,7 +33,6 @@
   left: 0;
   z-index: 0;
   padding: 22px 15px;
-  font-size: 16px;
   font-family: arial, sans-serif;
   line-height: 1.5;
   color: #999999;
@@ -181,7 +180,7 @@
 }
 
 .lark-wordpad .wordpad-body, .lark-wordpad-style {
-  font-size: 16px;
+  font-size: 14px;
   font-family: arial, sans-serif;
   line-height: 1.6;
   color: #333;

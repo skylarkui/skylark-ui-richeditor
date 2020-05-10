@@ -75,7 +75,7 @@
   factory(define,require);
 
   if (!isAmd) {
-    var skylarkjs = require("skylark-langx/skylark");
+    var skylarkjs = require("skylark-langx-ns");
 
     if (isCmd) {
       module.exports = skylarkjs;
@@ -4796,8 +4796,8 @@ define('skylark-widgets-wordpad/addons/actions/ImagePopover',[
 define('skylark-widgets-wordpad/addons/actions/ImageAction',[
   "skylark-langx/langx",
   "skylark-domx-query",
-  "skylark-storages-diskfs/select",
-  "skylark-storages-diskfs/readImage",  
+  "skylark-io-diskfs/select",
+  "skylark-io-diskfs/readImage",  
   "../../addons",
   "../../Action",
   "./ImagePopover",

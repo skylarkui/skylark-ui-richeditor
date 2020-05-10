@@ -1,8 +1,8 @@
 define([
   "skylark-langx/langx",
   "skylark-domx-query",
-  "skylark-storages-diskfs/select",
-  "skylark-storages-diskfs/readImage",  
+  "skylark-io-diskfs/select",
+  "skylark-io-diskfs/readImage",  
   "../../addons",
   "../../Action",
   "./ImagePopover",

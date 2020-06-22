@@ -560,7 +560,7 @@ define('skylark-widgets-wordpad/addons',[],function(){
 define('skylark-widgets-wordpad/Toolbar',[
   "skylark-langx/langx",
   "skylark-domx-query",
-  "skylark-widgets-swt/Toolbar",
+  "skylark-domx-panels/Toolbar",
   "./ToolButton",
   "./addons"
 ],function(langx,$,_Toolbar, ToolButton,addons){ 
@@ -570,13 +570,11 @@ define('skylark-widgets-wordpad/Toolbar',[
 
     _construct : function(editor,opts) {
       this.editor =editor;
-      _Toolbar.prototype._construct.call(this,opts);
-    },
-
-    _init : function() {
-      _Toolbar.prototype._init.call(this);
+      var elm = this.$("<div class=\"domx-toolbar\"><ul></ul></div>")[0];
+      _Toolbar.prototype._construct.call(this,elm,opts);
       this._render();
-    }
+     
+    },
 
   });
 

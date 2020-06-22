@@ -57,6 +57,11 @@ require.config({
             main: 'main'
          },
          {
+           name : "skylark-langx-events",
+           location : "../node_modules/skylark-langx-events/dist/uncompressed/skylark-langx-events",
+            main: 'main'
+         },
+         {
            name : "skylark-langx-funcs",
            location : "../node_modules/skylark-langx-funcs/dist/uncompressed/skylark-langx-funcs",
             main: 'main'
@@ -74,6 +79,11 @@ require.config({
          {
            name : "skylark-langx-ns",
            location : "../node_modules/skylark-langx-ns/dist/uncompressed/skylark-langx-ns",
+            main: 'main'
+         },
+         {
+           name : "skylark-langx-maths",
+           location : "../node_modules/skylark-langx-maths/dist/uncompressed/skylark-langx-maths",
             main: 'main'
          },
          {
@@ -164,14 +174,23 @@ require.config({
             main: 'main'
          },
          {
+           name : "skylark-domx-panels",
+           location : "../node_modules/skylark-domx-panels/dist/uncompressed/skylark-domx-panels",
+            main: 'main'
+         },
+         {
            name : "skylark-domx-plugins",
            location : "../node_modules/skylark-domx-plugins/dist/uncompressed/skylark-domx-plugins",
             main: 'main'
          },
          {
+           name : "skylark-domx-popups",
+           location : "../node_modules/skylark-domx-popups/dist/uncompressed/skylark-domx-popups",
+            main: 'main'
+         },
+         {
            name : "skylark-domx-query",
            location : "../node_modules/skylark-domx-query/dist/uncompressed/skylark-domx-query",
-           //location: "../../../domx/skylark-domx-query/src",
             main: 'main'
          },
 
@@ -211,20 +230,13 @@ require.config({
             main: 'main'
          },
          {
-           name : "skylark-storages-diskfs",
-           location : "../node_modules/skylark-storages-diskfs/dist/uncompressed/skylark-storages-diskfs",
+           name : "skylark-io-diskfs",
+           location : "../node_modules/skylark-io-diskfs/dist/uncompressed/skylark-io-diskfs",
             main: 'main'
          },
          {
            name : "skylark-widgets-base",
            location : "../node_modules/skylark-widgets-base/dist/uncompressed/skylark-widgets-base",
-          //location : "../../skylark-widgets-base/src",
-           main: 'main'
-         },
-         {
-           name : "skylark-widgets-swt",
-           location : "../node_modules/skylark-widgets-swt/dist/uncompressed/skylark-widgets-swt",
-           //location : "../../skylark-widgets-swt/src",
            main: 'main'
          },
         { name: "skylark-langx", location: "../node_modules/skylark-langx/dist/uncompressed/skylark-langx" },

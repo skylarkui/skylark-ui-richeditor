@@ -15,7 +15,7 @@
   "author": "Hudaokeji, Inc.",
   "license": "MIT",
   "scripts": {
-    "build": "sbundle build ."
+    "build": "slib build ."
   },
   "repository": {
     "type": "git",
@@ -32,13 +32,27 @@
     "skylark-domx-tables": "git+https://github.com/skylark-domx/skylark-domx-tables.git#master",
     "skylark-io-diskfs": "git+https://github.com/skylark-io/skylark-io-diskfs.git#master",
     "skylark-langx": "git+https://github.com/skylark-langx/skylark-langx.git#master",
-    "skylark-parsers-html": "git+https://github.com/skylark-parsers/skylark-parsers-html.git#master",
+    "skylark-texts-html": "git+https://github.com/skylark-texts/skylark-texts-html.git#master",
     "skylark-widgets-base": "git+https://github.com/skylark-widgets/skylark-widgets-base.git#master"
   },
   "skylarkjs": {
+    "directories": {
+      "dependencies": "./node_modules"
+    },
+    "secondaries": {},
     "build": {
       "prepare": {
+        "texttojs": [
+          "html",
+          "json",
+          "css"
+        ],
+        "jsxtojs": false,
+        "es6toamd": false,
         "cjstoamd": false
+      },
+      "bundles": {
+        "all": true
       }
     }
   },

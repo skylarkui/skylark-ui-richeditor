@@ -4,20 +4,20 @@ require.config({
   }
   ,packages : [
           {
-            name: 'skylark-parsers-css',
-            location : "../node_modules/skylark-parsers-css/dist/uncompressed/skylark-parsers-css",
+            name: 'skylark-texts-css',
+            location : "../node_modules/skylark-texts-css/dist/uncompressed/skylark-texts-css",
             //location : "../../../parsers/skylark-parsers-css/src",
             main: 'main'
           },
           {
-            name: 'skylark-parsers-javascript',
-            location : "../node_modules/skylark-parsers-javascript/dist/uncompressed/skylark-parsers-javascript",
+            name: 'skylark-scripts-javascript',
+            location : "../node_modules/skylark-scripts-javascript/dist/uncompressed/skylark-scripts-javascript",
             //location : "../../../parsers/skylark-parsers-javascript/src",
             main: 'main'
           },
           {
-            name: 'skylark-parsers-html',
-            location : "../node_modules/skylark-parsers-html/dist/uncompressed/skylark-parsers-html",
+            name: 'skylark-texts-html',
+            location : "../node_modules/skylark-texts-html/dist/uncompressed/skylark-texts-html",
             //location : "../../../parsers/skylark-parsers-html/src",
             main: 'main'
           },
@@ -34,6 +34,11 @@ require.config({
          {
            name : "skylark-langx-arrays",
            location : "../node_modules/skylark-langx-arrays/dist/uncompressed/skylark-langx-arrays",
+            main: 'main'
+         },
+         {
+           name : "skylark-langx-binary",
+           location : "../node_modules/skylark-langx-binary/dist/uncompressed/skylark-langx-binary",
             main: 'main'
          },
          {
@@ -272,7 +277,7 @@ require([
       },
       addons : {
         "general" : [
-            "dropzone"
+//            "dropzone"
          ],
          actions : {
             image : {

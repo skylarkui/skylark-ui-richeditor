@@ -1,6 +1,6 @@
 define([
   "skylark-langx/langx",
-  "skylark-widgets-base/Action",
+  "skylark-widgets-base/actions/Action",
   "./Wordpad",
   "./i18n"
 ],function(langx, _Action, Wordpad,i18n){ 

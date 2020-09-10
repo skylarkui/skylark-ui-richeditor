@@ -22182,8 +22182,8 @@ define('skylark-widgets-base/Widget',[
         this.visible = true;
         
 
-        this.element.style.position = "absolute";
-        this.element.style.overflow = "hidden";
+        //this.element.style.position = "absolute";
+        //this.element.style.overflow = "hidden";
 
         /**
          * Size of this component in px.
@@ -24226,7 +24226,7 @@ define('skylark-widgets-wordpad/Wordpad',[
 define('skylark-widgets-base/actions/ActionManager',[
 	"skylark-langx/Evented",
 	"../base"
-], function(Evented,actions){
+], function(Evented,base){
 
 	var ActionManager = Evented.inherit({
 		"klassName"		:	"ActionManager",

@@ -28,8 +28,8 @@ require.config({
           },
           { 
            name: "skylark-codemirror", 
-           //location : "../node_modules/skylark-codemirror/dist/uncompressed/skylark-codemirror"
-           location: "../../../intg/editor/skylark-codemirror/src"
+           location : "../node_modules/skylark-codemirror/dist/uncompressed/skylark-codemirror"
+           //location: "../../../intg/editor/skylark-codemirror/src"
          },
          {
            name : "skylark-langx-arrays",
@@ -92,8 +92,8 @@ require.config({
             main: 'main'
          },
          {
-           name : "skylark-langx-numbers",
-           location : "../node_modules/skylark-langx-numbers/dist/uncompressed/skylark-langx-numbers",
+           name : "skylark-langx-numerics",
+           location : "../node_modules/skylark-langx-numerics/dist/uncompressed/skylark-langx-numerics",
             main: 'main'
          },
          {

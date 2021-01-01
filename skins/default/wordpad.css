@@ -389,7 +389,7 @@
 .wordpad-fullscreen {
   overflow: hidden;
 }
-.wordpad-fullscreen .lark-wordpad {
+.lark-wordpad.wordpad-fullscreen {
   position: fixed;
   top: 0;
   left: 0;

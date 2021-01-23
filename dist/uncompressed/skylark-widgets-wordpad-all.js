@@ -18523,15 +18523,6 @@ define('skylark-io-diskfs/select',[
         if (!fileInput) {
             var input = fileInput = document.createElement("input");
 
-            function selectFiles(pickedFiles) {
-                for (var i = pickedFiles.length; i--;) {
-                    if (pickedFiles[i].size > maxFileSize) {
-                        pickedFiles.splice(i, 1);
-                    }
-                }
-                fileSelected(pickedFiles);
-            }
-
             input.type = "file";
             input.style.position = "fixed";
             input.style.left = 0;
@@ -18539,20 +18530,32 @@ define('skylark-io-diskfs/select',[
             input.style.opacity = .001;
             document.body.appendChild(input);
 
-            input.onchange = function(e) {
-                var entries = e.target.webkitEntries || e.target.entries;
-
-                if (entries && entries.length) {
-                    webentry.all(entries).then(function(files) {
-                        selectFiles(files);
-                    });
-                } else {
-                    selectFiles(Array.prototype.slice.call(e.target.files));
-                }
-                // reset to "", so selecting the same file next time still trigger the change handler
-                input.value = "";
-            };
         }
+
+        function selectFiles(pickedFiles) {
+            for (var i = pickedFiles.length; i--;) {
+                if (pickedFiles[i].size > maxFileSize) {
+                    pickedFiles.splice(i, 1);
+                }
+            }
+            fileSelected(pickedFiles);
+        }
+
+        fileInput.onchange = function(e) {
+            var entries = e.target.webkitEntries || e.target.entries;
+
+            if (entries && entries.length) {
+                webentry.all(entries).then(function(files) {
+                    selectFiles(files);
+                });
+            } else {
+                selectFiles(Array.prototype.slice.call(e.target.files));
+            }
+            // reset to "", so selecting the same file next time still trigger the change handler
+            fileInput.value = "";     
+            fileInput.onchange = null;
+        };
+        
         fileInput.multiple = multiple;
         fileInput.accept = accept;
         fileInput.title = title;
@@ -21220,9 +21223,9 @@ define('skylark-net-http/Xhr',[
                     xhr.overrideMimeType(mime);
                 }
 
-                //if (dataType) {
-                //    xhr.responseType = dataType;
-                //}
+                if (dataType == "blob" || dataType == "arraybuffer") {
+                    xhr.responseType = dataType;
+                }
 
                 var finish = function() {
                     xhr.onloadend = noop;
@@ -21236,16 +21239,16 @@ define('skylark-net-http/Xhr',[
                     if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304 || (xhr.status == 0 && getAbsoluteUrl(url).startsWith('file:'))) {
                         dataType = dataType || mimeToDataType(options.mimeType || xhr.getResponseHeader('content-type'));
 
-                        result = xhr.responseText;
+                        //result = xhr.responseText;
                         try {
                             if (dataType == 'script') {
-                                eval(result);
+                                eval(xhr.responseText);
                             } else if (dataType == 'xml') {
                                 result = xhr.responseXML;
                             } else if (dataType == 'json') {
-                                result = blankRE.test(result) ? null : JSON.parse(result);
+                                result = blankRE.test(xhr.responseText) ? null : JSON.parse(xhr.responseText);
                             } else if (dataType == "blob") {
-                                result = Blob([xhrObj.response]);
+                                result = xhr.response; // new Blob([xhr.response]);
                             } else if (dataType == "arraybuffer") {
                                 result = xhr.reponse;
                             }
@@ -21263,7 +21266,7 @@ define('skylark-net-http/Xhr',[
                     }
                     finish();
                 };
-
+                
                 var onabort = function() {
                     if (deferred) {
                         deferred.reject(new Error("abort"),xhr.status,xhr);
@@ -21412,6 +21415,9 @@ define('skylark-net-http/Upload',[
             this._options = objects.mixin({
                 debug: false,
                 url: '/upload',
+                headers : {
+
+                },
                 // maximum number of concurrent uploads
                 maxConnections: 999,
                 // To upload large files in smaller chunks, set the following option
@@ -21422,7 +21428,7 @@ define('skylark-net-http/Upload',[
 
                 onProgress: function(id, fileName, loaded, total){
                 },
-                onComplete: function(id, fileName){
+                onComplete: function(id, fileName,result,status,xhr){
                 },
                 onCancel: function(id, fileName){
                 },
@@ -21532,8 +21538,7 @@ define('skylark-net-http/Upload',[
                 curLoadedSize = 0,
                 file = this._files[id],
                 args = {
-                    headers : {
-                    }                    
+                    headers : objects.clone(options.headers)                    
                 };
 
             this._loaded[id] = this._loaded[id] || 0;
@@ -21585,7 +21590,7 @@ define('skylark-net-http/Upload',[
                     self._loaded[id] = self._loaded[id] + e.loaded;
                     self._options.onProgress(id, name, self._loaded[id], size);
                 }
-            }).then(function(){
+            }).then(function(result,status,xhr){
                 if (!self._files[id]) {
                     // the request was aborted/cancelled
                     return;
@@ -21604,7 +21609,7 @@ define('skylark-net-http/Upload',[
                     // continue with the next chunk:
                     self._send(id,params);
                 } else {
-                    self._options.onComplete(id,name);
+                    self._options.onComplete(id,name,result,status,xhr);
 
                     self._files[id] = null;
                     self._xhrs[id] = null;
@@ -21656,6 +21661,21 @@ define('skylark-net-http/Upload',[
             }
         }
     });
+
+
+  Upload.send = function(file, options) {
+    var uploader = new Upload(options);
+    var id = uploader.add(file);
+    return uploader.send(id,options);
+  };
+
+  Upload.sendAll = function(files,options) {
+      var uploader = new Upload(options);
+      for (var i = 0, len = files.length; i < len; i++) {
+        this.add(file[i]);
+      }
+      return uploader.send(options);
+  };
 
     return http.Upload = Upload;    
 });
@@ -22933,11 +22953,11 @@ define('skylark-widgets-base/Widget',[
     /** 
      * Determine whether this widget element is assigned the given class.
      * 
-     * @method hassClass
+     * @method hasClass
      * @param {String} name Name of the class t.
      */
-    hassClass : function(name){
-      return this._velm.hassClass(name);
+    hasClass : function(name){
+      return this._velm.hasClass(name);
     },
 
     /** 

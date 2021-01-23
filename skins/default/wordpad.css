@@ -565,3 +565,7 @@
 .lark-wordpad.wordpad-html .wordpad-placeholder {
   display: none;
 }
+
+.lark-wordpad-style ul, .lark-wordpad-style li {
+    list-style: inherit;
+}

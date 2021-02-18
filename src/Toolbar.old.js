@@ -2,9 +2,10 @@ define([
   "skylark-langx/langx",
   "skylark-domx-query",
   "skylark-domx-panels/Toolbar",
+  "skylark-widgets-base/Widget",
   "./ToolButton",
   "./addons"
-],function(langx,$,_Toolbar, ToolButton,addons){ 
+],function(langx,$,_Toolbar, Widget,ToolButton,addons){ 
 
   var Toolbar = _Toolbar.inherit({
     pluginName : "lark.wordpad.toolbar",

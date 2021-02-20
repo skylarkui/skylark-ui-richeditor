@@ -244,6 +244,11 @@ require.config({
            location : "../node_modules/skylark-widgets-base/dist/uncompressed/skylark-widgets-base",
            main: 'main'
          },
+         {
+           name : "skylark-widgets-toolbars",
+           location : "../node_modules/skylark-widgets-toolbars/dist/uncompressed/skylark-widgets-toolbars",
+           main: 'main'
+         },
         { name: "skylark-langx", location: "../node_modules/skylark-langx/dist/uncompressed/skylark-langx" },
         { 
           name: "skylark-domx-contents", 

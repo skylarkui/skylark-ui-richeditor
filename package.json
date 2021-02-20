@@ -33,7 +33,8 @@
     "skylark-io-diskfs": "git+https://github.com/skylark-io/skylark-io-diskfs.git#master",
     "skylark-langx": "git+https://github.com/skylark-langx/skylark-langx.git#master",
     "skylark-texts-html": "git+https://github.com/skylark-texts/skylark-texts-html.git#master",
-    "skylark-widgets-base": "git+https://github.com/skylark-widgets/skylark-widgets-base.git#master"
+    "skylark-widgets-base": "git+https://github.com/skylark-widgets/skylark-widgets-base.git#master",
+    "skylark-widgets-toolbars": "git+https://github.com/skylark-widgets/skylark-widgets-toolbars.git#master"
   },
   "skylarkjs": {
     "directories": {

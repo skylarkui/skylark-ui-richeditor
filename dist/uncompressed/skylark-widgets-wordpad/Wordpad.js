@@ -4,7 +4,7 @@ define([
   "skylark-domx-query",
   "skylark-domx-contents/Editable",
   "skylark-widgets-base/Widget",
-  "./Toolbar",
+  "skylark-widgets-toolbars/Toolbar",
   "./uploader",
   "./i18n",
   "./addons"

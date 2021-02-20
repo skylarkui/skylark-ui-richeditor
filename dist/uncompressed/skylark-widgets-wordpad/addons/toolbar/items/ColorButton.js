@@ -1,6 +1,6 @@
 define([
   "skylark-domx-query",
-  "../../../ToolButton",
+  "skylark-widgets-toolbars/ToolbarItem",
   "../../../i18n",
   "../../../addons"
 ],function($,ToolButton,i18n,addons){ 

@@ -558,112 +558,6 @@ define('skylark-langx-objects/objects',[
        };
     }
 
-    // Internal recursive comparison function for `isEqual`.
-    var eq, deepEq;
-    var SymbolProto = typeof Symbol !== 'undefined' ? Symbol.prototype : null;
-
-    eq = function(a, b, aStack, bStack) {
-        // Identical objects are equal. `0 === -0`, but they aren't identical.
-        // See the [Harmony `egal` proposal](http://wiki.ecmascript.org/doku.php?id=harmony:egal).
-        if (a === b) return a !== 0 || 1 / a === 1 / b;
-        // `null` or `undefined` only equal to itself (strict comparison).
-        if (a == null || b == null) return false;
-        // `NaN`s are equivalent, but non-reflexive.
-        if (a !== a) return b !== b;
-        // Exhaust primitive checks
-        var type = typeof a;
-        if (type !== 'function' && type !== 'object' && typeof b != 'object') return false;
-        return deepEq(a, b, aStack, bStack);
-    };
-
-    // Internal recursive comparison function for `isEqual`.
-    deepEq = function(a, b, aStack, bStack) {
-        // Unwrap any wrapped objects.
-        //if (a instanceof _) a = a._wrapped;
-        //if (b instanceof _) b = b._wrapped;
-        // Compare `[[Class]]` names.
-        var className = toString.call(a);
-        if (className !== toString.call(b)) return false;
-        switch (className) {
-            // Strings, numbers, regular expressions, dates, and booleans are compared by value.
-            case '[object RegExp]':
-            // RegExps are coerced to strings for comparison (Note: '' + /a/i === '/a/i')
-            case '[object String]':
-                // Primitives and their corresponding object wrappers are equivalent; thus, `"5"` is
-                // equivalent to `new String("5")`.
-                return '' + a === '' + b;
-            case '[object Number]':
-                // `NaN`s are equivalent, but non-reflexive.
-                // Object(NaN) is equivalent to NaN.
-                if (+a !== +a) return +b !== +b;
-                // An `egal` comparison is performed for other numeric values.
-                return +a === 0 ? 1 / +a === 1 / b : +a === +b;
-            case '[object Date]':
-            case '[object Boolean]':
-                // Coerce dates and booleans to numeric primitive values. Dates are compared by their
-                // millisecond representations. Note that invalid dates with millisecond representations
-                // of `NaN` are not equivalent.
-                return +a === +b;
-            case '[object Symbol]':
-                return SymbolProto.valueOf.call(a) === SymbolProto.valueOf.call(b);
-        }
-
-        var areArrays = className === '[object Array]';
-        if (!areArrays) {
-            if (typeof a != 'object' || typeof b != 'object') return false;
-            // Objects with different constructors are not equivalent, but `Object`s or `Array`s
-            // from different frames are.
-            var aCtor = a.constructor, bCtor = b.constructor;
-            if (aCtor !== bCtor && !(isFunction(aCtor) && aCtor instanceof aCtor &&
-                               isFunction(bCtor) && bCtor instanceof bCtor)
-                          && ('constructor' in a && 'constructor' in b)) {
-                return false;
-            }
-        }
-        // Assume equality for cyclic structures. The algorithm for detecting cyclic
-        // structures is adapted from ES 5.1 section 15.12.3, abstract operation `JO`.
-
-        // Initializing stack of traversed objects.
-        // It's done here since we only need them for objects and arrays comparison.
-        aStack = aStack || [];
-        bStack = bStack || [];
-        var length = aStack.length;
-        while (length--) {
-            // Linear search. Performance is inversely proportional to the number of
-            // unique nested structures.
-            if (aStack[length] === a) return bStack[length] === b;
-        }
-
-        // Add the first object to the stack of traversed objects.
-        aStack.push(a);
-        bStack.push(b);
-
-        // Recursively compare objects and arrays.
-        if (areArrays) {
-            // Compare array lengths to determine if a deep comparison is necessary.
-            length = a.length;
-            if (length !== b.length) return false;
-            // Deep compare the contents, ignoring non-numeric properties.
-            while (length--) {
-                if (!eq(a[length], b[length], aStack, bStack)) return false;
-            }
-        } else {
-            // Deep compare objects.
-            var keys = Object.keys(a), key;
-            length = keys.length;
-            // Ensure that both objects contain the same number of properties before comparing deep equality.
-            if (Object.keys(b).length !== length) return false;
-            while (length--) {
-                // Deep compare each member
-                key = keys[length];
-                if (!(b[key]!==undefined && eq(a[key], b[key], aStack, bStack))) return false;
-            }
-        }
-        // Remove the first object from the stack of traversed objects.
-        aStack.pop();
-        bStack.pop();
-        return true;
-    };
 
     // Retrieve all the property names of an object.
     function allKeys(obj) {
@@ -787,11 +681,6 @@ define('skylark-langx-objects/objects',[
     }
 
 
-   // Perform a deep comparison to check if two objects are equal.
-    function isEqual(a, b) {
-        return eq(a, b);
-    }
-
     // Returns whether an object has a given set of `key:value` pairs.
     function isMatch(object, attrs) {
         var keys = keys(attrs), length = keys.length;
@@ -902,25 +791,6 @@ define('skylark-langx-objects/objects',[
         return this;
     }
 
-    function result(obj, path, fallback) {
-        if (!isArray(path)) {
-            path = path.split(".");//[path]
-        };
-        var length = path.length;
-        if (!length) {
-          return isFunction(fallback) ? fallback.call(obj) : fallback;
-        }
-        for (var i = 0; i < length; i++) {
-          var prop = obj == null ? void 0 : obj[path[i]];
-          if (prop === void 0) {
-            prop = fallback;
-            i = length; // Ensure we don't continue iterating.
-          }
-          obj = isFunction(prop) ? prop.call(obj) : prop;
-        }
-
-        return obj;
-    }
 
     function safeMixin() {
         var args = _parseMixinArgs.apply(this, arguments);
@@ -989,8 +859,6 @@ define('skylark-langx-objects/objects',[
 
         has: has,
 
-        isEqual: isEqual,   
-
         includes: includes,
 
         isMatch: isMatch,
@@ -1004,9 +872,7 @@ define('skylark-langx-objects/objects',[
         pick: pick,
 
         removeItem: removeItem,
-
-        result : result,
-        
+     
         safeMixin: safeMixin,
 
         scall,
@@ -1016,8 +882,163 @@ define('skylark-langx-objects/objects',[
 
 
 });
-define('skylark-langx-objects/main',[
+define('skylark-langx-objects/isEqual',[
+	"skylark-langx-types",
 	"./objects"
+],function(types,objects) {
+    var isFunction = types.isFunction;
+
+
+    // Internal recursive comparison function for `isEqual`.
+    var eq, deepEq;
+    var SymbolProto = typeof Symbol !== 'undefined' ? Symbol.prototype : null;
+
+    eq = function(a, b, aStack, bStack) {
+        // Identical objects are equal. `0 === -0`, but they aren't identical.
+        // See the [Harmony `egal` proposal](http://wiki.ecmascript.org/doku.php?id=harmony:egal).
+        if (a === b) return a !== 0 || 1 / a === 1 / b;
+        // `null` or `undefined` only equal to itself (strict comparison).
+        if (a == null || b == null) return false;
+        // `NaN`s are equivalent, but non-reflexive.
+        if (a !== a) return b !== b;
+        // Exhaust primitive checks
+        var type = typeof a;
+        if (type !== 'function' && type !== 'object' && typeof b != 'object') return false;
+        return deepEq(a, b, aStack, bStack);
+    };
+
+    // Internal recursive comparison function for `isEqual`.
+    deepEq = function(a, b, aStack, bStack) {
+        // Unwrap any wrapped objects.
+        //if (a instanceof _) a = a._wrapped;
+        //if (b instanceof _) b = b._wrapped;
+        // Compare `[[Class]]` names.
+        var className = toString.call(a);
+        if (className !== toString.call(b)) return false;
+        switch (className) {
+            // Strings, numbers, regular expressions, dates, and booleans are compared by value.
+            case '[object RegExp]':
+            // RegExps are coerced to strings for comparison (Note: '' + /a/i === '/a/i')
+            case '[object String]':
+                // Primitives and their corresponding object wrappers are equivalent; thus, `"5"` is
+                // equivalent to `new String("5")`.
+                return '' + a === '' + b;
+            case '[object Number]':
+                // `NaN`s are equivalent, but non-reflexive.
+                // Object(NaN) is equivalent to NaN.
+                if (+a !== +a) return +b !== +b;
+                // An `egal` comparison is performed for other numeric values.
+                return +a === 0 ? 1 / +a === 1 / b : +a === +b;
+            case '[object Date]':
+            case '[object Boolean]':
+                // Coerce dates and booleans to numeric primitive values. Dates are compared by their
+                // millisecond representations. Note that invalid dates with millisecond representations
+                // of `NaN` are not equivalent.
+                return +a === +b;
+            case '[object Symbol]':
+                return SymbolProto.valueOf.call(a) === SymbolProto.valueOf.call(b);
+        }
+
+        var areArrays = className === '[object Array]';
+        if (!areArrays) {
+            if (typeof a != 'object' || typeof b != 'object') return false;
+            // Objects with different constructors are not equivalent, but `Object`s or `Array`s
+            // from different frames are.
+            var aCtor = a.constructor, bCtor = b.constructor;
+            if (aCtor !== bCtor && !(isFunction(aCtor) && aCtor instanceof aCtor &&
+                               isFunction(bCtor) && bCtor instanceof bCtor)
+                          && ('constructor' in a && 'constructor' in b)) {
+                return false;
+            }
+        }
+        // Assume equality for cyclic structures. The algorithm for detecting cyclic
+        // structures is adapted from ES 5.1 section 15.12.3, abstract operation `JO`.
+
+        // Initializing stack of traversed objects.
+        // It's done here since we only need them for objects and arrays comparison.
+        aStack = aStack || [];
+        bStack = bStack || [];
+        var length = aStack.length;
+        while (length--) {
+            // Linear search. Performance is inversely proportional to the number of
+            // unique nested structures.
+            if (aStack[length] === a) return bStack[length] === b;
+        }
+
+        // Add the first object to the stack of traversed objects.
+        aStack.push(a);
+        bStack.push(b);
+
+        // Recursively compare objects and arrays.
+        if (areArrays) {
+            // Compare array lengths to determine if a deep comparison is necessary.
+            length = a.length;
+            if (length !== b.length) return false;
+            // Deep compare the contents, ignoring non-numeric properties.
+            while (length--) {
+                if (!eq(a[length], b[length], aStack, bStack)) return false;
+            }
+        } else {
+            // Deep compare objects.
+            var keys = Object.keys(a), key;
+            length = keys.length;
+            // Ensure that both objects contain the same number of properties before comparing deep equality.
+            if (Object.keys(b).length !== length) return false;
+            while (length--) {
+                // Deep compare each member
+                key = keys[length];
+                if (!(b[key]!==undefined && eq(a[key], b[key], aStack, bStack))) return false;
+            }
+        }
+        // Remove the first object from the stack of traversed objects.
+        aStack.pop();
+        bStack.pop();
+        return true;
+    };
+
+
+   // Perform a deep comparison to check if two objects are equal.
+    function isEqual(a, b) {
+        return eq(a, b);
+    }
+
+    return objects.isEqual = isEqual;
+	
+});
+define('skylark-langx-objects/result',[
+	"skylark-langx-types",
+	"./objects"
+],function(types,objects) {
+	var isArray = types.isArray,
+		isFunction = types.isFunction;
+
+    function result(obj, path, fallback) {
+        if (!isArray(path)) {
+            path = path.split(".");//[path]
+        };
+        var length = path.length;
+        if (!length) {
+          return isFunction(fallback) ? fallback.call(obj) : fallback;
+        }
+        for (var i = 0; i < length; i++) {
+          var prop = obj == null ? void 0 : obj[path[i]];
+          if (prop === void 0) {
+            prop = fallback;
+            i = length; // Ensure we don't continue iterating.
+          }
+          obj = isFunction(prop) ? prop.call(obj) : prop;
+        }
+
+        return obj;
+    }
+
+    return objects.result = result;
+	
+});
+define('skylark-langx-objects/main',[
+	"./objects",
+	"./isEqual",
+	"./result"
 ],function(objects){
 	return objects;
 });
@@ -1280,11 +1301,28 @@ define('skylark-langx-constructs/inherit',[
 	"./constructs"
 ],function(constructs){
 
-    function inherit(ctor, base) {
-        var f = function() {};
-        f.prototype = base.prototype;
+    function inherit(ctor,base) {
+        ///var f = function() {};
+        ///f.prototype = base.prototype;
+        ///
+        ///ctor.prototype = new f();
 
-        ctor.prototype = new f();
+	    if ((typeof base !== "function") && base) {
+	      throw new TypeError("Super expression must either be null or a function");
+	    }
+
+	    ctor.prototype = Object.create(base && base.prototype, {
+	      constructor: {
+	        value: ctor,
+	        writable: true,
+	        configurable: true
+	      }
+	    });
+
+	    if (base) {
+	    	//tor.__proto__ = base;
+	    	Object.setPrototypeOf(ctor, base);
+	    } 
     }
 
     return constructs.inherit = inherit
@@ -1442,8 +1480,10 @@ let longEar = klass({
             var newCtor =ctor;
             for (var i=0;i<mixins.length;i++) {
                 var xtor = new Function();
-                xtor.prototype = Object.create(newCtor.prototype);
-                xtor.__proto__ = newCtor;
+
+                inherit(xtor,newCtor)
+                //xtor.prototype = Object.create(newCtor.prototype);
+                //xtor.__proto__ = newCtor;
                 xtor.superclass = null;
                 mixin(xtor.prototype,mixins[i].prototype);
                 xtor.prototype.__mixin__ = mixins[i];
@@ -1498,15 +1538,17 @@ let longEar = klass({
 
 
             // Populate our constructed prototype object
-            ctor.prototype = Object.create(innerParent.prototype);
+            ///ctor.prototype = Object.create(innerParent.prototype);
 
             // Enforce the constructor to be what we expect
-            ctor.prototype.constructor = ctor;
-            ctor.superclass = parent;
-
+            ///ctor.prototype.constructor = ctor;
+  
             // And make this class extendable
-            ctor.__proto__ = innerParent;
+            ///ctor.__proto__ = innerParent;
 
+            inherit(ctor,innerParent);
+
+            ctor.superclass = parent;
 
             if (!ctor._constructor) {
                 ctor._constructor = _constructor;
@@ -2394,6 +2436,24 @@ define('skylark-langx-funcs/template',[
     return funcs.template = template;
 
 });
+define('skylark-langx-funcs/throttle',[
+  "./funcs"
+],function(funcs){
+
+    const throttle = function (fn, wait) {
+        let last = window.performance.now();
+        const throttled = function (...args) {
+            const now = window.performance.now();
+            if (now - last >= wait) {
+                fn(...args);
+                last = now;
+            }
+        };
+        return throttled;
+    };
+
+    return funcs.throttle = throttle;
+});
 define('skylark-langx-funcs/main',[
 	"./funcs",
 	"./debounce",
@@ -2402,7 +2462,8 @@ define('skylark-langx-funcs/main',[
 	"./loop",
 	"./negate",
 	"./proxy",
-	"./template"
+	"./template",
+	"./throttle"
 ],function(funcs){
 	return funcs;
 });
@@ -3018,14 +3079,6 @@ define('skylark-langx-hoster/hoster',[
 			this.props = props;
 		};
 	}
-	Object.defineProperty(hoster,"document",function(){
-		if (!_document) {
-			var w = typeof window === 'undefined' ? require('html-element') : window;
-			_document = w.document;
-		}
-
-		return _document;
-	});
 
 	if (hoster.isBrowser) {
 	    function uaMatch( ua ) {
@@ -18657,7 +18710,7 @@ define('skylark-io-diskfs/diskfs',[
      */
     function dropzone(elm, params) {
         params = params || {};
-        var hoverClass = params.hoverClass || "dropzone",
+        var hoverClass = params.hoverClass || "hover",
             droppedCallback = params.dropped;
 
         var enterdCount = 0;
@@ -18729,7 +18782,7 @@ define('skylark-domx-files/pastezone',[
 ],function(objects, eventer,velm,$, files){
     function pastezone(elm, params) {
         params = params || {};
-        var hoverClass = params.hoverClass || "pastezone",
+        var hoverClass = params.hoverClass || "hover",
             pastedCallback = params.pasted;
 
         eventer.on(elm, "paste", function(e) {
@@ -22010,6 +22063,8 @@ define('skylark-net-http/Xhr',[
                                 result = xhr.response; // new Blob([xhr.response]);
                             } else if (dataType == "arraybuffer") {
                                 result = xhr.reponse;
+                            } else if (dataType == "text") {
+                                result = xhr.responseText;
                             }
                         } catch (e) { 
                             error = e;
@@ -22149,7 +22204,7 @@ define('skylark-net-http/Xhr',[
         return Xhr;
     })();
 
-	return http.Xhr = Xhr;	
+    return http.Xhr = Xhr;  
 });
 define('skylark-net-http/Upload',[
     "skylark-langx-types",
@@ -23300,9 +23355,93 @@ define('skylark-widgets-base/Widget',[
   "./skins/SkinManager"
 ],function(skylark,types,objects,events,Vector2,browser,datax,eventer,noder,files,geom,elmx,$,fx, plugins,HashMap,base,SkinManager){
 
-/*---------------------------------------------------------------------------------*/
+     const NativeEvents = {
+            "drag": 2, // DragEvent
+            "dragend": 2, // DragEvent
+            "dragenter": 2, // DragEvent
+            "dragexit": 2, // DragEvent
+            "dragleave": 2, // DragEvent
+            "dragover": 2, // DragEvent
+            "dragstart": 2, // DragEvent
+            "drop": 2, // DragEvent
 
-  var Widget = plugins.Plugin.inherit({
+            "abort": 3, // Event
+            "change": 3, // Event
+            "error": 3, // Event
+            "selectionchange": 3, // Event
+            "submit": 3, // Event
+            "reset": 3, // Event
+            'fullscreenchange':3,
+            'fullscreenerror':3,
+
+/*
+            'disablepictureinpicturechanged':3,
+            'ended':3,
+            'enterpictureinpicture':3,
+            'durationchange':3,
+            'leavepictureinpicture':3,
+            'loadstart' : 3,
+            'loadedmetadata':3,
+            'pause' : 3,
+            'play':3,
+            'posterchange':3,
+            'ratechange':3,
+            'seeking' : 3,
+            'sourceset':3,
+            'suspend':3,
+            'textdata':3,
+            'texttrackchange':3,
+            'timeupdate':3,
+            'volumechange':3,
+            'waiting' : 3,
+*/
+
+
+            "focus": 4, // FocusEvent
+            "blur": 4, // FocusEvent
+            "focusin": 4, // FocusEvent
+            "focusout": 4, // FocusEvent
+
+            "keydown": 5, // KeyboardEvent
+            "keypress": 5, // KeyboardEvent
+            "keyup": 5, // KeyboardEvent
+
+            "message": 6, // MessageEvent
+
+            "click": 7, // MouseEvent
+            "contextmenu": 7, // MouseEvent
+            "dblclick": 7, // MouseEvent
+            "mousedown": 7, // MouseEvent
+            "mouseup": 7, // MouseEvent
+            "mousemove": 7, // MouseEvent
+            "mouseover": 7, // MouseEvent
+            "mouseout": 7, // MouseEvent
+            "mouseenter": 7, // MouseEvent
+            "mouseleave": 7, // MouseEvent
+
+
+            "progress" : 11, //ProgressEvent
+
+            "textInput": 12, // TextEvent
+
+            "tap": 13,
+            "touchstart": 13, // TouchEvent
+            "touchmove": 13, // TouchEvent
+            "touchend": 13, // TouchEvent
+
+            "load": 14, // UIEvent
+            "resize": 14, // UIEvent
+            "select": 14, // UIEvent
+            "scroll": 14, // UIEvent
+            "unload": 14, // UIEvent,
+
+            "wheel": 15, // WheelEvent
+
+    };
+ 
+  const Plugin = plugins.Plugin;
+
+  var Widget = Plugin.inherit({
     klassName: "Widget",
 
     _construct : function(parent,elm,options) {
@@ -23470,6 +23609,74 @@ define('skylark-widgets-base/Widget',[
      */
     _startup : function() {
 
+    },
+
+
+    isNativeEvent : function(events) {
+        if (types.isString(events)) {
+            return !!NativeEvents[events];
+        } else if (types.isArray(events)) {
+            for (var i=0; i<events.length; i++) {
+                if (NativeEvents[events[i]]) {
+                    return true;
+                }
+            }
+            return false;
+        }            
+
+    },   
+
+    on : function(events, selector, data, callback, ctx, /*used internally*/ one) {
+        if (this.el_ && this.isNativeEvent(events)) {
+            eventer.on(this.el_,events,selector,data,callback,ctx,one);
+        } else {
+            Plugin.prototype.on.call(this,events, selector, data, callback, ctx,  one);
+        }
+    },   
+
+    off : function(events, callback) {
+        if (this.el_ && this.isNativeEvent(events)) {
+            eventer.off(this.el_,events,callback);
+        } else {
+            Plugin.prototype.off.call(this,events,callback);
+        }
+    },
+
+    listenTo : function(obj, event, callback, /*used internally*/ one) {
+        if (types.isString(obj) || types.isArray(obj)) {
+            one = callback;
+            callback = event;
+            event = obj;
+            if (this.el_ && this.isNativeEvent(event)) {
+                eventer.on(this.el_,event,callback,this,one);
+            } else {
+                this.on(event,callback,this,one);
+            }
+        } else {
+            if (obj.nodeType) {
+                eventer.on(obj,event,callback,this,one)
+            } else {
+                Plugin.prototype.listenTo.call(this,obj,event,callback,one)
+            }                
+        }
+    },
+
+    unlistenTo : function(obj, event, callback) {
+        if (types.isString(obj) || types.isArray(obj)) {
+            callback = event;
+            event = obj;
+            if (this.el_ && this.isNativeEvent(event)) {
+                eventer.off(this.el_,event,callback);
+            } else {
+                this.off(event,callback);                   
+            }
+        } else {
+            if (obj.nodeType) {
+                eventer.off(obj,event,callback)
+            } else {
+                Plugin.prototype.unlistenTo.call(this,obj,event,callback)
+            }
+        }
     },
 
     /**
@@ -23795,6 +24002,11 @@ define('skylark-widgets-base/Widget',[
       return this;
     },
 
+    removeAttr : function(name) {
+      this._velm.removeAttr(name);
+      return this;
+    },
+
 
     /**
      * Calculate the location of the container to make it centered.
@@ -23856,12 +24068,12 @@ define('skylark-widgets-base/Widget',[
       var oldParent = this._parent;
       this._parent = parent;
       if (parent) {
-        this.attach(parent._elm || parent.element);
+        this.mount(parent._elm || parent.element);
         if (parent._setupChild) {
           parent._setupChild(this);
         }
       } else if (oldParent) {
-        this.detach();
+        this.unmount();
       }
       return this;
     },
@@ -23918,12 +24130,12 @@ define('skylark-widgets-base/Widget',[
 
 
     /**
-     *  Attach the current widget element to dom document.
+     *  mount the current widget element to dom document.
      *
-     * @method attachTo
+     * @method mount
      * @return {Widget} This Widget.
      */
-    attach : function(target,position){
+    mount : function(target,position){
         var toElm = target.element || target,
             elm = this._elm;
         if (!position || position=="child") {
@@ -23939,12 +24151,12 @@ define('skylark-widgets-base/Widget',[
     },
 
     /**
-     *  Detach the current widget element from dom document.
+     *  unmount the current widget element from dom document.
      *
      * @method html
      * @return {HtmlElement} HTML element representing the widget.
      */
-    detach : function() {
+    unmount : function() {
       this._velm.remove();
     },
 
@@ -24098,8 +24310,8 @@ define('skylark-widgets-base/Widget',[
   Widget.prototype.updateInterface = Widget.prototype.update;
   Widget.prototype.updatePosition = Widget.prototype.updateLocation;
   Widget.prototype.attachTo = Widget.prototype.setParent;
-
-  Widget.prototype._attachTo = Widget.prototype.attach;
+  Widget.prototype._attachTo = Widget.prototype.mount;
+  Widget.prototype.detach = Widget.prototype.unmount;
 
   /**
    * Top-left locationing.
@@ -24196,7 +24408,7 @@ define('skylark-widgets-base/Widget',[
   return base.Widget = Widget;
 });
 
-define('skylark-domx-panels/panels',[
+define('skylark-domx-plugins-panels/panels',[
   "skylark-langx/skylark",
   "skylark-langx/langx",
   "skylark-domx-browser",
@@ -24256,11 +24468,11 @@ define('skylark-domx-panels/panels',[
 		isDownArrow: isDownArrow
 	});
 
-	return skylark.attach("domx.panels",panels);
+	return skylark.attach("domx.plugins.panels",panels);
 
 });
 
-define('skylark-domx-panels/Toolbar',[
+define('skylark-domx-plugins-panels/Toolbar',[
   "skylark-langx/langx",
   "skylark-domx-query",
   "skylark-domx-plugins",
@@ -24660,7 +24872,7 @@ define('skylark-widgets-toolbars/ToolbarItem',[
 define('skylark-widgets-toolbars/Toolbar',[
   "skylark-langx/langx",
   "skylark-domx-query",
-  "skylark-domx-panels/Toolbar",
+  "skylark-domx-plugins-panels/Toolbar",
   "skylark-widgets-base/Widget",
   "./toolbars",
   "./ToolbarItem"
@@ -40381,7 +40593,7 @@ define('skylark-codemirror/addon/beautify/beautify',[
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
 define('skylark-codemirror/mode/xml/xml',["../../CodeMirror"], function(CodeMirror) {
-
+"use strict";
 
 var htmlConfig = {
   autoSelfClosers: {'area': true, 'base': true, 'br': true, 'col': true, 'command': true,
@@ -40777,7 +40989,7 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
 define('skylark-codemirror/mode/css/css',["../../CodeMirror"], function(CodeMirror) {
-
+"use strict";
 
 CodeMirror.defineMode("css", function(config, parserConfig) {
   var inline = parserConfig.inline
@@ -41602,7 +41814,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
 define('skylark-codemirror/mode/javascript/javascript',["../../CodeMirror"], function(CodeMirror) {
-
+"use strict";
 
 CodeMirror.defineMode("javascript", function(config, parserConfig) {
   var indentUnit = config.indentUnit;

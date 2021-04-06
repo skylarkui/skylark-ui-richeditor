@@ -1858,7 +1858,7 @@ define('skylark-codemirror/addon/beautify/beautify',[
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
 define('skylark-codemirror/mode/xml/xml',["../../CodeMirror"], function(CodeMirror) {
-
+"use strict";
 
 var htmlConfig = {
   autoSelfClosers: {'area': true, 'base': true, 'br': true, 'col': true, 'command': true,
@@ -2254,7 +2254,7 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
 define('skylark-codemirror/mode/css/css',["../../CodeMirror"], function(CodeMirror) {
-
+"use strict";
 
 CodeMirror.defineMode("css", function(config, parserConfig) {
   var inline = parserConfig.inline
@@ -3079,7 +3079,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
 define('skylark-codemirror/mode/javascript/javascript',["../../CodeMirror"], function(CodeMirror) {
-
+"use strict";
 
 CodeMirror.defineMode("javascript", function(config, parserConfig) {
   var indentUnit = config.indentUnit;

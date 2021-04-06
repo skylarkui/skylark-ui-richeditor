@@ -28,7 +28,6 @@
     "skylark-codemirror": "git+https://github.com/skylark-integration/skylark-codemirror.git#master",
     "skylark-domx-contents": "git+https://github.com/skylark-domx/skylark-domx-contents.git#master",
     "skylark-domx-files": "git+https://github.com/skylark-domx/skylark-domx-files.git#master",
-    "skylark-domx-panels": "git+https://github.com/skylark-domx/skylark-domx-panels.git#master",
     "skylark-domx-plugins-panels": "git+https://github.com/skylark-domx/skylark-domx-panels.git#master",
     "skylark-domx-tables": "git+https://github.com/skylark-domx/skylark-domx-tables.git#master",
     "skylark-io-diskfs": "git+https://github.com/skylark-io/skylark-io-diskfs.git#master",

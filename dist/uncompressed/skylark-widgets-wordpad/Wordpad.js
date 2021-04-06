@@ -156,7 +156,7 @@ define([
 
       });
 
-      this.toolbar.attach(this._elm,"prepend");
+      this.toolbar.mount(this._elm,"prepend");
 
       
       if (this.options.placeholder) {

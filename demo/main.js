@@ -189,8 +189,8 @@ require.config({
             main: 'main'
          },
          {
-           name : "skylark-domx-panels",
-           location : "../node_modules/skylark-domx-panels/dist/uncompressed/skylark-domx-panels",
+           name : "skylark-domx-plugins-panels",
+           location : "../node_modules/skylark-domx-plugins-panels/dist/uncompressed/skylark-domx-plugins-panels",
             main: 'main'
          },
          {
@@ -199,8 +199,8 @@ require.config({
             main: 'main'
          },
          {
-           name : "skylark-domx-popups",
-           location : "../node_modules/skylark-domx-popups/dist/uncompressed/skylark-domx-popups",
+           name : "skylark-domx-plugins-popups",
+           location : "../node_modules/skylark-domx-plugins-popups/dist/uncompressed/skylark-domx-plugins-popups",
             main: 'main'
          },
          {
